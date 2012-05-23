@@ -14,11 +14,11 @@ except (OSError, IOError):
 
 version = '1.0'
 
-deps = ['mozinfo']
+deps = ['mozinfo==0.3.3']
 
 setup(name='mozdownload',
       version=version,
-      description='Mozilla binary downloader',
+      description='Script to download builds for Firefox and Thunderbird from the Mozilla server.',
       long_description=description,
       classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       keywords='mozilla',
@@ -32,6 +32,6 @@ setup(name='mozdownload',
       entry_points="""
       # -*- Entry points: -*-
       [console_scripts]
-      mozdownload = mozdownload:main
+      mozdownload = mozdownload:cli
       """,
       )

@@ -22,7 +22,7 @@ BUILD_TYPES = {'release': scraper.ReleaseScraper,
                'tinderbox': scraper.TinderboxScraper }
 
 
-def main():
+def cli():
     """Main function for the downloader"""
 
     usage = 'usage: %prog [options]'
@@ -146,4 +146,4 @@ def main():
     build.download()
 
 if __name__ == "__main__":
-    main()
+    cli()
