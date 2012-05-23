@@ -34,7 +34,6 @@ class DirectoryParser(HTMLParser):
                 self.active_url = attr[1].strip('/')
                 return
 
-
     def handle_endtag(self, tag):
         if tag == 'a':
             self.active_url = None
