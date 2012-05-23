@@ -5,7 +5,7 @@
 """Module to handle downloads for different types of Firefox and Thunderbird builds."""
 
 
-from datetime import datetime, tzinfo, timedelta
+from datetime import datetime
 import os
 import re
 import sys
@@ -14,6 +14,7 @@ import urllib
 import mozinfo
 
 from parser import DirectoryParser
+from timezones import PacificTimezone
 
 
 # Base URL for the path to all builds
@@ -607,36 +608,3 @@ class TinderboxScraper(MozillaScraper):
                               'win64': 'win64'}
 
         return PLATFORM_FRAGMENTS[self.platform]
-
-
-class PacificTimezone(tzinfo):
-    """Class to set the timezone to PST/PDT and automatically adjusts
-    for daylight saving.
-    """
-
-    def utcoffset(self, dt):
-        return timedelta(hours=-8) + self.dst(dt)
-
-
-    def tzname(self, dt):
-        return "Pacific"
-
-
-    def dst(self, dt):
-        # Daylight saving starts on the second Sunday of March at 2AM standard
-        dst_start_date = self.first_sunday(dt.year, 3) + timedelta(days=7) \
-                                                       + timedelta(hours=2)
-        # Daylight saving ends on the first Sunday of November at 2AM standard
-        dst_end_date = self.first_sunday(dt.year, 11) + timedelta(hours=2)
-
-        if dst_start_date <= dt.replace(tzinfo=None) < dst_end_date:
-            return timedelta(hours=1)
-        else:
-            return timedelta(0)
-
-
-    def first_sunday(self, year, month):
-        date = datetime(year, month, 1, 0)
-        days_until_sunday = 6 - date.weekday()
-
-        return date + timedelta(days=days_until_sunday)
