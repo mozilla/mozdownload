@@ -19,7 +19,7 @@ Download the latest Firefox Aurora build for Windows (32bit):
 
     mozdownload --type=daily --branch=mozilla-aurora --platform=win32
 
-Download the latest official Thunderbird release for you platform: 
+Download the latest official Thunderbird release for your platform: 
 
     mozdownload --application=thunderbird --version=latest
 
@@ -27,5 +27,4 @@ Download the latest Earlybird build for Linux (64bit):
 
     mozdownload --application=thunderbird --type=daily --branch=comm-aurora --platform=linux64
 
-Run `mozdownload --help` for detailed information on the command line
-program.
+Run `mozdownload --help` for detailed information on the command line options.
