@@ -6,7 +6,6 @@
 
 
 from datetime import datetime
-from HTMLParser import HTMLParser
 import os
 import re
 import sys
@@ -14,6 +13,7 @@ import urllib
 
 import mozinfo
 
+from parser import DirectoryParser
 from timezones import PacificTimezone
 
 
@@ -33,46 +33,6 @@ class NotFoundException(Exception):
     def __init__(self, message, location):
         self.location = location
         Exception.__init__(self, ': '.join([message, location]))
-
-
-class DirectoryParser(HTMLParser):
-    """Class to parse directory listings"""
-
-    def __init__(self, url):
-        HTMLParser.__init__(self)
-
-        self.entries = [ ]
-        self.active_url = None
-
-        req = urllib.urlopen(url)
-        self.feed(req.read())
-
-    def filter(self, regex):
-        pattern = re.compile(regex, re.IGNORECASE)
-        return [entry for entry in self.entries if pattern.match(entry)]
-
-    def handle_starttag(self, tag, attrs):
-        if not tag == 'a':
-            return
-
-        for attr in attrs:
-            if attr[0] == 'href':
-                self.active_url = attr[1].strip('/')
-                return
-
-
-    def handle_endtag(self, tag):
-        if tag == 'a':
-            self.active_url = None
-
-    def handle_data(self, data):
-        # Only process the data when we are in an active a tag and have an URL
-        if not self.active_url:
-            return
-
-        name = urllib.quote(data.strip('/'))
-        if self.active_url == name:
-            self.entries.append(self.active_url)
 
 
 class MozillaScraper(object):
