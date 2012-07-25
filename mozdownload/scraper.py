@@ -229,7 +229,7 @@ class DailyScraper(Scraper):
                 raise NotFoundException(message, url)
 
             # Read status file for the platform, retrieve build id, and convert to a date
-            status_file = url + parser.entries[0]
+            status_file = url + parser.entries[-1]
             f = urllib.urlopen(status_file)
             self.date = datetime.strptime(f.readline().strip(), '%Y%m%d%H%M%S')
             self.builds, self.build_index = self.get_build_info_for_date(self.date)
