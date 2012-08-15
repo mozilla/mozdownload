@@ -208,7 +208,7 @@ class DailyScraper(Scraper):
             # and time can be extracted: '20111212042025' -> '2011-12-12 04:20:25'
             self.date = datetime.strptime(build_id, '%Y%m%d%H%M%S')
             self.builds, self.build_index = self.get_build_info_for_date(self.date,
-                                                                         build_id=True)
+                                                                         build_id=build_id)
 
         elif date:
             # A date (without time) has been specified. Use its value and the
@@ -237,7 +237,7 @@ class DailyScraper(Scraper):
             self.builds, self.build_index = self.get_build_info_for_date(self.date)
 
 
-    def get_build_info_for_date(self, date, build_index=None, build_id=False):
+    def get_build_info_for_date(self, date, build_index=None, build_id=None):
         url = '/'.join([self.base_url, self.monthly_build_list_regex])
 
         print 'Retrieving list of builds from %s' % url
