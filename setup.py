@@ -14,7 +14,7 @@ try:
 except (OSError, IOError):
     description = None
 
-version = '1.1'
+version = '1.2'
 
 deps = ['mozinfo==0.3.3']
 
@@ -22,7 +22,8 @@ setup(name='mozdownload',
       version=version,
       description='Script to download builds for Firefox and Thunderbird from the Mozilla server.',
       long_description=description,
-      classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+      # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+      classifiers=[],
       keywords='mozilla',
       author='Mozilla Automation and Testing Team',
       author_email='tools@lists.mozilla.com',
