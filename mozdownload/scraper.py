@@ -234,7 +234,8 @@ class DailyScraper(Scraper):
             status_file = url + parser.entries[-1]
             f = urllib.urlopen(status_file)
             self.date = datetime.strptime(f.readline().strip(), '%Y%m%d%H%M%S')
-            self.builds, self.build_index = self.get_build_info_for_date(self.date)
+            self.builds, self.build_index = self.get_build_info_for_date(self.date,
+                                                                         has_time=True)
 
 
     def get_build_info_for_date(self, date, has_time=False, build_index=None):
