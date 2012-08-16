@@ -207,13 +207,15 @@ class DailyScraper(Scraper):
             # A build id has been specified. Split up its components so the date
             # and time can be extracted: '20111212042025' -> '2011-12-12 04:20:25'
             self.date = datetime.strptime(build_id, '%Y%m%d%H%M%S')
-            self.builds, self.build_index = self.get_build_info_for_date(self.date)
+            self.builds, self.build_index = self.get_build_info_for_date(self.date,
+                                                                         has_time=True)
 
         elif date:
             # A date (without time) has been specified. Use its value and the
             # build index to find the requested build for that day.
             self.date = datetime.strptime(date, '%Y-%m-%d')
-            self.builds, self.build_index = self.get_build_info_for_date(self.date, self.build_index)
+            self.builds, self.build_index = self.get_build_info_for_date(self.date,
+                                                                         build_index=self.build_index)
 
         else:
             # If no build id nor date have been specified the lastest available
@@ -232,10 +234,11 @@ class DailyScraper(Scraper):
             status_file = url + parser.entries[-1]
             f = urllib.urlopen(status_file)
             self.date = datetime.strptime(f.readline().strip(), '%Y%m%d%H%M%S')
-            self.builds, self.build_index = self.get_build_info_for_date(self.date)
+            self.builds, self.build_index = self.get_build_info_for_date(self.date,
+                                                                         has_time=True)
 
 
-    def get_build_info_for_date(self, date, build_index=None):
+    def get_build_info_for_date(self, date, has_time=False, build_index=None):
         url = '/'.join([self.base_url, self.monthly_build_list_regex])
 
         print 'Retrieving list of builds from %s' % url
@@ -249,7 +252,7 @@ class DailyScraper(Scraper):
             message = 'Folder for builds on %s has not been found' % self.date.strftime('%Y-%m-%d')
             raise NotFoundException(message, url)
 
-        if date.hour and date.minute and date.second:
+        if has_time:
             # If a time is included in the date, use it to determine the build's index
             regex = r'.*%s.*' % date.strftime('%H-%M-%S')
             build_index = parser.entries.index(parser.filter(regex)[0])
