@@ -20,7 +20,7 @@ from parser import DirectoryParser
 from timezones import PacificTimezone
 
 
-APPLICATIONS = ['firefox', 'thunderbird']
+APPLICATIONS = ['firefox', 'thunderbird', 'b2g']
 
 # Base URL for the path to all builds
 BASE_URL = 'https://ftp.mozilla.org/pub/mozilla.org'
