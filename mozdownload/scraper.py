@@ -44,7 +44,8 @@ class Scraper(object):
     """Generic class to download an application from the Mozilla server"""
 
     def __init__(self, directory, version, platform=None,
-                 application='firefox', locale='en-US'):
+                 application='firefox', locale='en-US',
+                 windows_extension='.exe'):
 
         # Private properties for caching
         self._target = None
@@ -54,6 +55,7 @@ class Scraper(object):
         self.locale = locale
         self.platform = platform or self.detect_platform()
         self.version = version
+        self.windows_extension = windows_extension
 
         # build the base URL
         self.application = application
@@ -101,8 +103,8 @@ class Scraper(object):
                  'linux64': '.tar.bz2',
                  'mac': '.dmg',
                  'mac64': '.dmg',
-                 'win32': '.exe',
-                 'win64': '.exe'}
+                 'win32': self.windows_extension,
+                 'win64': self.windows_extension}
         return regex[self.platform]
 
 
@@ -273,13 +275,14 @@ class DailyScraper(Scraper):
                         'linux64': r'\.tar\.bz2$',
                         'mac': r'\.dmg$',
                         'mac64': r'\.dmg$',
-                        'win32': r'.*\.exe$',
-                        'win64': r'.*\.exe$'}
+                        'win32': r'(\.installer)?\%(WINDOWS_EXTENSION)s$',
+                        'win64': r'(\.installer)?\%(WINDOWS_EXTENSION)s$'}
         regex = regex_base_name + regex_suffix[self.platform]
 
         return regex % {'APP': self.application,
                         'LOCALE': self.locale,
-                        'PLATFORM': self.platform_regex}
+                        'PLATFORM': self.platform_regex,
+                        'WINDOWS_EXTENSION': self.windows_extension}
 
 
     def build_filename(self, binary):
@@ -699,6 +702,13 @@ def cli():
                      default=None,
                      metavar='DATE',
                      help='Date of the build, default: latest build')
+    group.add_option('--windows-extension',
+                      dest='windows_extension',
+                      choices=['.exe', '.zip'],
+                      default='.exe',
+                      metavar='EXTENSION',
+                      help='The file extension to use for Windows builds, \
+                           default: ".exe".')
     parser.add_option_group(group)
 
     # Option group for tinderbox builds
@@ -732,7 +742,8 @@ def cli():
                            'branch': options.branch,
                            'build_number': options.build_number,
                            'build_id': options.build_id,
-                           'date': options.date},
+                           'date': options.date,
+                           'windows_extension': options.windows_extension},
                        'tinderbox': {
                            'branch': options.branch,
                            'build_number': options.build_number,
