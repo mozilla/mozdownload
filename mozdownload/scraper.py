@@ -637,7 +637,7 @@ def cli():
                       default=APPLICATIONS[0],
                       metavar='APPLICATION',
                       help='The name of the application to download, '
-                           'default: "%s"' % APPLICATIONS[0])
+                           'default: "%default"')
     parser.add_option('--directory', '-d',
                       dest='directory',
                       default=os.getcwd(),
@@ -655,7 +655,7 @@ def cli():
                       dest='locale',
                       default='en-US',
                       metavar='LOCALE',
-                      help='Locale of the application, default: "en-US"')
+                      help='Locale of the application, default: "%default"')
     parser.add_option('--platform', '-p',
                       dest='platform',
                       choices=PLATFORM_FRAGMENTS.keys(),
@@ -666,8 +666,7 @@ def cli():
                       choices=BUILD_TYPES.keys(),
                       default=BUILD_TYPES.keys()[0],
                       metavar='BUILD_TYPE',
-                      help='Type of build to download, default: "%s"' %
-                           BUILD_TYPES.keys()[0])
+                      help='Type of build to download, default: "%default"')
     parser.add_option('--version', '-v',
                       dest='version',
                       metavar='VERSION',
@@ -691,7 +690,7 @@ def cli():
                      dest='branch',
                      default='mozilla-central',
                      metavar='BRANCH',
-                     help='Name of the branch, default: "mozilla-central"')
+                     help='Name of the branch, default: "%default"')
     parser.add_option('--build-id',
                       dest='build_id',
                       default=None,
@@ -708,7 +707,7 @@ def cli():
                       default='.exe',
                       metavar='EXTENSION',
                       help='The file extension to use for Windows builds, \
-                           default: ".exe".')
+                           default: "%default".')
     parser.add_option_group(group)
 
     # Option group for tinderbox builds
