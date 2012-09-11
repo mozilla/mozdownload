@@ -634,7 +634,7 @@ def cli():
     parser.add_option('--application', '-a',
                       dest='application',
                       choices=APPLICATIONS,
-                      default=APPLICATIONS[0],
+                      default='firefox',
                       metavar='APPLICATION',
                       help='The name of the application to download, '
                            'default: "%default"')
