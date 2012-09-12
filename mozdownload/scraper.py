@@ -44,8 +44,7 @@ class Scraper(object):
     """Generic class to download an application from the Mozilla server"""
 
     def __init__(self, directory, version, platform=None,
-                 application='firefox', locale='en-US',
-                 windows_extension='.exe'):
+                 application='firefox', locale='en-US'):
 
         # Private properties for caching
         self._target = None
@@ -55,7 +54,6 @@ class Scraper(object):
         self.locale = locale
         self.platform = platform or self.detect_platform()
         self.version = version
-        self.windows_extension = windows_extension
 
         # build the base URL
         self.application = application
@@ -103,8 +101,8 @@ class Scraper(object):
                  'linux64': '.tar.bz2',
                  'mac': '.dmg',
                  'mac64': '.dmg',
-                 'win32': self.windows_extension,
-                 'win64': self.windows_extension}
+                 'win32': '.exe',
+                 'win64': '.exe'}
         return regex[self.platform]
 
 
@@ -194,10 +192,11 @@ class DailyScraper(Scraper):
     """Class to download a daily build from the Mozilla server"""
 
     def __init__(self, branch='mozilla-central', build_id=None, date=None,
-                 build_number=None, *args, **kwargs):
+                 build_number=None, file_ext=None, *args, **kwargs):
 
         Scraper.__init__(self, *args, **kwargs)
         self.branch = branch
+        self.file_ext = file_ext
 
         # Internally we access builds via index
         if build_number is not None:
@@ -271,18 +270,28 @@ class DailyScraper(Scraper):
         """Return the regex for the binary"""
 
         regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.%(PLATFORM)s'
-        regex_suffix = {'linux': r'\.tar\.bz2$',
-                        'linux64': r'\.tar\.bz2$',
-                        'mac': r'\.dmg$',
-                        'mac64': r'\.dmg$',
-                        'win32': r'(\.installer)?\%(WINDOWS_EXTENSION)s$',
-                        'win64': r'(\.installer)?\%(WINDOWS_EXTENSION)s$'}
+        regex_suffix = {'linux': r'%(EXT)s$',
+                        'linux64': r'%(EXT)s$',
+                        'mac': r'%(EXT)s$',
+                        'mac64': r'%(EXT)s$',
+                        'win32': r'(\.installer)?%(EXT)s$',
+                        'win64': r'(\.installer)?%(EXT)s$'}
         regex = regex_base_name + regex_suffix[self.platform]
 
         return regex % {'APP': self.application,
                         'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
-                        'WINDOWS_EXTENSION': self.windows_extension}
+                        'EXT': re.escape(self.extension)}
+
+
+    @property
+    def extension(self):
+        """Return the file extension"""
+
+        if self.file_ext:
+            return self.file_ext
+
+        return super(DailyScraper, self).extension
 
 
     def build_filename(self, binary):
@@ -701,13 +710,12 @@ def cli():
                      default=None,
                      metavar='DATE',
                      help='Date of the build, default: latest build')
-    group.add_option('--windows-extension',
-                      dest='windows_extension',
-                      choices=['.exe', '.zip'],
-                      default='.exe',
+    group.add_option('--file-ext',
+                      dest='file_ext',
+                      default=None,
                       metavar='EXTENSION',
-                      help='The file extension to use for Windows builds, \
-                           default: "%default".')
+                      help='File extension of the build (e.g. ".zip"), default:\
+                            the standard build extension on the platform.')
     parser.add_option_group(group)
 
     # Option group for tinderbox builds
@@ -742,7 +750,7 @@ def cli():
                            'build_number': options.build_number,
                            'build_id': options.build_id,
                            'date': options.date,
-                           'windows_extension': options.windows_extension},
+                           'file_ext': options.file_ext},
                        'tinderbox': {
                            'branch': options.branch,
                            'build_number': options.build_number,
