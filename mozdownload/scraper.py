@@ -689,7 +689,7 @@ def cli():
                      default='mozilla-central',
                      metavar='BRANCH',
                      help='Name of the branch, default: "mozilla-central"')
-    parser.add_option('--build-id',
+    group.add_option('--build-id',
                       dest='build_id',
                       default=None,
                       metavar='BUILD_ID',
