@@ -97,13 +97,13 @@ class Scraper(object):
     def extension(self):
         """Return the file extension"""
 
-        regex = {'linux': '.tar.bz2',
+        extns = {'linux': '.tar.bz2',
                  'linux64': '.tar.bz2',
                  'mac': '.dmg',
                  'mac64': '.dmg',
                  'win32': '.exe',
                  'win64': '.exe'}
-        return regex[self.platform]
+        return extns[self.platform]
 
 
     @property
