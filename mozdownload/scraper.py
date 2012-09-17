@@ -44,7 +44,7 @@ class Scraper(object):
     """Generic class to download an application from the Mozilla server"""
 
     def __init__(self, directory, version, platform=None,
-                 application='firefox', locale='en-US'):
+                 application='firefox', locale='en-US', file_ext=None):
 
         # Private properties for caching
         self._target = None
@@ -54,6 +54,7 @@ class Scraper(object):
         self.locale = locale
         self.platform = platform or self.detect_platform()
         self.version = version
+        self.file_ext = file_ext
 
         # build the base URL
         self.application = application
@@ -96,6 +97,9 @@ class Scraper(object):
     @property
     def extension(self):
         """Return the file extension"""
+
+        if self.file_ext:
+            return self.file_ext
 
         extns = {'linux': '.tar.bz2',
                  'linux64': '.tar.bz2',
@@ -192,11 +196,10 @@ class DailyScraper(Scraper):
     """Class to download a daily build from the Mozilla server"""
 
     def __init__(self, branch='mozilla-central', build_id=None, date=None,
-                 build_number=None, file_ext=None, *args, **kwargs):
+                 build_number=None, *args, **kwargs):
 
         Scraper.__init__(self, *args, **kwargs)
         self.branch = branch
-        self.file_ext = file_ext
 
         # Internally we access builds via index
         if build_number is not None:
@@ -284,16 +287,6 @@ class DailyScraper(Scraper):
                         'EXT': re.escape(self.extension)}
 
 
-    @property
-    def extension(self):
-        """Return the file extension"""
-
-        if self.file_ext:
-            return self.file_ext
-
-        return super(DailyScraper, self).extension
-
-
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
@@ -342,13 +335,14 @@ class ReleaseScraper(Scraper):
     def binary_regex(self):
         """Return the regex for the binary"""
 
-        regex = {'linux': r'^%s-.*.tar.bz2$',
-                 'linux64': r'^%s-.*.tar.bz2$',
-                 'mac': r'^%s.*.dmg$',
-                 'mac64': r'^%s.*.dmg$',
-                 'win32': r'^%s.*.exe$',
-                 'win64': r'^%s.*.exe$'}
-        return regex[self.platform] % self.application
+        regex = {'linux': r'^%(APP)s-.*%(EXT)s$',
+                 'linux64': r'^%(APP)s-.*%(EXT)s$',
+                 'mac': r'^%(APP)s.*%(EXT)s$',
+                 'mac64': r'^%(APP)s.*%(EXT)s$',
+                 'win32': r'^%(APP)s.*%(EXT)s$',
+                 'win64': r'^%(APP)s.*%(EXT)s$'}
+        return regex[self.platform] % {'APP': self.application,
+                                       'EXT': re.escape(self.extension)}
 
 
     @property
@@ -512,17 +506,18 @@ class TinderboxScraper(Scraper):
         """Return the regex for the binary"""
 
         regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.'
-        regex_suffix = {'linux': r'.*\.tar\.bz2$',
-                        'linux64': r'.*\.tar\.bz2$',
-                        'mac': r'.*\.dmg$',
-                        'mac64': r'.*\.dmg$',
-                        'win32': r'.*\.exe$',
-                        'win64': r'.*\.exe$'}
+        regex_suffix = {'linux': r'.*%(EXT)s$',
+                        'linux64': r'.*%(EXT)s$',
+                        'mac': r'.*%(EXT)s$',
+                        'mac64': r'.*%(EXT)s$',
+                        'win32': r'.*%(EXT)s$',
+                        'win64': r'.*%(EXT)s$'}
 
         regex = regex_base_name + regex_suffix[self.platform]
 
         return regex % {'APP': self.application,
-                        'LOCALE': self.locale}
+                        'LOCALE': self.locale,
+                        'EXT': re.escape(self.extension)}
 
 
     def build_filename(self, binary):
@@ -681,6 +676,12 @@ def cli():
                       metavar='VERSION',
                       help='Version of the application to be used by release and\
                             candidate builds, i.e. "3.6"')
+    parser.add_option('--file-ext',
+                      dest='file_ext',
+                      default=None,
+                      metavar='EXTENSION',
+                      help='File extension of the build (e.g. ".zip"), default:\
+                            the standard build extension on the platform.')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
@@ -710,12 +711,6 @@ def cli():
                      default=None,
                      metavar='DATE',
                      help='Date of the build, default: latest build')
-    group.add_option('--file-ext',
-                      dest='file_ext',
-                      default=None,
-                      metavar='EXTENSION',
-                      help='File extension of the build (e.g. ".zip"), default:\
-                            the standard build extension on the platform.')
     parser.add_option_group(group)
 
     # Option group for tinderbox builds
@@ -741,7 +736,8 @@ def cli():
                         'locale': options.locale,
                         'platform': options.platform,
                         'version': options.version,
-                        'directory': options.directory}
+                        'directory': options.directory,
+                        'file_ext': options.file_ext}
     scraper_options = {'candidate': {
                            'build_number': options.build_number,
                            'no_unsigned': options.no_unsigned},
@@ -749,8 +745,7 @@ def cli():
                            'branch': options.branch,
                            'build_number': options.build_number,
                            'build_id': options.build_id,
-                           'date': options.date,
-                           'file_ext': options.file_ext},
+                           'date': options.date},
                        'tinderbox': {
                            'branch': options.branch,
                            'build_number': options.build_number,
