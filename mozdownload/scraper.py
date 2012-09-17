@@ -32,6 +32,12 @@ PLATFORM_FRAGMENTS = {'linux': 'linux-i686',
                       'win32': 'win32',
                       'win64': 'win64-x86_64'}
 
+FILE_EXTENSIONS = {'linux': '.tar.bz2',
+                   'linux64': '.tar.bz2',
+                   'mac': '.dmg',
+                   'mac64': '.dmg',
+                   'win32': '.exe',
+                   'win64': '.exe'}
 
 class NotFoundException(Exception):
     """Exception for a resource not being found (e.g. no logs)"""
@@ -44,7 +50,7 @@ class Scraper(object):
     """Generic class to download an application from the Mozilla server"""
 
     def __init__(self, directory, version, platform=None,
-                 application='firefox', locale='en-US', file_ext=None):
+                 application='firefox', locale='en-US', extension=None):
 
         # Private properties for caching
         self._target = None
@@ -54,7 +60,7 @@ class Scraper(object):
         self.locale = locale
         self.platform = platform or self.detect_platform()
         self.version = version
-        self.file_ext = file_ext
+        self.extension = extension or FILE_EXTENSIONS[self.platform]
 
         # build the base URL
         self.application = application
@@ -92,22 +98,6 @@ class Scraper(object):
         """Return the regex for the binary filename"""
 
         raise NotImplementedError(sys._getframe(0).f_code.co_name)
-
-
-    @property
-    def extension(self):
-        """Return the file extension"""
-
-        if self.file_ext:
-            return self.file_ext
-
-        extns = {'linux': '.tar.bz2',
-                 'linux64': '.tar.bz2',
-                 'mac': '.dmg',
-                 'mac64': '.dmg',
-                 'win32': '.exe',
-                 'win64': '.exe'}
-        return extns[self.platform]
 
 
     @property
@@ -676,8 +666,8 @@ def cli():
                       metavar='VERSION',
                       help='Version of the application to be used by release and\
                             candidate builds, i.e. "3.6"')
-    parser.add_option('--file-ext',
-                      dest='file_ext',
+    parser.add_option('--extension',
+                      dest='extension',
                       default=None,
                       metavar='EXTENSION',
                       help='File extension of the build (e.g. ".zip"), default:\
@@ -737,7 +727,7 @@ def cli():
                         'platform': options.platform,
                         'version': options.version,
                         'directory': options.directory,
-                        'file_ext': options.file_ext}
+                        'extension': options.extension}
     scraper_options = {'candidate': {
                            'build_number': options.build_number,
                            'no_unsigned': options.no_unsigned},
