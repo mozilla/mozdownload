@@ -658,7 +658,7 @@ def cli():
     parser.add_option('--type', '-t',
                       dest='type',
                       choices=BUILD_TYPES.keys(),
-                      default=BUILD_TYPES.keys()[0],
+                      default='release',
                       metavar='BUILD_TYPE',
                       help='Type of build to download, default: "%default"')
     parser.add_option('--version', '-v',
