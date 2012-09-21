@@ -32,12 +32,12 @@ PLATFORM_FRAGMENTS = {'linux': 'linux-i686',
                       'win32': 'win32',
                       'win64': 'win64-x86_64'}
 
-FILE_EXTENSIONS = {'linux': '.tar.bz2',
-                   'linux64': '.tar.bz2',
-                   'mac': '.dmg',
-                   'mac64': '.dmg',
-                   'win32': '.exe',
-                   'win64': '.exe'}
+DEFAULT_FILE_EXTENSIONS = {'linux': '.tar.bz2',
+                           'linux64': '.tar.bz2',
+                           'mac': '.dmg',
+                           'mac64': '.dmg',
+                           'win32': '.exe',
+                           'win64': '.exe'}
 
 class NotFoundException(Exception):
     """Exception for a resource not being found (e.g. no logs)"""
@@ -60,7 +60,7 @@ class Scraper(object):
         self.locale = locale
         self.platform = platform or self.detect_platform()
         self.version = version
-        self.extension = extension or FILE_EXTENSIONS[self.platform]
+        self.extension = extension or DEFAULT_FILE_EXTENSIONS[self.platform]
 
         # build the base URL
         self.application = application
