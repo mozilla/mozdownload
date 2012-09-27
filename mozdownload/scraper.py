@@ -32,12 +32,12 @@ PLATFORM_FRAGMENTS = {'linux': 'linux-i686',
                       'win32': 'win32',
                       'win64': 'win64-x86_64'}
 
-DEFAULT_FILE_EXTENSIONS = {'linux': '.tar.bz2',
-                           'linux64': '.tar.bz2',
-                           'mac': '.dmg',
-                           'mac64': '.dmg',
-                           'win32': '.exe',
-                           'win64': '.exe'}
+DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
+                           'linux64': 'tar.bz2',
+                           'mac': 'dmg',
+                           'mac64': 'dmg',
+                           'win32': 'exe',
+                           'win64': 'exe'}
 
 class NotFoundException(Exception):
     """Exception for a resource not being found (e.g. no logs)"""
@@ -263,18 +263,18 @@ class DailyScraper(Scraper):
         """Return the regex for the binary"""
 
         regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.%(PLATFORM)s'
-        regex_suffix = {'linux': r'%(EXT)s$',
-                        'linux64': r'%(EXT)s$',
-                        'mac': r'%(EXT)s$',
-                        'mac64': r'%(EXT)s$',
-                        'win32': r'(\.installer)?%(EXT)s$',
-                        'win64': r'(\.installer)?%(EXT)s$'}
+        regex_suffix = {'linux': r'\.%(EXT)s$',
+                        'linux64': r'\.%(EXT)s$',
+                        'mac': r'\.%(EXT)s$',
+                        'mac64': r'\.%(EXT)s$',
+                        'win32': r'(\.installer)?\.%(EXT)s$',
+                        'win64': r'(\.installer)?\.%(EXT)s$'}
         regex = regex_base_name + regex_suffix[self.platform]
 
         return regex % {'APP': self.application,
                         'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
-                        'EXT': re.escape(self.extension)}
+                        'EXT': self.extension}
 
 
     def build_filename(self, binary):
@@ -325,14 +325,14 @@ class ReleaseScraper(Scraper):
     def binary_regex(self):
         """Return the regex for the binary"""
 
-        regex = {'linux': r'^%(APP)s-.*%(EXT)s$',
-                 'linux64': r'^%(APP)s-.*%(EXT)s$',
-                 'mac': r'^%(APP)s.*%(EXT)s$',
-                 'mac64': r'^%(APP)s.*%(EXT)s$',
-                 'win32': r'^%(APP)s.*%(EXT)s$',
-                 'win64': r'^%(APP)s.*%(EXT)s$'}
+        regex = {'linux': r'^%(APP)s-.*\.%(EXT)s$',
+                 'linux64': r'^%(APP)s-.*\.%(EXT)s$',
+                 'mac': r'^%(APP)s.*\.%(EXT)s$',
+                 'mac64': r'^%(APP)s.*\.%(EXT)s$',
+                 'win32': r'^%(APP)s.*\.%(EXT)s$',
+                 'win64': r'^%(APP)s.*\.%(EXT)s$'}
         return regex[self.platform] % {'APP': self.application,
-                                       'EXT': re.escape(self.extension)}
+                                       'EXT': self.extension}
 
 
     @property
@@ -348,7 +348,7 @@ class ReleaseScraper(Scraper):
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
-        template = '%(APP)s-%(VERSION)s.%(LOCALE)s.%(PLATFORM)s%(EXT)s'
+        template = '%(APP)s-%(VERSION)s.%(LOCALE)s.%(PLATFORM)s.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'LOCALE': self.locale,
@@ -415,7 +415,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
-        template = '%(APP)s-%(VERSION)s-build%(BUILD)s.%(LOCALE)s.%(PLATFORM)s%(EXT)s'
+        template = '%(APP)s-%(VERSION)s-build%(BUILD)s.%(LOCALE)s.%(PLATFORM)s.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'BUILD': self.builds[self.build_index],
@@ -496,18 +496,18 @@ class TinderboxScraper(Scraper):
         """Return the regex for the binary"""
 
         regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.'
-        regex_suffix = {'linux': r'.*%(EXT)s$',
-                        'linux64': r'.*%(EXT)s$',
-                        'mac': r'.*%(EXT)s$',
-                        'mac64': r'.*%(EXT)s$',
-                        'win32': r'.*%(EXT)s$',
-                        'win64': r'.*%(EXT)s$'}
+        regex_suffix = {'linux': r'.*\.%(EXT)s$',
+                        'linux64': r'.*\.%(EXT)s$',
+                        'mac': r'.*\.%(EXT)s$',
+                        'mac64': r'.*\.%(EXT)s$',
+                        'win32': r'.*\.%(EXT)s$',
+                        'win64': r'.*\.%(EXT)s$'}
 
         regex = regex_base_name + regex_suffix[self.platform]
 
         return regex % {'APP': self.application,
                         'LOCALE': self.locale,
-                        'EXT': re.escape(self.extension)}
+                        'EXT': self.extension}
 
 
     def build_filename(self, binary):
@@ -670,7 +670,7 @@ def cli():
                       dest='extension',
                       default=None,
                       metavar='EXTENSION',
-                      help='File extension of the build (e.g. ".zip"), default:\
+                      help='File extension of the build (e.g. "zip"), default:\
                             the standard build extension on the platform.')
 
     # Option group for candidate builds
