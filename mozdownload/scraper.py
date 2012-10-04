@@ -20,7 +20,7 @@ from parser import DirectoryParser
 from timezones import PacificTimezone
 
 
-APPLICATIONS = ['firefox', 'thunderbird']
+APPLICATIONS = ['b2g', 'firefox', 'thunderbird']
 
 # Base URL for the path to all builds
 BASE_URL = 'https://ftp.mozilla.org/pub/mozilla.org'
@@ -32,6 +32,12 @@ PLATFORM_FRAGMENTS = {'linux': 'linux-i686',
                       'win32': 'win32',
                       'win64': 'win64-x86_64'}
 
+DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
+                           'linux64': 'tar.bz2',
+                           'mac': 'dmg',
+                           'mac64': 'dmg',
+                           'win32': 'exe',
+                           'win64': 'exe'}
 
 class NotFoundException(Exception):
     """Exception for a resource not being found (e.g. no logs)"""
@@ -44,7 +50,7 @@ class Scraper(object):
     """Generic class to download an application from the Mozilla server"""
 
     def __init__(self, directory, version, platform=None,
-                 application='firefox', locale='en-US'):
+                 application='firefox', locale='en-US', extension=None):
 
         # Private properties for caching
         self._target = None
@@ -54,6 +60,7 @@ class Scraper(object):
         self.locale = locale
         self.platform = platform or self.detect_platform()
         self.version = version
+        self.extension = extension or DEFAULT_FILE_EXTENSIONS[self.platform]
 
         # build the base URL
         self.application = application
@@ -91,19 +98,6 @@ class Scraper(object):
         """Return the regex for the binary filename"""
 
         raise NotImplementedError(sys._getframe(0).f_code.co_name)
-
-
-    @property
-    def extension(self):
-        """Return the file extension"""
-
-        regex = {'linux': '.tar.bz2',
-                 'linux64': '.tar.bz2',
-                 'mac': '.dmg',
-                 'mac64': '.dmg',
-                 'win32': '.exe',
-                 'win64': '.exe'}
-        return regex[self.platform]
 
 
     @property
@@ -269,17 +263,18 @@ class DailyScraper(Scraper):
         """Return the regex for the binary"""
 
         regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.%(PLATFORM)s'
-        regex_suffix = {'linux': r'\.tar\.bz2$',
-                        'linux64': r'\.tar\.bz2$',
-                        'mac': r'\.dmg$',
-                        'mac64': r'\.dmg$',
-                        'win32': r'.*\.exe$',
-                        'win64': r'.*\.exe$'}
+        regex_suffix = {'linux': r'\.%(EXT)s$',
+                        'linux64': r'\.%(EXT)s$',
+                        'mac': r'\.%(EXT)s$',
+                        'mac64': r'\.%(EXT)s$',
+                        'win32': r'(\.installer)?\.%(EXT)s$',
+                        'win64': r'(\.installer)?\.%(EXT)s$'}
         regex = regex_base_name + regex_suffix[self.platform]
 
         return regex % {'APP': self.application,
                         'LOCALE': self.locale,
-                        'PLATFORM': self.platform_regex}
+                        'PLATFORM': self.platform_regex,
+                        'EXT': self.extension}
 
 
     def build_filename(self, binary):
@@ -330,13 +325,14 @@ class ReleaseScraper(Scraper):
     def binary_regex(self):
         """Return the regex for the binary"""
 
-        regex = {'linux': r'^%s-.*.tar.bz2$',
-                 'linux64': r'^%s-.*.tar.bz2$',
-                 'mac': r'^%s.*.dmg$',
-                 'mac64': r'^%s.*.dmg$',
-                 'win32': r'^%s.*.exe$',
-                 'win64': r'^%s.*.exe$'}
-        return regex[self.platform] % self.application
+        regex = {'linux': r'^%(APP)s-.*\.%(EXT)s$',
+                 'linux64': r'^%(APP)s-.*\.%(EXT)s$',
+                 'mac': r'^%(APP)s.*\.%(EXT)s$',
+                 'mac64': r'^%(APP)s.*\.%(EXT)s$',
+                 'win32': r'^%(APP)s.*\.%(EXT)s$',
+                 'win64': r'^%(APP)s.*\.%(EXT)s$'}
+        return regex[self.platform] % {'APP': self.application,
+                                       'EXT': self.extension}
 
 
     @property
@@ -352,7 +348,7 @@ class ReleaseScraper(Scraper):
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
-        template = '%(APP)s-%(VERSION)s.%(LOCALE)s.%(PLATFORM)s%(EXT)s'
+        template = '%(APP)s-%(VERSION)s.%(LOCALE)s.%(PLATFORM)s.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'LOCALE': self.locale,
@@ -419,7 +415,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
-        template = '%(APP)s-%(VERSION)s-build%(BUILD)s.%(LOCALE)s.%(PLATFORM)s%(EXT)s'
+        template = '%(APP)s-%(VERSION)s-build%(BUILD)s.%(LOCALE)s.%(PLATFORM)s.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'BUILD': self.builds[self.build_index],
@@ -500,17 +496,18 @@ class TinderboxScraper(Scraper):
         """Return the regex for the binary"""
 
         regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.'
-        regex_suffix = {'linux': r'.*\.tar\.bz2$',
-                        'linux64': r'.*\.tar\.bz2$',
-                        'mac': r'.*\.dmg$',
-                        'mac64': r'.*\.dmg$',
-                        'win32': r'.*\.exe$',
-                        'win64': r'.*\.exe$'}
+        regex_suffix = {'linux': r'.*\.%(EXT)s$',
+                        'linux64': r'.*\.%(EXT)s$',
+                        'mac': r'.*\.%(EXT)s$',
+                        'mac64': r'.*\.%(EXT)s$',
+                        'win32': r'.*\.%(EXT)s$',
+                        'win64': r'.*\.%(EXT)s$'}
 
         regex = regex_base_name + regex_suffix[self.platform]
 
         return regex % {'APP': self.application,
-                        'LOCALE': self.locale}
+                        'LOCALE': self.locale,
+                        'EXT': self.extension}
 
 
     def build_filename(self, binary):
@@ -631,10 +628,10 @@ def cli():
     parser.add_option('--application', '-a',
                       dest='application',
                       choices=APPLICATIONS,
-                      default=APPLICATIONS[0],
+                      default='firefox',
                       metavar='APPLICATION',
                       help='The name of the application to download, '
-                           'default: "%s"' % APPLICATIONS[0])
+                           'default: "%default"')
     parser.add_option('--directory', '-d',
                       dest='directory',
                       default=os.getcwd(),
@@ -652,7 +649,7 @@ def cli():
                       dest='locale',
                       default='en-US',
                       metavar='LOCALE',
-                      help='Locale of the application, default: "en-US"')
+                      help='Locale of the application, default: "%default"')
     parser.add_option('--platform', '-p',
                       dest='platform',
                       choices=PLATFORM_FRAGMENTS.keys(),
@@ -661,15 +658,20 @@ def cli():
     parser.add_option('--type', '-t',
                       dest='type',
                       choices=BUILD_TYPES.keys(),
-                      default=BUILD_TYPES.keys()[0],
+                      default='release',
                       metavar='BUILD_TYPE',
-                      help='Type of build to download, default: "%s"' %
-                           BUILD_TYPES.keys()[0])
+                      help='Type of build to download, default: "%default"')
     parser.add_option('--version', '-v',
                       dest='version',
                       metavar='VERSION',
                       help='Version of the application to be used by release and\
                             candidate builds, i.e. "3.6"')
+    parser.add_option('--extension',
+                      dest='extension',
+                      default=None,
+                      metavar='EXTENSION',
+                      help='File extension of the build (e.g. "zip"), default:\
+                            the standard build extension on the platform.')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
@@ -688,8 +690,8 @@ def cli():
                      dest='branch',
                      default='mozilla-central',
                      metavar='BRANCH',
-                     help='Name of the branch, default: "mozilla-central"')
-    group.add_option('--build-id',
+                     help='Name of the branch, default: "%default"')
+    parser.add_option('--build-id',
                       dest='build_id',
                       default=None,
                       metavar='BUILD_ID',
@@ -724,7 +726,8 @@ def cli():
                         'locale': options.locale,
                         'platform': options.platform,
                         'version': options.version,
-                        'directory': options.directory}
+                        'directory': options.directory,
+                        'extension': options.extension}
     scraper_options = {'candidate': {
                            'build_number': options.build_number,
                            'no_unsigned': options.no_unsigned},
