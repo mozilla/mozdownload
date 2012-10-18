@@ -732,6 +732,13 @@ class TinderboxScraper(Scraper):
             message = 'No builds have been found'
             raise NotFoundError(message, url)
 
+        if len(parser.entries) > 1:
+            print 'Found %s builds: %s' % (
+                len(parser.entries),
+                len(parser.entries) > 10 and
+                ' ... '.join([', '.join(parser.entries[:5]), ', '.join(parser.entries[-5:])]) or
+                ', '.join(parser.entries))
+
         # If no index has been given, set it to the last build of the day.
         if build_index is None:
             build_index = len(parser.entries) - 1
