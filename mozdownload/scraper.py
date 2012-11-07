@@ -13,6 +13,7 @@ import os
 import re
 import sys
 import urllib
+import urllib2
 
 import mozinfo
 
@@ -50,7 +51,8 @@ class Scraper(object):
     """Generic class to download an application from the Mozilla server"""
 
     def __init__(self, directory, version, platform=None,
-                 application='firefox', locale='en-US', extension=None):
+                 application='firefox', locale='en-US', extension=None,
+                 username=None, password=None):
 
         # Private properties for caching
         self._target = None
@@ -61,6 +63,8 @@ class Scraper(object):
         self.platform = platform or self.detect_platform()
         self.version = version
         self.extension = extension or DEFAULT_FILE_EXTENSIONS[self.platform]
+        self.username = username
+        self.password = password
 
         # build the base URL
         self.application = application
@@ -170,7 +174,18 @@ class Scraper(object):
 
             print 'Downloading build: %s' % (urllib.unquote(self.final_url))
             tmp_file = self.target + ".part"
-            urllib.urlretrieve(self.final_url, tmp_file)
+
+            if self.username and self.password:
+                password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+                password_mgr.add_password(None, self.final_url, self.username, self.password)
+                handler = urllib2.HTTPBasicAuthHandler(password_mgr)
+                opener = urllib2.build_opener(urllib2.HTTPHandler, handler)
+                urllib2.install_opener(opener)
+
+            f = urllib2.urlopen(self.final_url)
+            data = f.read()
+            with open(tmp_file, 'wb') as code:
+                code.write(data)
             os.rename(tmp_file, self.target)
         except:
             try:
@@ -672,6 +687,16 @@ def cli():
                       metavar='EXTENSION',
                       help='File extension of the build (e.g. "zip"), default:\
                             the standard build extension on the platform.')
+    parser.add_option('--username',
+                      dest='username',
+                      default=None,
+                      metavar='USERNAME',
+                      help='Username for protected files.')
+    parser.add_option('--password',
+                      dest='password',
+                      default=None,
+                      metavar='PASSWORD',
+                      help='Password for protected files.')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
@@ -727,7 +752,9 @@ def cli():
                         'platform': options.platform,
                         'version': options.version,
                         'directory': options.directory,
-                        'extension': options.extension}
+                        'extension': options.extension,
+                        'username': options.username,
+                        'password': options.password}
     scraper_options = {'candidate': {
                            'build_number': options.build_number,
                            'no_unsigned': options.no_unsigned},
