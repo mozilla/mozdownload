@@ -168,7 +168,7 @@ class Scraper(object):
                 print "File has already been downloaded: %s" % (self.target)
                 return
 
-            print 'Downloading file: %s' % (urllib.unquote(self.final_url))
+            print 'Downloading from: %s' % (urllib.unquote(self.final_url))
             tmp_file = self.target + ".part"
             urllib.urlretrieve(self.final_url, tmp_file)
             os.rename(tmp_file, self.target)
@@ -325,7 +325,7 @@ class DirectScraper(Scraper):
 
     @property
     def target(self):
-        return self.final_url.rpartition('/')[-1]
+        return urllib.splitquery(self.final_url)[0].rpartition('/')[-1]
 
     @property
     def final_url(self):
