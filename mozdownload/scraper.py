@@ -12,6 +12,7 @@ from optparse import OptionParser, OptionGroup
 import os
 import re
 import sys
+import time
 import urllib
 import urllib2
 
@@ -52,7 +53,7 @@ class Scraper(object):
 
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
-                 authentication=None):
+                 authentication=None, retry_attempts=3, retry_delay=10):
 
         # Private properties for caching
         self._target = None
@@ -64,6 +65,8 @@ class Scraper(object):
         self.version = version
         self.extension = extension or DEFAULT_FILE_EXTENSIONS[self.platform]
         self.authentication = authentication
+        self.retry_attempts = retry_attempts
+        self.retry_delay = retry_delay
 
         # build the base URL
         self.application = application
@@ -160,46 +163,49 @@ class Scraper(object):
     def download(self):
         """Download the specified file"""
 
-        tmp_file = None
+        attempts = 0
 
         if not os.path.isdir(self.directory):
             os.makedirs(self.directory)
 
-        try:
-            # Don't re-download the file
-            if os.path.isfile(os.path.abspath(self.target)):
-                print "File has already been downloaded: %s" % (self.target)
-                return
+        # Don't re-download the file
+        if os.path.isfile(os.path.abspath(self.target)):
+            print "File has already been downloaded: %s" % (self.target)
+            return
 
-            print 'Downloading from: %s' % (urllib.unquote(self.final_url))
-            tmp_file = self.target + ".part"
+        print 'Downloading from: %s' % (urllib.unquote(self.final_url))
+        tmp_file = self.target + ".part"
 
-            if self.authentication \
-               and self.authentication['username'] \
-               and self.authentication['password']:
-                password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-                password_mgr.add_password(None,
-                                          self.final_url,
-                                          self.authentication['username'],
-                                          self.authentication['password'])
-                handler = urllib2.HTTPBasicAuthHandler(password_mgr)
-                opener = urllib2.build_opener(urllib2.HTTPHandler, handler)
-                urllib2.install_opener(opener)
+        if self.authentication \
+           and self.authentication['username'] \
+           and self.authentication['password']:
+            password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+            password_mgr.add_password(None,
+                                      self.final_url,
+                                      self.authentication['username'],
+                                      self.authentication['password'])
+            handler = urllib2.HTTPBasicAuthHandler(password_mgr)
+            opener = urllib2.build_opener(urllib2.HTTPHandler, handler)
+            urllib2.install_opener(opener)
 
-            r = urllib2.urlopen(self.final_url)
-            CHUNK = 16 * 1024
-            with open(tmp_file, 'wb') as f:
-                for chunk in iter(lambda: r.read(CHUNK), ''):
-                    f.write(chunk)
-            os.rename(tmp_file, self.target)
-        except:
+        while True:
+            attempts += 1
             try:
-                if os.path.isfile(tmp_file):
+                r = urllib2.urlopen(self.final_url)
+                CHUNK = 16 * 1024
+                with open(tmp_file, 'wb') as f:
+                    for chunk in iter(lambda: r.read(CHUNK), ''):
+                        f.write(chunk)
+                break
+            except (urllib2.HTTPError, urllib2.URLError):
+                if tmp_file and os.path.isfile(tmp_file):
                     os.remove(tmp_file)
-            except OSError:
-                pass
+                print 'Download failed! Retrying... (attempt %s)' % attempts
+                if attempts >= self.retry_attempts:
+                    raise
+                time.sleep(self.retry_delay)
 
-            raise
+        os.rename(tmp_file, self.target)
 
 
 class DailyScraper(Scraper):
@@ -724,6 +730,20 @@ def cli():
                       default=None,
                       metavar='PASSWORD',
                       help='Password for basic HTTP authentication.')
+    parser.add_option('--retry-attempts',
+                      dest='retry_attempts',
+                      default=3,
+                      type=int,
+                      metavar='RETRY_ATTEMPTS',
+                      help='Number of times the download will be attempted in '
+                           'the event of a failure, default: %default')
+    parser.add_option('--retry-delay',
+                      dest='retry_delay',
+                      default=10,
+                      type=int,
+                      metavar='RETRY_DELAY',
+                      help='Amount of time (in seconds) to wait between retry '
+                           'attempts, default: %default')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
@@ -783,8 +803,9 @@ def cli():
                         'extension': options.extension,
                         'authentication': {
                             'username': options.username,
-                            'password': options.password}
-                        }
+                            'password': options.password},
+                        'retry_attempts': options.retry_attempts,
+                        'retry_delay': options.retry_delay}
     scraper_options = {'candidate': {
                            'build_number': options.build_number,
                            'no_unsigned': options.no_unsigned},
