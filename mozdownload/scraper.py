@@ -52,7 +52,7 @@ class Scraper(object):
 
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
-                 username=None, password=None):
+                 authentication=None):
 
         # Private properties for caching
         self._target = None
@@ -63,8 +63,7 @@ class Scraper(object):
         self.platform = platform or self.detect_platform()
         self.version = version
         self.extension = extension or DEFAULT_FILE_EXTENSIONS[self.platform]
-        self.username = username
-        self.password = password
+        self.authentication = authentication
 
         # build the base URL
         self.application = application
@@ -175,21 +174,27 @@ class Scraper(object):
             print 'Downloading build: %s' % (urllib.unquote(self.final_url))
             tmp_file = self.target + ".part"
 
-            if self.username and self.password:
+            if self.authentication \
+               and self.authentication['username'] \
+               and self.authentication['password']:
                 password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-                password_mgr.add_password(None, self.final_url, self.username, self.password)
+                password_mgr.add_password(None,
+                                          self.final_url,
+                                          self.authentication['username'],
+                                          self.authentication['password'])
                 handler = urllib2.HTTPBasicAuthHandler(password_mgr)
                 opener = urllib2.build_opener(urllib2.HTTPHandler, handler)
                 urllib2.install_opener(opener)
 
-            f = urllib2.urlopen(self.final_url)
-            data = f.read()
-            with open(tmp_file, 'wb') as code:
-                code.write(data)
+            r = urllib2.urlopen(self.final_url)
+            CHUNK = 16 * 1024
+            with open(tmp_file, 'wb') as f:
+                for chunk in iter(lambda: r.read(CHUNK), ''):
+                    f.write(chunk)
             os.rename(tmp_file, self.target)
         except:
             try:
-                if tmp_file:
+                if os.path.isfile(tmp_file):
                     os.remove(tmp_file)
             except OSError:
                 pass
@@ -691,12 +696,12 @@ def cli():
                       dest='username',
                       default=None,
                       metavar='USERNAME',
-                      help='Username for protected files.')
+                      help='Username for basic HTTP authentication.')
     parser.add_option('--password',
                       dest='password',
                       default=None,
                       metavar='PASSWORD',
-                      help='Password for protected files.')
+                      help='Password for basic HTTP authentication.')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
@@ -753,8 +758,10 @@ def cli():
                         'version': options.version,
                         'directory': options.directory,
                         'extension': options.extension,
-                        'username': options.username,
-                        'password': options.password}
+                        'authentication': {
+                            'username': options.username,
+                            'password': options.password}
+                        }
     scraper_options = {'candidate': {
                            'build_number': options.build_number,
                            'no_unsigned': options.no_unsigned},
