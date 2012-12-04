@@ -27,4 +27,12 @@ Download the latest Earlybird build for Linux (64bit):
 
     mozdownload --application=thunderbird --type=daily --branch=comm-aurora --platform=linux64
 
+Download this README file: 
+
+    mozdownload --url=https://raw.github.com/mozilla/mozdownload/master/README.md
+
+Download a file from a URL protected with basic authentication: 
+
+    mozdownload --url=http://example.com/secrets.txt --username=admin --password=password
+
 Run `mozdownload --help` for detailed information on the command line options.
