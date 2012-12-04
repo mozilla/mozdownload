@@ -163,18 +163,18 @@ class Scraper(object):
             os.makedirs(self.directory)
 
         try:
-            # Don't re-download the build
+            # Don't re-download the file
             if os.path.isfile(os.path.abspath(self.target)):
-                print "Build has already been downloaded: %s" % (self.target)
+                print "File has already been downloaded: %s" % (self.target)
                 return
 
-            print 'Downloading build: %s' % (urllib.unquote(self.final_url))
+            print 'Downloading from: %s' % (urllib.unquote(self.final_url))
             tmp_file = self.target + ".part"
             urllib.urlretrieve(self.final_url, tmp_file)
             os.rename(tmp_file, self.target)
         except:
             try:
-                if tmp_file:
+                if os.path.isfile(tmp_file):
                     os.remove(tmp_file)
             except OSError:
                 pass
@@ -313,6 +313,23 @@ class DailyScraper(Scraper):
         except:
             raise NotFoundException("Specified sub folder cannot be found",
                                     self.base_url + self.monthly_build_list_regex)
+
+
+class DirectScraper(Scraper):
+    """Class to download a file from a specified URL"""
+
+    def __init__(self, url, *args, **kwargs):
+        Scraper.__init__(self, *args, **kwargs)
+
+        self.url = url
+
+    @property
+    def target(self):
+        return urllib.splitquery(self.final_url)[0].rpartition('/')[-1]
+
+    @property
+    def final_url(self):
+        return self.url
 
 
 class ReleaseScraper(Scraper):
@@ -661,6 +678,11 @@ def cli():
                       default='release',
                       metavar='BUILD_TYPE',
                       help='Type of build to download, default: "%default"')
+    parser.add_option('--url',
+                      dest='url',
+                      default=None,
+                      metavar='URL',
+                      help='URL to download.')
     parser.add_option('--version', '-v',
                       dest='version',
                       metavar='VERSION',
@@ -717,7 +739,8 @@ def cli():
 
     # Check for required options and arguments
     # Note: Will be optional when ini file support has been landed
-    if not options.type in ['daily', 'tinderbox'] \
+    if not options.url \
+       and not options.type in ['daily', 'tinderbox'] \
        and not options.version:
         parser.error('The version of the application to download has not been specified.')
 
@@ -745,7 +768,11 @@ def cli():
 
     kwargs = scraper_keywords.copy()
     kwargs.update(scraper_options.get(options.type, {}))
-    build = BUILD_TYPES[options.type](**kwargs)
+
+    if options.url:
+        build = DirectScraper(options.url, **kwargs)
+    else:
+        build = BUILD_TYPES[options.type](**kwargs)
 
     build.download()
 
