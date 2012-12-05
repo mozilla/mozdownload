@@ -1,3 +1,9 @@
+1.5 / 2012-12-04
+==================
+  * Don't download stub installer for tinderbox builds (#41)
+  * Support basic authentication (#36)
+  * Support downloading from an arbitrary URL (#35)
+
 1.4 / 2012-10-08
 ==================
   * Don't download stub installer by default (#31)
