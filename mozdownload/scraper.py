@@ -194,7 +194,7 @@ class Scraper(object):
             os.rename(tmp_file, self.target)
         except:
             try:
-                if os.path.isfile(tmp_file):
+                if tmp_file and os.path.isfile(tmp_file):
                     os.remove(tmp_file)
             except OSError:
                 pass
