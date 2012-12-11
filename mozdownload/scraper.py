@@ -252,6 +252,23 @@ class DailyScraper(Scraper):
                                                                          has_time=True)
 
 
+    def is_build_dir(self, dir):
+        """Return whether or not the given dir contains a build."""
+
+        url = '/'.join([self.base_url, self.monthly_build_list_regex, dir])
+        parser = DirectoryParser(url)
+
+        pattern = re.compile(self.binary_regex, re.IGNORECASE)
+        for entry in parser.entries:
+            try:
+                pattern.match(entry).group()
+                return True
+            except:
+                # No match, continue with next entry
+                continue
+        return False
+
+
     def get_build_info_for_date(self, date, has_time=False, build_index=None):
         url = '/'.join([self.base_url, self.monthly_build_list_regex])
 
@@ -262,6 +279,7 @@ class DailyScraper(Scraper):
                     'BRANCH': self.branch,
                     'L10N': '' if self.locale == 'en-US' else '-l10n'}
         parser.entries = parser.filter(regex)
+        parser.entries = parser.filter(self.is_build_dir)
         if not parser.entries:
             message = 'Folder for builds on %s has not been found' % self.date.strftime('%Y-%m-%d')
             raise NotFoundException(message, url)
