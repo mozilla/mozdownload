@@ -277,7 +277,7 @@ class DailyScraper(Scraper):
         regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s$' % {
                     'DATE': date.strftime('%Y-%m-%d'),
                     'BRANCH': self.branch,
-                    'L10N': '' if self.locale == 'en-US' else '-l10n'}
+                    'L10N': '' if self.locale == 'en-US' else '(-l10n)?'}
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
         if not parser.entries:
