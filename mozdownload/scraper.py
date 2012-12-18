@@ -239,7 +239,10 @@ class DailyScraper(Scraper):
 
             print 'Retrieving the build status file from %s' % url
             parser = DirectoryParser(url)
-            parser.entries = parser.filter(r'.*%s\.txt' % self.platform_regex)
+            parser.entries = parser.filter(r'.*%(LOCALE)s\.%(PLATFORM)s\.txt' % {
+                'LOCALE': self.locale,
+                'PLATFORM': self.platform_regex
+            })
             if not parser.entries:
                 message = 'Status file for %s build cannot be found' % self.platform_regex
                 raise NotFoundException(message, url)
