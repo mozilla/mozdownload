@@ -287,13 +287,11 @@ class DailyScraper(Scraper):
         if has_time:
             # If a time is included in the date, use it to determine the build's index
             regex = r'.*%s.*' % date.strftime('%H-%M-%S')
-            entries = parser.filter(regex)
-            if entries:
-                build_index = parser.entries.index(entries[0])
-
-        # If no index has been given, set it to the last build of the day.
-        if build_index is None:
-            build_index = len(parser.entries) - 1
+            build_index = parser.entries.index(parser.filter(regex)[0])
+        else:
+            # If no index has been given, set it to the last build of the day.
+            if build_index is None:
+                build_index = len(parser.entries) - 1
 
         return (parser.entries, build_index)
 
