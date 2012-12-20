@@ -21,9 +21,14 @@ class DirectoryParser(HTMLParser):
         req = urllib.urlopen(url)
         self.feed(req.read())
 
-    def filter(self, regex):
-        pattern = re.compile(regex, re.IGNORECASE)
-        return [entry for entry in self.entries if pattern.match(entry)]
+    def filter(self, filter):
+        """Filter entries by calling function or applying regex."""
+
+        if hasattr(filter, '__call__'):
+            return [entry for entry in self.entries if filter(entry)]
+        else:
+            pattern = re.compile(filter, re.IGNORECASE)
+            return [entry for entry in self.entries if pattern.match(entry)]
 
     def handle_starttag(self, tag, attrs):
         if not tag == 'a':
