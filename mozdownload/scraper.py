@@ -53,7 +53,7 @@ class Scraper(object):
 
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
-                 authentication=None, retry=None):
+                 authentication=None, retry_attempts=3, retry_delay=10):
 
         # Private properties for caching
         self._target = None
@@ -65,7 +65,8 @@ class Scraper(object):
         self.version = version
         self.extension = extension or DEFAULT_FILE_EXTENSIONS[self.platform]
         self.authentication = authentication
-        self.retry = retry
+        self.retry_attempts = retry_attempts
+        self.retry_delay = retry_delay
 
         # build the base URL
         self.application = application
@@ -196,16 +197,13 @@ class Scraper(object):
                     for chunk in iter(lambda: r.read(CHUNK), ''):
                         f.write(chunk)
                 break
-            except Exception:
-                try:
-                    if tmp_file and os.path.isfile(tmp_file):
-                        os.remove(tmp_file)
-                except OSError:
-                    pass
+            except (urllib2.HTTPError, urllib2.URLError):
+                if tmp_file and os.path.isfile(tmp_file):
+                    os.remove(tmp_file)
                 print 'Download failed! Retrying... (attempt %s)' % attempts
-                if attempts == self.retry.get('attempts', 1):
+                if attempts >= self.retry_attempts:
                     raise
-                time.sleep(self.retry.get('delay', 0))
+                time.sleep(self.retry_delay)
 
         os.rename(tmp_file, self.target)
 
@@ -735,12 +733,14 @@ def cli():
     parser.add_option('--retry-attempts',
                       dest='retry_attempts',
                       default=3,
+                      type=int,
                       metavar='RETRY_ATTEMPTS',
                       help='Number of times the download will be attempted in '
                            'the event of a failure, default: %default')
     parser.add_option('--retry-delay',
                       dest='retry_delay',
                       default=10,
+                      type=int,
                       metavar='RETRY_DELAY',
                       help='Amount of time (in seconds) to wait between retry '
                            'attempts, default: %default')
@@ -804,10 +804,8 @@ def cli():
                         'authentication': {
                             'username': options.username,
                             'password': options.password},
-                        'retry': {
-                            'attempts': options.retry_attempts,
-                            'delay': options.retry_delay}
-                        }
+                        'retry_attempts': options.retry_attempts,
+                        'retry_delay': options.retry_delay}
     scraper_options = {'candidate': {
                            'build_number': options.build_number,
                            'no_unsigned': options.no_unsigned},
