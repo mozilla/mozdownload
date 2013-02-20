@@ -1,3 +1,8 @@
+1.6 / 2013-02-20
+==================
+  * Automatically retry on failure (#39)
+  * Improve handling of exceptions when temporary file does not exist (#51)
+
 1.5 / 2012-12-04
 ==================
   * Don't download stub installer for tinderbox builds (#41)
