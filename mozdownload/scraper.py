@@ -683,7 +683,6 @@ def cli():
                            'current working directory')
     parser.add_option('--build-number',
                       dest='build_number',
-                      default=None,
                       type="int",
                       metavar='BUILD_NUMBER',
                       help='Number of the build (for candidate, daily, '
@@ -706,7 +705,6 @@ def cli():
                       help='Type of build to download, default: "%default"')
     parser.add_option('--url',
                       dest='url',
-                      default=None,
                       metavar='URL',
                       help='URL to download.')
     parser.add_option('--version', '-v',
@@ -716,18 +714,15 @@ def cli():
                             candidate builds, i.e. "3.6"')
     parser.add_option('--extension',
                       dest='extension',
-                      default=None,
                       metavar='EXTENSION',
                       help='File extension of the build (e.g. "zip"), default:\
                             the standard build extension on the platform.')
     parser.add_option('--username',
                       dest='username',
-                      default=None,
                       metavar='USERNAME',
                       help='Username for basic HTTP authentication.')
     parser.add_option('--password',
                       dest='password',
-                      default=None,
                       metavar='PASSWORD',
                       help='Password for basic HTTP authentication.')
     parser.add_option('--retry-attempts',
@@ -765,12 +760,10 @@ def cli():
                      help='Name of the branch, default: "%default"')
     group.add_option('--build-id',
                       dest='build_id',
-                      default=None,
                       metavar='BUILD_ID',
                       help='ID of the build to download')
     group.add_option('--date',
                      dest='date',
-                     default=None,
                      metavar='DATE',
                      help='Date of the build, default: latest build')
     parser.add_option_group(group)
