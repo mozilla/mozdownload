@@ -4,22 +4,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-"""
-Module to handle downloads for different types of Firefox and Thunderbird builds.
-
-Mozdownload Version: 
-"""
-
-
 from datetime import datetime
 from optparse import OptionParser, OptionGroup
 import os
+import pkg_resources
 import re
 import sys
 import time
 import urllib
 import urllib2
-import pkg_resources
 
 import mozinfo
 
@@ -27,6 +20,12 @@ from parser import DirectoryParser
 from timezones import PacificTimezone
 
 VERSION = pkg_resources.require("mozdownload")[0].version
+
+__doc__= """
+Module to handle downloads for different types of Firefox and Thunderbird builds.
+
+Mozdownload Version: %(Version)s
+""" % {'Version' : VERSION}
 
 APPLICATIONS = ['b2g', 'firefox', 'thunderbird']
 
@@ -673,7 +672,7 @@ def cli():
                    'tinderbox': TinderboxScraper }
 
     usage = 'usage: %prog [options]'
-    parser = OptionParser(usage=usage, description=__doc__ + VERSION)
+    parser = OptionParser(usage=usage, description=__doc__)
     parser.add_option('--application', '-a',
                       dest='application',
                       choices=APPLICATIONS,
