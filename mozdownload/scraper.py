@@ -53,7 +53,8 @@ class Scraper(object):
 
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
-                 authentication=None, retry_attempts=3, retry_delay=10):
+                 authentication=None, retry_attempts=3, retry_delay=10,
+                 timeout=600):
 
         # Private properties for caching
         self._target = None
@@ -67,6 +68,7 @@ class Scraper(object):
         self.authentication = authentication
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
+        self.timeout = timeout
 
         # build the base URL
         self.application = application
@@ -191,7 +193,7 @@ class Scraper(object):
         while True:
             attempts += 1
             try:
-                r = urllib2.urlopen(self.final_url)
+                r = urllib2.urlopen(self.final_url, timeout=self.timeout)
                 CHUNK = 16 * 1024
                 with open(tmp_file, 'wb') as f:
                     for chunk in iter(lambda: r.read(CHUNK), ''):
@@ -744,6 +746,13 @@ def cli():
                       metavar='RETRY_DELAY',
                       help='Amount of time (in seconds) to wait between retry '
                            'attempts, default: %default')
+    parser.add_option('--timeout',
+                      dest='timeout',
+                      default=600,
+                      type=int,
+                      metavar='TIMEOUT',
+                      help='Amount of time (in seconds) until process times '
+                           'out, default: %default')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
@@ -805,7 +814,8 @@ def cli():
                             'username': options.username,
                             'password': options.password},
                         'retry_attempts': options.retry_attempts,
-                        'retry_delay': options.retry_delay}
+                        'retry_delay': options.retry_delay,
+                        'timeout': options.timeout}
     scraper_options = {'candidate': {
                            'build_number': options.build_number,
                            'no_unsigned': options.no_unsigned},
