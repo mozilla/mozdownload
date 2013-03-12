@@ -182,6 +182,11 @@ class Scraper(object):
         else:
             return "%s%d" % (mozinfo.os, mozinfo.bits)
 
+    def update_download_progress(self, percent):
+        sys.stdout.write("===== Downloaded %d%% =====\r"%percent)
+        sys.stdout.flush()
+        if percent >= 100:
+            sys.stdout.write("\n")
 
     def download(self):
         """Download the specified file"""
@@ -216,13 +221,18 @@ class Scraper(object):
             try:
                 start_time = datetime.now()
                 r = urllib2.urlopen(self.final_url)
+                total_size = int(r.info().getheader('Content-length').strip())
                 CHUNK = 16 * 1024
+                bytes_so_far = 0.0
                 with open(tmp_file, 'wb') as f:
                     for chunk in iter(lambda: r.read(CHUNK), ''):
                         f.write(chunk)
                         t1 = (datetime.now() - start_time).total_seconds()
                         if t1 >= self.timeout:
                             raise TimeoutException
+                        bytes_so_far += CHUNK
+                        percent = (bytes_so_far / total_size) * 100
+                        self.update_download_progress(percent)
                 break
             except (urllib2.HTTPError, urllib2.URLError, TimeoutException):
                 if tmp_file and os.path.isfile(tmp_file):
