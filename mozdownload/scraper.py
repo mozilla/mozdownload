@@ -6,6 +6,7 @@
 
 from datetime import datetime
 from optparse import OptionParser, OptionGroup
+import locale
 import os
 import pkg_resources
 import re
@@ -27,6 +28,8 @@ applications.
 
 mozdownload version: %(version)s
 """ % {'version' : version}
+
+locale.setlocale(locale.LC_ALL, '')
 
 APPLICATIONS = ['b2g', 'firefox', 'thunderbird']
 
@@ -182,8 +185,15 @@ class Scraper(object):
         else:
             return "%s%d" % (mozinfo.os, mozinfo.bits)
 
-    def update_download_progress(self, percent):
-        sys.stdout.write("===== Downloaded %d%% =====\r"%percent)
+    def update_download_progress(self, bytes_downloaded, total_size, start_time):
+        """Updates the download progressbar for the download method"""
+        
+        percent = (bytes_downloaded / total_size) * 100
+        progressbar_string = '='*int(percent/100*39)
+        bytes_formatted = locale.format("%d", bytes_downloaded, grouping=True)
+        
+        sys.stdout.write("%d%% [%s>] %s bytes\r" % (percent, progressbar_string,
+                         bytes_formatted))
         sys.stdout.flush()
         if percent >= 100:
             sys.stdout.write("\n")
@@ -223,16 +233,17 @@ class Scraper(object):
                 r = urllib2.urlopen(self.final_url)
                 total_size = int(r.info().getheader('Content-length').strip())
                 CHUNK = 16 * 1024
-                bytes_so_far = 0.0
+                bytes_downloaded = 0.0
+                start_time = datetime.now()
                 with open(tmp_file, 'wb') as f:
                     for chunk in iter(lambda: r.read(CHUNK), ''):
                         f.write(chunk)
                         t1 = (datetime.now() - start_time).total_seconds()
                         if t1 >= self.timeout:
                             raise TimeoutException
-                        bytes_so_far += CHUNK
-                        percent = (bytes_so_far / total_size) * 100
-                        self.update_download_progress(percent)
+                        bytes_downloaded += CHUNK
+                        self.update_download_progress(bytes_downloaded,
+                                                      total_size, start_time)
                 break
             except (urllib2.HTTPError, urllib2.URLError, TimeoutException):
                 if tmp_file and os.path.isfile(tmp_file):
