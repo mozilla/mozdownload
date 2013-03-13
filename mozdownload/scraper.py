@@ -22,10 +22,10 @@ from timezones import PacificTimezone
 VERSION = pkg_resources.require("mozdownload")[0].version
 
 __doc__= """
-Module to handle downloads for different types of tp.mozilla.org hosted 
+Module to handle downloads for different types of ftp.mozilla.org hosted 
 applications.
 
-Mozdownload version: %(version)s
+mozdownload version: %(version)s
 """ % {'version' : VERSION}
 
 APPLICATIONS = ['b2g', 'firefox', 'thunderbird']
