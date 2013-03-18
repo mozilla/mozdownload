@@ -189,21 +189,22 @@ class Scraper(object):
         """Updates the download progressbar for the download method"""
         
         percent = (bytes_downloaded / total_size) * 100
-        progressbar_string = '='*int(percent/100*39)+'>'
-        bytes_formatted = locale.format("%d", bytes_downloaded, grouping=True)
+        progressbar_string = '=' * int(percent / 100 * 39) + '>'
+        bytes_formatted = locale.format('%d', bytes_downloaded, grouping=True)
         
-        sys.stdout.write("%3d%% [%-40s] %11s %4.1f MB/s %4.1f s \r" % 
+        sys.stdout.write('%3d%% [%-40s] %11s %4.1f MB/s %4.1f s \r' % 
                         (percent, progressbar_string, bytes_formatted, dl_rate, eta))
         sys.stdout.flush()
         if percent >= 100:
-            sys.stdout.write("\n")
+            sys.stdout.write('\n')
             
-    def get_dlrate_eta(self, start_time, time_so_far, bytes_downloaded, total_size):
+    def get_download_rate_and_eta(self, start_time, time_so_far, bytes_downloaded,
+                                  total_size):
         """Returns the current dowload rate in MB/s and estimated duration"""
         
-        dl_rate = (bytes_downloaded / (time_so_far-start_time).total_seconds()) # in bytes
-        eta = (total_size - bytes_downloaded) / (dl_rate * 1.0) # estimated remaining time in seconds
-        return dl_rate/(1024**2), eta
+        dl_rate = (bytes_downloaded / (time_so_far-start_time).total_seconds())  # in bytes
+        eta = (total_size - bytes_downloaded) / (dl_rate * 1.0)  # estimated remaining time in seconds
+        return dl_rate / (1024**2), eta
 
     def download(self):
         """Download the specified file"""
@@ -250,8 +251,8 @@ class Scraper(object):
                             raise TimeoutException
                         bytes_downloaded += CHUNK
                         t1 = datetime.now()
-                        dl_rate, eta = self.get_dlrate_eta(start_time, t1,
-                                                         bytes_downloaded, total_size)
+                        dl_rate, eta = self.get_download_rate_and_eta(start_time, t1,
+                                                                      bytes_downloaded, total_size)
                         self.update_download_progress(bytes_downloaded,
                                                       total_size, dl_rate, eta)
                 break
