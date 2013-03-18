@@ -46,12 +46,14 @@ class NotFoundException(Exception):
     def __init__(self, message, location):
         self.location = location
         Exception.__init__(self, ': '.join([message, location]))
-        
+
+
 class TimeoutException(Exception):
     """Exception for a download exceeding the allocated timeout"""
     def __init__(self):
         self.message = 'The download exceeded the allocated timeout'
         Exception.__init__(self, self.message)
+
 
 class Scraper(object):
     """Generic class to download an application from the Mozilla server"""
@@ -208,7 +210,7 @@ class Scraper(object):
                         if t1 >= self.timeout:
                             raise TimeoutException
                 break
-            except (urllib2.HTTPError, urllib2.URLError):
+            except (urllib2.HTTPError, urllib2.URLError, TimeoutException):
                 if tmp_file and os.path.isfile(tmp_file):
                     os.remove(tmp_file)
                 print 'Download failed! Retrying... (attempt %s)' % attempts
@@ -757,10 +759,10 @@ def cli():
                            'attempts, default: %default')
     parser.add_option('--timeout',
                       dest='timeout',
-                      default=600,
+                      default=180,
                       type=int,
                       metavar='TIMEOUT',
-                      help='Amount of time (in seconds) until process times '
+                      help='Amount of time (in seconds) until download times '
                            'out, default: %default')
 
     # Option group for candidate builds
