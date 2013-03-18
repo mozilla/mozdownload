@@ -53,8 +53,7 @@ class Scraper(object):
 
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
-                 authentication=None, retry_attempts=3, retry_binary=3,
-                 retry_delay=10):
+                 authentication=None, retry_attempts=3, retry_delay=10):
 
         # Private properties for caching
         self._target = None
@@ -67,7 +66,6 @@ class Scraper(object):
         self.extension = extension or DEFAULT_FILE_EXTENSIONS[self.platform]
         self.authentication = authentication
         self.retry_attempts = retry_attempts
-        self.retry_binary = retry_binary 
         self.retry_delay = retry_delay
 
         # build the base URL
@@ -83,32 +81,34 @@ class Scraper(object):
 
         while True:
             attempts += 1
+            try:
+                if self._binary is None:
+                    # Retrieve all entries from the remote virtual folder
+                    parser = DirectoryParser(self.path)
+                    if not parser.entries:
+                        raise NotFoundException('No entries found', self.path)
             
-            if self._binary is None:
-                # Retrieve all entries from the remote virtual folder
-                parser = DirectoryParser(self.path)
-                if not parser.entries:
-                    raise NotFoundException('No entries found', self.path)
-        
-                # Download the first matched directory entry
-                pattern = re.compile(self.binary_regex, re.IGNORECASE)
-                for entry in parser.entries:
-                    try:
-                        self._binary = pattern.match(entry).group()
-                        break
-                    except:
-                        # No match, continue with next entry
-                        continue
-
-            if self._binary is None:
+                    # Download the first matched directory entry
+                    pattern = re.compile(self.binary_regex, re.IGNORECASE)
+                    for entry in parser.entries:
+                        try:
+                            self._binary = pattern.match(entry).group()
+                            break
+                        except:
+                            # No match, continue with next entry
+                            continue
+    
+                    else:
+                        raise NotFoundException("Binary not found in folder", 
+                                                self.path)
+                else:
+                    return self._binary
+            except:
                 print "Binary not found! Retrying... (attempt %s)" % attempts
-                if attempts >= self.retry_binary:
+                if attempts >= self.retry_attempts:
                     raise NotFoundException("Binary not found in folder", 
                                             self.path)
                 time.sleep(self.retry_delay)
-            else:
-                return self._binary
-
 
     @property
     def binary_regex(self):
