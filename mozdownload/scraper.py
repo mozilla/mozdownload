@@ -192,7 +192,7 @@ class Scraper(object):
         progressbar_string = '=' * int(percent / 100 * 39) + '>'
         bytes_formatted = locale.format('%d', bytes_downloaded, grouping=True)
 
-        sys.stdout.write('%3d%% [%-40s] %11s %4.1f MB/s %4.1f s \r' %
+        sys.stdout.write('%3d%% [%-40s] %11s %5.1fMB/s eta %5.1fs\r' %
                         (percent, progressbar_string, bytes_formatted, dl_rate, eta))
         sys.stdout.flush()
         if percent >= 100:
@@ -204,7 +204,7 @@ class Scraper(object):
 
         dl_rate = (bytes_downloaded / (time_so_far - start_time).total_seconds())  # in bytes
         eta = (total_size - bytes_downloaded) / (dl_rate * 1.0)  # estimated remaining time in seconds
-        return dl_rate / (1024 ** 2), eta
+        return dl_rate / (1024 ** 2), abs(eta)
 
     def download(self):
         """Download the specified file"""
