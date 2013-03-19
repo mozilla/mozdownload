@@ -7,6 +7,7 @@
 from HTMLParser import HTMLParser
 import re
 import urllib
+import urllib2
 
 
 class DirectoryParser(HTMLParser):
@@ -18,7 +19,7 @@ class DirectoryParser(HTMLParser):
         self.entries = [ ]
         self.active_url = None
 
-        req = urllib.urlopen(url)
+        req = urllib2.urlopen(url, timeout=60)
         self.feed(req.read())
 
     def filter(self, regex):
