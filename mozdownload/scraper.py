@@ -78,35 +78,32 @@ class Scraper(object):
         """Return the name of the build"""
         
         attempt = 0
-        if self._binary is None:
-            while True:
-                attempt += 1
-                try:
-                    #if self._binary is None:
-                    # Retrieve all entries from the remote virtual folder
-                    parser = DirectoryParser(self.path)
-                    if not parser.entries:
-                        raise NotFoundException('No entries found', self.path)
-            
-                    # Download the first matched directory entry
-                    pattern = re.compile(self.binary_regex, re.IGNORECASE)
-                    for entry in parser.entries:
-                        try:
-                            self._binary = pattern.match(entry).group()
-                            break
-                        except:
-                            # No match, continue with next entry
-                            continue
 
-                    else:
-                        raise NotFoundException("Binary not found in folder", 
-                                                self.path)
-                except NotFoundException:
-                    print "Binary not found! Retrying... (attempt %s)" % attempt
-                    if attempt >= self.retry_attempts:
-                        raise NotFoundException("Binary not found in folder", 
-                                                self.path)
-                    time.sleep(self.retry_delay)
+        while self._binary is None:
+            attempt += 1
+            try:
+                # Retrieve all entries from the remote virtual folder
+                parser = DirectoryParser(self.path)
+                if not parser.entries:
+                    raise NotFoundException('No entries found', self.path)
+
+                # Download the first matched directory entry
+                pattern = re.compile(self.binary_regex, re.IGNORECASE)
+                for entry in parser.entries:
+                    try:
+                        self._binary = pattern.match(entry).group()
+                        break
+                    except:
+                        # No match, continue with next entry
+                        continue
+                else:
+                    raise NotFoundException("Binary not found in folder",
+                                            self.path)
+            except NotFoundException:
+                print "Binary not found! Retrying... (attempt %s)" % attempt
+                if attempt >= self.retry_attempts:
+                    raise
+                time.sleep(self.retry_delay)
 
         return self._binary
 
