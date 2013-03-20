@@ -4,12 +4,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-"""Module to handle downloads for different types of Firefox and Thunderbird builds."""
-
-
 from datetime import datetime
 from optparse import OptionParser, OptionGroup
 import os
+import pkg_resources
 import re
 import sys
 import time
@@ -21,6 +19,14 @@ import mozinfo
 from parser import DirectoryParser
 from timezones import PacificTimezone
 
+version = pkg_resources.require("mozdownload")[0].version
+
+__doc__= """
+Module to handle downloads for different types of ftp.mozilla.org hosted 
+applications.
+
+mozdownload version: %(version)s
+""" % {'version' : version}
 
 APPLICATIONS = ['b2g', 'firefox', 'thunderbird']
 
