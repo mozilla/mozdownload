@@ -85,28 +85,36 @@ class Scraper(object):
     @property
     def binary(self):
         """Return the name of the build"""
+        
+        attempt = 0
 
-        if self._binary is None:
-            # Retrieve all entries from the remote virtual folder
-            parser = DirectoryParser(self.path)
-            if not parser.entries:
-                raise NotFoundException('No entries found', self.path)
-    
-            # Download the first matched directory entry
-            pattern = re.compile(self.binary_regex, re.IGNORECASE)
-            for entry in parser.entries:
-                try:
-                    self._binary = pattern.match(entry).group()
-                    break
-                except:
-                    # No match, continue with next entry
-                    continue
+        while self._binary is None:
+            attempt += 1
+            try:
+                # Retrieve all entries from the remote virtual folder
+                parser = DirectoryParser(self.path)
+                if not parser.entries:
+                    raise NotFoundException('No entries found', self.path)
 
-        if self._binary is None:
-            raise NotFoundException("Binary not found in folder", self.path)
-        else:
-            return self._binary
+                # Download the first matched directory entry
+                pattern = re.compile(self.binary_regex, re.IGNORECASE)
+                for entry in parser.entries:
+                    try:
+                        self._binary = pattern.match(entry).group()
+                        break
+                    except:
+                        # No match, continue with next entry
+                        continue
+                else:
+                    raise NotFoundException("Binary not found in folder",
+                                            self.path)
+            except NotFoundException:
+                print "Binary not found! Retrying... (attempt %s)" % attempt
+                if attempt >= self.retry_attempts:
+                    raise
+                time.sleep(self.retry_delay)
 
+        return self._binary
 
     @property
     def binary_regex(self):
@@ -172,7 +180,7 @@ class Scraper(object):
     def download(self):
         """Download the specified file"""
 
-        attempts = 0
+        attempt = 0
 
         if not os.path.isdir(self.directory):
             os.makedirs(self.directory)
@@ -198,7 +206,7 @@ class Scraper(object):
             urllib2.install_opener(opener)
 
         while True:
-            attempts += 1
+            attempt += 1
             try:
                 start_time = datetime.now()
                 r = urllib2.urlopen(self.final_url)
@@ -213,8 +221,8 @@ class Scraper(object):
             except (urllib2.HTTPError, urllib2.URLError, TimeoutException):
                 if tmp_file and os.path.isfile(tmp_file):
                     os.remove(tmp_file)
-                print 'Download failed! Retrying... (attempt %s)' % attempts
-                if attempts >= self.retry_attempts:
+                print 'Download failed! Retrying... (attempt %s)' % attempt
+                if attempt >= self.retry_attempts:
                     raise
                 time.sleep(self.retry_delay)
 
