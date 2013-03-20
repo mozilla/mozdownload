@@ -192,7 +192,7 @@ class Scraper(object):
         progressbar_string = '=' * int(percent / 100 * 39) + '>'
         bytes_formatted = locale.format('%d', bytes_downloaded, grouping=True)
 
-        sys.stdout.write('%3d%% [%-40s] %11s %5.1fMB/s eta %5.1fs\r' %
+        sys.stdout.write('%3d%% [%-40s] %11s %5.1fMB/s eta %5.1fs\r ' %
                         (percent, progressbar_string, bytes_formatted, dl_rate, eta))
         sys.stdout.flush()
         if percent >= 100:
