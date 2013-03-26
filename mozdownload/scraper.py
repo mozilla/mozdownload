@@ -19,6 +19,9 @@ import mozinfo
 from parser import DirectoryParser
 from timezones import PacificTimezone
 
+from progressbar import ProgressBar, Percentage, RotatingMarker, ETA, FileTransferSpeed, Bar
+
+
 version = pkg_resources.require("mozdownload")[0].version
 
 __doc__= """
@@ -212,18 +215,33 @@ class Scraper(object):
             opener = urllib2.build_opener(urllib2.HTTPHandler, handler)
             urllib2.install_opener(opener)
 
+
+
+
         while True:
             attempt += 1
             try:
                 start_time = datetime.now()
                 r = urllib2.urlopen(self.final_url)
+                total_size = int(r.info().getheader('Content-length').strip())
                 CHUNK = 16 * 1024
+
+                max_value = ((total_size/CHUNK)+1)*CHUNK  # ValueError: Value out of range if only total_size given
+
+                bytes_downloaded = 0
+                widgets = [Percentage(), ' ', Bar(marker=RotatingMarker()),
+                           ' ', ETA(), ' ', FileTransferSpeed()]
+                pbar = ProgressBar(widgets=widgets, maxval=max_value).start()
+
                 with open(tmp_file, 'wb') as f:
                     for chunk in iter(lambda: r.read(CHUNK), ''):
                         f.write(chunk)
                         t1 = (datetime.now() - start_time).total_seconds()
+                        bytes_downloaded += CHUNK
+                        pbar.update(bytes_downloaded)
                         if t1 >= self.timeout:
                             raise TimeoutException
+                pbar.finish()
                 break
             except (urllib2.HTTPError, urllib2.URLError, TimeoutException):
                 if tmp_file and os.path.isfile(tmp_file):
