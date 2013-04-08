@@ -87,3 +87,7 @@ Run `mozdownload --help` for detailed information on the command line options.
 
       --debug-build           Download a debug build
 
+
+## Running the tests
+
+To run the tests, run `./run_tests.sh`.
