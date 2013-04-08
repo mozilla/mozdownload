@@ -114,10 +114,11 @@ class Scraper(object):
                 else:
                     raise NotFoundException("Binary not found in folder",
                                             self.path)
-            except NotFoundException:
+            except (NotFoundException, urllib2.HTTPError):
                 print "Binary not found! Retrying... (attempt %s)" % attempt
                 if attempt >= self.retry_attempts:
-                    raise
+                    raise NotFoundException("Binary not found in folder",
+                                        self.path)
                 time.sleep(self.retry_delay)
 
         return self._binary
