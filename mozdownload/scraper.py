@@ -6,6 +6,7 @@
 
 from datetime import datetime
 from optparse import OptionParser, OptionGroup
+import locale
 import os
 import pkg_resources
 import re
@@ -27,6 +28,8 @@ applications.
 
 mozdownload version: %(version)s
 """ % {'version' : version}
+
+locale.setlocale(locale.LC_ALL, '')
 
 APPLICATIONS = ['b2g', 'firefox', 'thunderbird']
 
@@ -182,6 +185,26 @@ class Scraper(object):
         else:
             return "%s%d" % (mozinfo.os, mozinfo.bits)
 
+    def update_download_progress(self, bytes_downloaded, total_size, dl_rate, eta):
+        """Updates the download progressbar for the download method"""
+
+        percent = (bytes_downloaded / total_size) * 100
+        progressbar_string = '=' * int(percent / 100 * 39) + '>'
+        bytes_formatted = locale.format('%d', bytes_downloaded, grouping=True)
+
+        sys.stdout.write('%3d%% [%-40s] %11s %5.1fMB/s eta %5.1fs\r ' %
+                        (percent, progressbar_string, bytes_formatted, dl_rate, eta))
+        sys.stdout.flush()
+        if percent >= 100:
+            sys.stdout.write('\n')
+
+    def get_download_rate_and_eta(self, start_time, time_so_far, bytes_downloaded,
+                                  total_size):
+        """Returns the current dowload rate in MB/s and estimated duration"""
+
+        dl_rate = (bytes_downloaded / (time_so_far - start_time).total_seconds())  # in bytes
+        eta = (total_size - bytes_downloaded) / (dl_rate * 1.0)  # estimated remaining time in seconds
+        return dl_rate / (1024 ** 2), abs(eta)
 
     def download(self):
         """Download the specified file"""
@@ -216,13 +239,22 @@ class Scraper(object):
             try:
                 start_time = datetime.now()
                 r = urllib2.urlopen(self.final_url)
+                total_size = int(r.info().getheader('Content-length').strip())
                 CHUNK = 16 * 1024
+                bytes_downloaded = 0.0
+                start_time = datetime.now()
                 with open(tmp_file, 'wb') as f:
                     for chunk in iter(lambda: r.read(CHUNK), ''):
                         f.write(chunk)
                         t1 = (datetime.now() - start_time).total_seconds()
                         if t1 >= self.timeout:
                             raise TimeoutException
+                        bytes_downloaded += CHUNK
+                        t1 = datetime.now()
+                        dl_rate, eta = self.get_download_rate_and_eta(start_time, t1,
+                                                                      bytes_downloaded, total_size)
+                        self.update_download_progress(bytes_downloaded,
+                                                      total_size, dl_rate, eta)
                 break
             except (urllib2.HTTPError, urllib2.URLError, TimeoutException):
                 if tmp_file and os.path.isfile(tmp_file):
