@@ -215,9 +215,6 @@ class Scraper(object):
             opener = urllib2.build_opener(urllib2.HTTPHandler, handler)
             urllib2.install_opener(opener)
 
-
-
-
         while True:
             attempt += 1
             try:
