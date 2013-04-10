@@ -54,10 +54,9 @@ Run `mozdownload --help` for detailed information on the command line options.
                               Platform of the application
       -t BUILD_TYPE, --type=BUILD_TYPE
                               Type of build to download, default: "release"
-      --url=URL               URL to download.
-                              Note: In case the URL includes reserved characters (such as &), it is
-                              encouraged to enclose the URL in quotes or escape the special character
-                              (e.g. \&), otherwise the CLI output may behave abnormally.
+      --url=URL               URL to download. Note: Reserved characters (such as &)
+                              must be escaped or put in quotes otherwise CLI output
+                              may be abnormal.
       -v VERSION, --version=VERSION
                               Version of the application to be used by release and candidate
                               builds, i.e. "3.6"
