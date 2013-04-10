@@ -749,7 +749,9 @@ def cli():
     parser.add_option('--url',
                       dest='url',
                       metavar='URL',
-                      help='URL to download.')
+                      help='URL to download. '
+                           'Note: Reserved characters (such as &) must be escaped '
+                           'or put in quotes otherwise CLI output may be abnormal.')
     parser.add_option('--version', '-v',
                       dest='version',
                       metavar='VERSION',
