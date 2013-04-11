@@ -19,7 +19,11 @@ import mozinfo
 from parser import DirectoryParser
 from timezones import PacificTimezone
 
-from progressbar import ProgressBar, Percentage, RotatingMarker, ETA, FileTransferSpeed, Bar
+from progressbar import ProgressBar
+from progressbar import Percentage
+from progressbar import ETA
+from progressbar import FileTransferSpeed
+from progressbar import Bar
 
 
 version = pkg_resources.require("mozdownload")[0].version
@@ -223,10 +227,10 @@ class Scraper(object):
                 total_size = int(r.info().getheader('Content-length').strip())
                 CHUNK = 16 * 1024
 
-                max_value = ((total_size/CHUNK)+1)*CHUNK  # ValueError: Value out of range if only total_size given
+                max_value = (( total_size / CHUNK ) + 1) * CHUNK  # ValueError: Value out of range if only total_size given
 
                 bytes_downloaded = 0
-                widgets = [Percentage(), ' ', Bar(marker=RotatingMarker()),
+                widgets = [Percentage(), ' ', Bar(),
                            ' ', ETA(), ' ', FileTransferSpeed()]
                 pbar = ProgressBar(widgets=widgets, maxval=max_value).start()
 
@@ -243,7 +247,7 @@ class Scraper(object):
             except (urllib2.HTTPError, urllib2.URLError, TimeoutException):
                 if tmp_file and os.path.isfile(tmp_file):
                     os.remove(tmp_file)
-                print 'Download failed! Retrying... (attempt %s)' % attempt
+                print '\nDownload failed! Retrying... (attempt %s)' % attempt  # Without \n, output will overwrite progressbar
                 if attempt >= self.retry_attempts:
                     raise
                 time.sleep(self.retry_delay)
