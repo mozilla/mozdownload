@@ -68,7 +68,7 @@ class Scraper(object):
 
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
-                 authentication=None, retry_attempts=3, retry_delay=10,
+                 authentication=None, retry_attempts=0, retry_delay=30,
                  timeout=180):
 
         # Private properties for caching
@@ -241,9 +241,8 @@ class Scraper(object):
             except (urllib2.HTTPError, urllib2.URLError, TimeoutException):
                 if tmp_file and os.path.isfile(tmp_file):
                     os.remove(tmp_file)
-
-                # Without \n, output will overwrite progressbar
-                print '\nDownload failed! Retrying... (attempt %s)' % attempt
+                if self.retry_attempts > 0: # Otherwise shows printout but no retry is done
+                    print '\nDownload failed! Retrying... (attempt %s)' % attempt
                 if attempt >= self.retry_attempts:
                     raise
                 time.sleep(self.retry_delay)
@@ -772,14 +771,14 @@ def cli():
                       help='Password for basic HTTP authentication.')
     parser.add_option('--retry-attempts',
                       dest='retry_attempts',
-                      default=3,
+                      default=0,
                       type=int,
                       metavar='RETRY_ATTEMPTS',
                       help='Number of times the download will be attempted in '
                            'the event of a failure, default: %default')
     parser.add_option('--retry-delay',
                       dest='retry_delay',
-                      default=10,
+                      default=30,
                       type=int,
                       metavar='RETRY_DELAY',
                       help='Amount of time (in seconds) to wait between retry '
