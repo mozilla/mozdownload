@@ -19,12 +19,7 @@ import mozinfo
 from parser import DirectoryParser
 from timezones import PacificTimezone
 
-from progressbar import ProgressBar
-from progressbar import Percentage
-from progressbar import ETA
-from progressbar import FileTransferSpeed
-from progressbar import Bar
-
+import progressbar
 
 version = pkg_resources.require("mozdownload")[0].version
 
@@ -226,13 +221,12 @@ class Scraper(object):
                 r = urllib2.urlopen(self.final_url)
                 total_size = int(r.info().getheader('Content-length').strip())
                 CHUNK = 16 * 1024
-
-                max_value = (( total_size / CHUNK ) + 1) * CHUNK  # ValueError: Value out of range if only total_size given
-
+                # ValueError: Value out of range if only total_size given
+                max_value = ((total_size / CHUNK) + 1) * CHUNK
                 bytes_downloaded = 0
-                widgets = [Percentage(), ' ', Bar(),
-                           ' ', ETA(), ' ', FileTransferSpeed()]
-                pbar = ProgressBar(widgets=widgets, maxval=max_value).start()
+                widgets = [progressbar.Percentage(), ' ', progressbar.Bar(),
+                           ' ', progressbar.ETA(), ' ', progressbar.FileTransferSpeed()]
+                pbar = progressbar.ProgressBar(widgets=widgets, maxval=max_value).start()
 
                 with open(tmp_file, 'wb') as f:
                     for chunk in iter(lambda: r.read(CHUNK), ''):
@@ -247,7 +241,9 @@ class Scraper(object):
             except (urllib2.HTTPError, urllib2.URLError, TimeoutException):
                 if tmp_file and os.path.isfile(tmp_file):
                     os.remove(tmp_file)
-                print '\nDownload failed! Retrying... (attempt %s)' % attempt  # Without \n, output will overwrite progressbar
+
+                # Without \n, output will overwrite progressbar
+                print '\nDownload failed! Retrying... (attempt %s)' % attempt
                 if attempt >= self.retry_attempts:
                     raise
                 time.sleep(self.retry_delay)
@@ -753,9 +749,9 @@ def cli():
     parser.add_option('--url',
                       dest='url',
                       metavar='URL',
-                      help='URL to download. '
-                           'Note: Reserved characters (such as &) must be escaped '
-                           'or put in quotes otherwise CLI output may be abnormal.')
+                      help='URL to download. Note: Reserved characters (such as &)\
+                           must be escaped or put in quotes otherwise CLI output\
+                           may be abnormal.')
     parser.add_option('--version', '-v',
                       dest='version',
                       metavar='VERSION',
