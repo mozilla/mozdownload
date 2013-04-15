@@ -117,8 +117,8 @@ class Scraper(object):
                     raise NotFoundException("Binary not found in folder",
                                             self.path)
             except (NotFoundException, urllib2.HTTPError):
-                # Otherwise shows printout but no retry is done
                 if self.retry_attempts > 0:
+                    # Print only if multiple attempts are requested
                     print "Binary not found! Retrying... (attempt %s)" % attempt
                 if attempt >= self.retry_attempts:
                     raise NotFoundException("Binary not found in folder",
@@ -243,8 +243,8 @@ class Scraper(object):
             except (urllib2.HTTPError, urllib2.URLError, TimeoutException):
                 if tmp_file and os.path.isfile(tmp_file):
                     os.remove(tmp_file)
-                # Otherwise shows printout but no retry is done
                 if self.retry_attempts > 0:
+                    # Print only if multiple attempts are requested
                     print '\nDownload failed! Retrying... (attempt %s)' % attempt
                 if attempt >= self.retry_attempts:
                     raise
