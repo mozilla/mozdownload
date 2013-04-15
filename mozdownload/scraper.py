@@ -19,6 +19,8 @@ import mozinfo
 from parser import DirectoryParser
 from timezones import PacificTimezone
 
+import progressbar
+
 version = pkg_resources.require("mozdownload")[0].version
 
 __doc__= """
@@ -217,18 +219,31 @@ class Scraper(object):
             try:
                 start_time = datetime.now()
                 r = urllib2.urlopen(self.final_url)
+                total_size = int(r.info().getheader('Content-length').strip())
                 CHUNK = 16 * 1024
+                # ValueError: Value out of range if only total_size given
+                max_value = ((total_size / CHUNK) + 1) * CHUNK
+                bytes_downloaded = 0
+                widgets = [progressbar.Percentage(), ' ', progressbar.Bar(),
+                           ' ', progressbar.ETA(), ' ', progressbar.FileTransferSpeed()]
+                pbar = progressbar.ProgressBar(widgets=widgets, maxval=max_value).start()
+
                 with open(tmp_file, 'wb') as f:
                     for chunk in iter(lambda: r.read(CHUNK), ''):
                         f.write(chunk)
                         t1 = (datetime.now() - start_time).total_seconds()
+                        bytes_downloaded += CHUNK
+                        pbar.update(bytes_downloaded)
                         if t1 >= self.timeout:
                             raise TimeoutException
+                pbar.finish()
                 break
             except (urllib2.HTTPError, urllib2.URLError, TimeoutException):
                 if tmp_file and os.path.isfile(tmp_file):
                     os.remove(tmp_file)
-                print 'Download failed! Retrying... (attempt %s)' % attempt
+
+                # Without \n, output will overwrite progressbar
+                print '\nDownload failed! Retrying... (attempt %s)' % attempt
                 if attempt >= self.retry_attempts:
                     raise
                 time.sleep(self.retry_delay)
@@ -734,7 +749,9 @@ def cli():
     parser.add_option('--url',
                       dest='url',
                       metavar='URL',
-                      help='URL to download.')
+                      help='URL to download. Note: Reserved characters (such as &)\
+                           must be escaped or put in quotes otherwise CLI output\
+                           may be abnormal.')
     parser.add_option('--version', '-v',
                       dest='version',
                       metavar='VERSION',
