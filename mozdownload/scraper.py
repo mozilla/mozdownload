@@ -68,7 +68,7 @@ class Scraper(object):
 
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
-                 authentication=None, retry_attempts=0, retry_delay=30,
+                 authentication=None, retry_attempts=0, retry_delay=10,
                  timeout=180):
 
         # Private properties for caching
@@ -781,7 +781,7 @@ def cli():
                            'the event of a failure, default: %default')
     parser.add_option('--retry-delay',
                       dest='retry_delay',
-                      default=30,
+                      default=10,
                       type=int,
                       metavar='RETRY_DELAY',
                       help='Amount of time (in seconds) to wait between retry '
