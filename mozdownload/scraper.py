@@ -68,7 +68,7 @@ class Scraper(object):
 
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
-                 authentication=None, retry_attempts=3, retry_delay=10,
+                 authentication=None, retry_attempts=0, retry_delay=10,
                  timeout=180):
 
         # Private properties for caching
@@ -117,7 +117,9 @@ class Scraper(object):
                     raise NotFoundException("Binary not found in folder",
                                             self.path)
             except (NotFoundException, urllib2.HTTPError):
-                print "Binary not found! Retrying... (attempt %s)" % attempt
+                if self.retry_attempts > 0:
+                    # Print only if multiple attempts are requested
+                    print "Binary not found! Retrying... (attempt %s)" % attempt
                 if attempt >= self.retry_attempts:
                     raise NotFoundException("Binary not found in folder",
                                             self.path)
@@ -241,9 +243,9 @@ class Scraper(object):
             except (urllib2.HTTPError, urllib2.URLError, TimeoutException):
                 if tmp_file and os.path.isfile(tmp_file):
                     os.remove(tmp_file)
-
-                # Without \n, output will overwrite progressbar
-                print '\nDownload failed! Retrying... (attempt %s)' % attempt
+                if self.retry_attempts > 0:
+                    # Print only if multiple attempts are requested
+                    print '\nDownload failed! Retrying... (attempt %s)' % attempt
                 if attempt >= self.retry_attempts:
                     raise
                 time.sleep(self.retry_delay)
@@ -772,7 +774,7 @@ def cli():
                       help='Password for basic HTTP authentication.')
     parser.add_option('--retry-attempts',
                       dest='retry_attempts',
-                      default=3,
+                      default=0,
                       type=int,
                       metavar='RETRY_ATTEMPTS',
                       help='Number of times the download will be attempted in '
