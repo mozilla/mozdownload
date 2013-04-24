@@ -1,3 +1,13 @@
+1.7 / 2013-04-24
+==================
+  * Revert to no retries by default (#65)
+  * Add a percentage completion counter (#48)
+  * Remove default=None from OptionParser options (#43)
+  * Added full command line options to README (#44)
+  * Added version number to docstring and --help output (#34)
+  * Implement automatic retries for locating the binary (#58)
+  * Implemented a download timeout (#50) 
+
 1.6 / 2013-02-20
 ==================
   * Automatically retry on failure (#39)
