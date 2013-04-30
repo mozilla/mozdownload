@@ -1,3 +1,7 @@
+1.7.1 / 2013-04-30
+==================
+  * total_seconds is not an attribute on timedelta in Python 2.6 (#73)
+
 1.7 / 2013-04-24
 ==================
   * Revert to no retries by default (#65)
