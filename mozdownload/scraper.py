@@ -191,6 +191,14 @@ class Scraper(object):
     def download(self):
         """Download the specified file"""
 
+        def total_seconds(td):
+            # Keep backward compatibility with Python 2.6 which doesn't have
+            # this method
+            if hasattr(td, 'total_seconds'):
+                return td.total_seconds()
+            else:
+                return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+
         attempt = 0
 
         if not os.path.isdir(self.directory):
@@ -233,9 +241,10 @@ class Scraper(object):
                 with open(tmp_file, 'wb') as f:
                     for chunk in iter(lambda: r.read(CHUNK), ''):
                         f.write(chunk)
-                        t1 = (datetime.now() - start_time).total_seconds()
                         bytes_downloaded += CHUNK
                         pbar.update(bytes_downloaded)
+
+                        t1 = total_seconds(datetime.now() - start_time)
                         if t1 >= self.timeout:
                             raise TimeoutException
                 pbar.finish()
