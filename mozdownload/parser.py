@@ -13,15 +13,11 @@ import urllib2
 class DirectoryParser(HTMLParser):
     """Class to parse directory listings"""
 
-    def __init__(self, url, opener=None):
+    def __init__(self, url):
         HTMLParser.__init__(self)
 
         self.entries = [ ]
         self.active_url = None
-
-        # handle authentication
-        if opener is not None:
-            urllib2.install_opener(opener)
 
         req = urllib2.urlopen(url, timeout=60)
         self.feed(req.read())
