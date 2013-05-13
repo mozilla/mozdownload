@@ -1,3 +1,7 @@
+1.7.2 / 2013-05-13
+==================
+  *  Add support for hidden release candidate builds (#77)
+
 1.7.1 / 2013-04-30
 ==================
   * total_seconds is not an attribute on timedelta in Python 2.6 (#73)
