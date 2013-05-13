@@ -89,6 +89,19 @@ class Scraper(object):
         self.application = application
         self.base_url = '/'.join([BASE_URL, self.application])
 
+        self.opener = None
+        if self.authentication \
+           and self.authentication['username'] \
+           and self.authentication['password']:
+            password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+            password_mgr.add_password(None,
+                                      self.base_url,
+                                      self.authentication['username'],
+                                      self.authentication['password'])
+            handler = urllib2.HTTPBasicAuthHandler(password_mgr)
+            opener = urllib2.build_opener(urllib2.HTTPHandler, handler)
+            urllib2.install_opener(opener)
+            self.opener = opener
 
     @property
     def binary(self):
@@ -211,18 +224,6 @@ class Scraper(object):
 
         print 'Downloading from: %s' % (urllib.unquote(self.final_url))
         tmp_file = self.target + ".part"
-
-        if self.authentication \
-           and self.authentication['username'] \
-           and self.authentication['password']:
-            password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-            password_mgr.add_password(None,
-                                      self.final_url,
-                                      self.authentication['username'],
-                                      self.authentication['password'])
-            handler = urllib2.HTTPBasicAuthHandler(password_mgr)
-            opener = urllib2.build_opener(urllib2.HTTPHandler, handler)
-            urllib2.install_opener(opener)
 
         while True:
             attempt += 1
@@ -461,11 +462,10 @@ class ReleaseCandidateScraper(ReleaseScraper):
 
         # Internally we access builds via index
         if build_number is not None:
-            self.build_index = int(build_number) - 1
+            self.builds = ['build%s' % build_number]
+            self.build_index = 0
         else:
-            self.build_index = None
-
-        self.builds, self.build_index = self.get_build_info_for_version(self.version, self.build_index)
+            self.builds, self.build_index = self.get_build_info_for_version(self.version)
 
         self.no_unsigned = no_unsigned
         self.unsigned = False
@@ -512,7 +512,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
-        template = '%(APP)s-%(VERSION)s-build%(BUILD)s.%(LOCALE)s.%(PLATFORM)s.%(EXT)s'
+        template = '%(APP)s-%(VERSION)s-%(BUILD)s.%(LOCALE)s.%(PLATFORM)s.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'BUILD': self.builds[self.build_index],
