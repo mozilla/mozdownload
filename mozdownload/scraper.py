@@ -89,6 +89,19 @@ class Scraper(object):
         self.application = application
         self.base_url = '/'.join([BASE_URL, self.application])
 
+        self.opener = None
+        if self.authentication \
+           and self.authentication['username'] \
+           and self.authentication['password']:
+            password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+            password_mgr.add_password(None,
+                                      self.base_url,
+                                      self.authentication['username'],
+                                      self.authentication['password'])
+            handler = urllib2.HTTPBasicAuthHandler(password_mgr)
+            opener = urllib2.build_opener(urllib2.HTTPHandler, handler)
+            urllib2.install_opener(opener)
+            self.opener = opener
 
     @property
     def binary(self):
@@ -191,6 +204,14 @@ class Scraper(object):
     def download(self):
         """Download the specified file"""
 
+        def total_seconds(td):
+            # Keep backward compatibility with Python 2.6 which doesn't have
+            # this method
+            if hasattr(td, 'total_seconds'):
+                return td.total_seconds()
+            else:
+                return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+
         attempt = 0
 
         if not os.path.isdir(self.directory):
@@ -203,18 +224,6 @@ class Scraper(object):
 
         print 'Downloading from: %s' % (urllib.unquote(self.final_url))
         tmp_file = self.target + ".part"
-
-        if self.authentication \
-           and self.authentication['username'] \
-           and self.authentication['password']:
-            password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-            password_mgr.add_password(None,
-                                      self.final_url,
-                                      self.authentication['username'],
-                                      self.authentication['password'])
-            handler = urllib2.HTTPBasicAuthHandler(password_mgr)
-            opener = urllib2.build_opener(urllib2.HTTPHandler, handler)
-            urllib2.install_opener(opener)
 
         while True:
             attempt += 1
@@ -233,9 +242,10 @@ class Scraper(object):
                 with open(tmp_file, 'wb') as f:
                     for chunk in iter(lambda: r.read(CHUNK), ''):
                         f.write(chunk)
-                        t1 = (datetime.now() - start_time).total_seconds()
                         bytes_downloaded += CHUNK
                         pbar.update(bytes_downloaded)
+
+                        t1 = total_seconds(datetime.now() - start_time)
                         if t1 >= self.timeout:
                             raise TimeoutException
                 pbar.finish()
@@ -452,11 +462,10 @@ class ReleaseCandidateScraper(ReleaseScraper):
 
         # Internally we access builds via index
         if build_number is not None:
-            self.build_index = int(build_number) - 1
+            self.builds = ['build%s' % build_number]
+            self.build_index = 0
         else:
-            self.build_index = None
-
-        self.builds, self.build_index = self.get_build_info_for_version(self.version, self.build_index)
+            self.builds, self.build_index = self.get_build_info_for_version(self.version)
 
         self.no_unsigned = no_unsigned
         self.unsigned = False
@@ -503,7 +512,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
-        template = '%(APP)s-%(VERSION)s-build%(BUILD)s.%(LOCALE)s.%(PLATFORM)s.%(EXT)s'
+        template = '%(APP)s-%(VERSION)s-%(BUILD)s.%(LOCALE)s.%(PLATFORM)s.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'BUILD': self.builds[self.build_index],

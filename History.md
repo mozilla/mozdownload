@@ -1,3 +1,21 @@
+1.7.2 / 2013-05-13
+==================
+  *  Add support for hidden release candidate builds (#77)
+
+1.7.1 / 2013-04-30
+==================
+  * total_seconds is not an attribute on timedelta in Python 2.6 (#73)
+
+1.7 / 2013-04-24
+==================
+  * Revert to no retries by default (#65)
+  * Add a percentage completion counter (#48)
+  * Remove default=None from OptionParser options (#43)
+  * Added full command line options to README (#44)
+  * Added version number to docstring and --help output (#34)
+  * Implement automatic retries for locating the binary (#58)
+  * Implemented a download timeout (#50) 
+
 1.6 / 2013-02-20
 ==================
   * Automatically retry on failure (#39)
