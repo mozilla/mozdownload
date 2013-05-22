@@ -269,7 +269,6 @@ class DailyScraper(Scraper):
     def __init__(self, branch='mozilla-central', build_id=None, date=None,
                  build_number=None, *args, **kwargs):
 
-        Scraper.__init__(self, *args, **kwargs)
         self.branch = branch
 
         # Internally we access builds via index
@@ -319,6 +318,7 @@ class DailyScraper(Scraper):
                                           '%Y%m%d%H%M%S')
             self.builds, self.build_index = self.get_build_info_for_date(
                 self.date, has_time=True)
+        Scraper.__init__(self, *args, **kwargs)
 
     def get_build_info_for_date(self, date, has_time=False, build_index=None):
         url = '/'.join([self.base_url, self.monthly_build_list_regex])
@@ -340,7 +340,11 @@ class DailyScraper(Scraper):
             # If a time is included in the date, use it to determine the
             # build's index
             regex = r'.*%s.*' % date.strftime('%H-%M-%S')
-            build_index = parser.entries.index(parser.filter(regex)[0])
+            entries = parser.filter(regex)
+            if not entries:
+                message = 'Folder for builds on %s has not been found' % self.date.strftime('%Y-%m-%d-%H-%M-%S')
+                raise NotFoundError(message, url)
+            build_index = parser.entries.index(entries[0])
         else:
             # If no index has been given, set it to the last build of the day.
             if build_index is None:
@@ -465,7 +469,6 @@ class ReleaseCandidateScraper(ReleaseScraper):
     """Class to download a release candidate build from the Mozilla server"""
 
     def __init__(self, build_number=None, no_unsigned=False, *args, **kwargs):
-        Scraper.__init__(self, *args, **kwargs)
 
         # Internally we access builds via index
         if build_number is not None:
@@ -477,6 +480,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
 
         self.no_unsigned = no_unsigned
         self.unsigned = False
+
+        Scraper.__init__(self, *args, **kwargs)
 
     def get_build_info_for_version(self, version, build_index=None):
         url = '/'.join([self.base_url, self.candidate_build_list_regex])
@@ -559,7 +564,6 @@ class TinderboxScraper(Scraper):
 
     def __init__(self, branch='mozilla-central', build_number=None, date=None,
                  debug_build=False, *args, **kwargs):
-        Scraper.__init__(self, *args, **kwargs)
 
         self.branch = branch
         self.debug_build = debug_build
@@ -596,6 +600,7 @@ class TinderboxScraper(Scraper):
                 raise NotFoundError("Specified sub folder cannot be found",
                                     self.base_url +
                                     self.monthly_build_list_regex)
+        Scraper.__init__(self, *args, **kwargs)
 
     @property
     def binary_regex(self):
