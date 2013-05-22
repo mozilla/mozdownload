@@ -9,10 +9,10 @@ from optparse import OptionParser, OptionGroup
 import os
 import pkg_resources
 import re
+import requests
 import sys
 import time
 import urllib
-import urllib2
 
 import mozinfo
 
@@ -35,6 +35,9 @@ APPLICATIONS = ['b2g', 'firefox', 'thunderbird']
 # Base URL for the path to all builds
 BASE_URL = 'https://ftp.mozilla.org/pub/mozilla.org'
 
+# Chunk size when downloading a file
+CHUNK_SIZE = 16 * 1024
+
 PLATFORM_FRAGMENTS = {'linux': 'linux-i686',
                       'linux64': 'linux-x86_64',
                       'mac': 'mac',
@@ -49,14 +52,21 @@ DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
                            'win32': 'exe',
                            'win64': 'exe'}
 
-class NotFoundException(Exception):
+
+class NotFoundError(Exception):
     """Exception for a resource not being found (e.g. no logs)"""
     def __init__(self, message, location):
         self.location = location
         Exception.__init__(self, ': '.join([message, location]))
 
 
-class TimeoutException(Exception):
+class NotImplementedError(Exception):
+    """Exception for a feature which is not implemented yet"""
+    def __init__(self, message):
+        Exception.__init__(self, message)
+
+
+class TimeoutError(Exception):
     """Exception for a download exceeding the allocated timeout"""
     def __init__(self):
         self.message = 'The download exceeded the allocated timeout'
@@ -89,20 +99,6 @@ class Scraper(object):
         self.application = application
         self.base_url = '/'.join([BASE_URL, self.application])
 
-        self.opener = None
-        if self.authentication \
-           and self.authentication['username'] \
-           and self.authentication['password']:
-            password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-            password_mgr.add_password(None,
-                                      self.base_url,
-                                      self.authentication['username'],
-                                      self.authentication['password'])
-            handler = urllib2.HTTPBasicAuthHandler(password_mgr)
-            opener = urllib2.build_opener(urllib2.HTTPHandler, handler)
-            urllib2.install_opener(opener)
-            self.opener = opener
-
     @property
     def binary(self):
         """Return the name of the build"""
@@ -113,9 +109,9 @@ class Scraper(object):
             attempt += 1
             try:
                 # Retrieve all entries from the remote virtual folder
-                parser = DirectoryParser(self.path)
+                parser = DirectoryParser(self.path, self.authentication)
                 if not parser.entries:
-                    raise NotFoundException('No entries found', self.path)
+                    raise NotFoundError('No entries found', self.path)
 
                 # Download the first matched directory entry
                 pattern = re.compile(self.binary_regex, re.IGNORECASE)
@@ -127,15 +123,15 @@ class Scraper(object):
                         # No match, continue with next entry
                         continue
                 else:
-                    raise NotFoundException("Binary not found in folder",
+                    raise NotFoundError("Binary not found in folder",
                                             self.path)
-            except (NotFoundException, urllib2.HTTPError):
+            except (NotFoundError, requests.exceptions.RequestException), e:
                 if self.retry_attempts > 0:
                     # Print only if multiple attempts are requested
-                    print "Binary not found! Retrying... (attempt %s)" % attempt
+                    print "Build not found: '%s'" % e.message
+                    print "Retrying... (attempt %s)" % attempt
                 if attempt >= self.retry_attempts:
-                    raise NotFoundException("Binary not found in folder",
-                                            self.path)
+                    raise
                 time.sleep(self.retry_delay)
 
         return self._binary
@@ -172,7 +168,7 @@ class Scraper(object):
     def platform_regex(self):
         """Return the platform fragment of the URL"""
 
-        return PLATFORM_FRAGMENTS[self.platform];
+        return PLATFORM_FRAGMENTS[self.platform]
 
 
     @property
@@ -229,33 +225,38 @@ class Scraper(object):
             attempt += 1
             try:
                 start_time = datetime.now()
-                r = urllib2.urlopen(self.final_url)
-                total_size = int(r.info().getheader('Content-length').strip())
-                CHUNK = 16 * 1024
+
+                # Enable streaming mode so we can download the content in chunks
+                r = requests.get(self.final_url, stream=True,
+                                 auth=self.authentication)
+                r.raise_for_status()
+
                 # ValueError: Value out of range if only total_size given
-                max_value = ((total_size / CHUNK) + 1) * CHUNK
+                total_size = int(r.headers.get('Content-length').strip())
+                max_value = ((total_size / CHUNK_SIZE) + 1) * CHUNK_SIZE
                 bytes_downloaded = 0
                 widgets = [progressbar.Percentage(), ' ', progressbar.Bar(),
                            ' ', progressbar.ETA(), ' ', progressbar.FileTransferSpeed()]
                 pbar = progressbar.ProgressBar(widgets=widgets, maxval=max_value).start()
 
                 with open(tmp_file, 'wb') as f:
-                    for chunk in iter(lambda: r.read(CHUNK), ''):
+                    for chunk in iter(lambda: r.raw.read(CHUNK_SIZE), ''):
                         f.write(chunk)
-                        bytes_downloaded += CHUNK
+                        bytes_downloaded += CHUNK_SIZE
                         pbar.update(bytes_downloaded)
 
                         t1 = total_seconds(datetime.now() - start_time)
                         if t1 >= self.timeout:
-                            raise TimeoutException
+                            raise TimeoutError
                 pbar.finish()
                 break
-            except (urllib2.HTTPError, urllib2.URLError, TimeoutException):
+            except (requests.exceptions.RequestException, TimeoutError), e:
                 if tmp_file and os.path.isfile(tmp_file):
                     os.remove(tmp_file)
                 if self.retry_attempts > 0:
                     # Print only if multiple attempts are requested
-                    print '\nDownload failed! Retrying... (attempt %s)' % attempt
+                    print 'Download failed: "%s"' % e.message
+                    print "Retrying... (attempt %s)" % attempt
                 if attempt >= self.retry_attempts:
                     raise
                 time.sleep(self.retry_delay)
@@ -303,12 +304,13 @@ class DailyScraper(Scraper):
             parser.entries = parser.filter(r'.*%s\.txt' % self.platform_regex)
             if not parser.entries:
                 message = 'Status file for %s build cannot be found' % self.platform_regex
-                raise NotFoundException(message, url)
+                raise NotFoundError(message, url)
 
             # Read status file for the platform, retrieve build id, and convert to a date
-            status_file = url + parser.entries[-1]
-            f = urllib.urlopen(status_file)
-            self.date = datetime.strptime(f.readline().strip(), '%Y%m%d%H%M%S')
+            r = requests.get(url + parser.entries[-1], auth=self.authentication)
+            r.raise_for_status()
+
+            self.date = datetime.strptime(r.text.split('\n')[0],'%Y%m%d%H%M%S')
             self.builds, self.build_index = self.get_build_info_for_date(self.date,
                                                                          has_time=True)
 
@@ -325,7 +327,7 @@ class DailyScraper(Scraper):
         parser.entries = parser.filter(regex)
         if not parser.entries:
             message = 'Folder for builds on %s has not been found' % self.date.strftime('%Y-%m-%d')
-            raise NotFoundException(message, url)
+            raise NotFoundError(message, url)
 
         if has_time:
             # If a time is included in the date, use it to determine the build's index
@@ -392,7 +394,7 @@ class DailyScraper(Scraper):
         try:
             return self.monthly_build_list_regex + self.builds[self.build_index]
         except:
-            raise NotFoundException("Specified sub folder cannot be found",
+            raise NotFoundError("Specified sub folder cannot be found",
                                     self.base_url + self.monthly_build_list_regex)
 
 
@@ -400,9 +402,10 @@ class DirectScraper(Scraper):
     """Class to download a file from a specified URL"""
 
     def __init__(self, url, *args, **kwargs):
+        self.url = url
+
         Scraper.__init__(self, *args, **kwargs)
 
-        self.url = url
 
     @property
     def target(self):
@@ -478,7 +481,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
         parser = DirectoryParser(url)
         if not parser.entries:
             message = 'Folder for specific candidate builds at has not been found'
-            raise NotFoundException(message, url)
+            raise NotFoundError(message, url)
 
         # If no index has been given, set it to the last build of the given version.
         if build_index is None:
@@ -527,7 +530,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
         try:
             # Try to download the signed candidate build
             Scraper.download(self)
-        except NotFoundException, e:
+        except NotFoundError, e:
             print str(e)
 
             # If the signed build cannot be downloaded and unsigned builds are
@@ -584,7 +587,7 @@ class TinderboxScraper(Scraper):
             try:
                 self.timestamp = self.builds[self.build_index]
             except:
-                raise NotFoundException("Specified sub folder cannot be found",
+                raise NotFoundError("Specified sub folder cannot be found",
                                         self.base_url + self.monthly_build_list_regex)
 
 
@@ -679,7 +682,7 @@ class TinderboxScraper(Scraper):
 
         if not parser.entries:
             message = 'No builds have been found'
-            raise NotFoundException(message, url)
+            raise NotFoundError(message, url)
 
         # If no index has been given, set it to the last build of the day.
         if build_index is None:
@@ -857,9 +860,7 @@ def cli():
                         'version': options.version,
                         'directory': options.directory,
                         'extension': options.extension,
-                        'authentication': {
-                            'username': options.username,
-                            'password': options.password},
+                        'authentication': (options.username, options.password),
                         'retry_attempts': options.retry_attempts,
                         'retry_delay': options.retry_delay,
                         'timeout': options.timeout}
