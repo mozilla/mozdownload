@@ -16,7 +16,7 @@ except (OSError, IOError):
 
 version = '1.7.2'
 
-deps = ['mozinfo==0.3.3', 'progressbar==2.2']
+deps = ['mozinfo==0.3.3', 'progressbar==2.2', 'requests==1.2.2']
 
 setup(name='mozdownload',
       version=version,
