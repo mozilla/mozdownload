@@ -308,7 +308,9 @@ class DailyScraper(Scraper):
                 raise NotFoundError(message, url)
 
             # Read status file for the platform, retrieve build id, and convert to a date
-            r = requests.get(url + parser.entries[-1], auth=self.authentication)
+            headers = {'Cache-Control': 'max-age=0'}
+            r = requests.get(url + parser.entries[-1], auth=self.authentication,
+                             headers=headers)
             r.raise_for_status()
 
             self.date = datetime.strptime(r.text.split('\n')[0],'%Y%m%d%H%M%S')

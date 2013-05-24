@@ -21,7 +21,10 @@ class DirectoryParser(HTMLParser):
 
         HTMLParser.__init__(self)
 
-        r = requests.get(url, auth=self.authentication, timeout=60)
+        # Force the server to not send cached content
+        headers = {'Cache-Control': 'max-age=0'}
+        r = requests.get(url, auth=self.authentication,
+                         headers=headers, timeout=60)
         r.raise_for_status()
         self.feed(r.text)
 
