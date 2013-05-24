@@ -109,7 +109,8 @@ class Scraper(object):
             attempt += 1
             try:
                 # Retrieve all entries from the remote virtual folder
-                parser = DirectoryParser(self.path, self.authentication)
+                parser = DirectoryParser(self.path,
+                                         authentication=self.authentication)
                 if not parser.entries:
                     raise NotFoundError('No entries found', self.path)
 
@@ -300,7 +301,7 @@ class DailyScraper(Scraper):
             url = '%s/nightly/latest-%s/' % (self.base_url, self.branch)
 
             print 'Retrieving the build status file from %s' % url
-            parser = DirectoryParser(url)
+            parser = DirectoryParser(url, authentication=self.authentication)
             parser.entries = parser.filter(r'.*%s\.txt' % self.platform_regex)
             if not parser.entries:
                 message = 'Status file for %s build cannot be found' % self.platform_regex
@@ -319,7 +320,7 @@ class DailyScraper(Scraper):
         url = '/'.join([self.base_url, self.monthly_build_list_regex])
 
         print 'Retrieving list of builds from %s' % url
-        parser = DirectoryParser(url)
+        parser = DirectoryParser(url, authentication=self.authentication)
         regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s$' % {
                     'DATE': date.strftime('%Y-%m-%d'),
                     'BRANCH': self.branch,
@@ -478,7 +479,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
         url = '/'.join([self.base_url, self.candidate_build_list_regex])
 
         print 'Retrieving list of candidate builds from %s' % url
-        parser = DirectoryParser(url)
+        parser = DirectoryParser(url, authentication=self.authentication)
         if not parser.entries:
             message = 'Folder for specific candidate builds at has not been found'
             raise NotFoundError(message, url)
@@ -673,7 +674,7 @@ class TinderboxScraper(Scraper):
         # If a timestamp is given, retrieve just that build
         regex = '^' + self.timestamp + '$' if self.timestamp else r'^\d+$'
 
-        parser = DirectoryParser(url)
+        parser = DirectoryParser(url, authentication=self.authentication)
         parser.entries = parser.filter(regex)
 
         # If date is given, retrieve the subset of builds on that date
