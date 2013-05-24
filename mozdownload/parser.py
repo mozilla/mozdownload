@@ -6,21 +6,27 @@
 
 from HTMLParser import HTMLParser
 import re
+import requests
 import urllib
-import urllib2
 
 
 class DirectoryParser(HTMLParser):
     """Class to parse directory listings"""
 
-    def __init__(self, url):
+    def __init__(self, url, authentication=None):
+        self.authentication = authentication
+
+        self.active_url = None
+        self.entries = [ ]
+
         HTMLParser.__init__(self)
 
-        self.entries = [ ]
-        self.active_url = None
-
-        req = urllib2.urlopen(url, timeout=60)
-        self.feed(req.read())
+        # Force the server to not send cached content
+        headers = {'Cache-Control': 'max-age=0'}
+        r = requests.get(url, auth=self.authentication,
+                         headers=headers, timeout=60)
+        r.raise_for_status()
+        self.feed(r.text)
 
     def filter(self, regex):
         pattern = re.compile(regex, re.IGNORECASE)
