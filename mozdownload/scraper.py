@@ -78,8 +78,8 @@ class Scraper(object):
 
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
-                 authentication=None, retry_attempts=0, retry_delay=10,
-                 timeout=180):
+                 authentication=None, retry_attempts=0, retry_delay=10.,
+                 timeout_download=180., timeout_network=20.):
 
         # Private properties for caching
         self._target = None
@@ -93,7 +93,8 @@ class Scraper(object):
         self.authentication = authentication
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
-        self.timeout = timeout
+        self.timeout_download = timeout_download
+        self.timeout_network = timeout_network
 
         # build the base URL
         self.application = application
@@ -110,7 +111,8 @@ class Scraper(object):
             try:
                 # Retrieve all entries from the remote virtual folder
                 parser = DirectoryParser(self.path,
-                                         authentication=self.authentication)
+                                         authentication=self.authentication,
+                                         timeout=self.timeout_network)
                 if not parser.entries:
                     raise NotFoundError('No entries found', self.path)
 
@@ -247,7 +249,7 @@ class Scraper(object):
                         pbar.update(bytes_downloaded)
 
                         t1 = total_seconds(datetime.now() - start_time)
-                        if t1 >= self.timeout:
+                        if t1 >= self.timeout_download:
                             raise TimeoutError
                 pbar.finish()
                 break
@@ -301,7 +303,8 @@ class DailyScraper(Scraper):
             url = '%s/nightly/latest-%s/' % (self.base_url, self.branch)
 
             print 'Retrieving the build status file from %s' % url
-            parser = DirectoryParser(url, authentication=self.authentication)
+            parser = DirectoryParser(url, authentication=self.authentication,
+                                     timeout=self.timeout_network)
             parser.entries = parser.filter(r'.*%s\.txt' % self.platform_regex)
             if not parser.entries:
                 message = 'Status file for %s build cannot be found' % self.platform_regex
@@ -322,7 +325,8 @@ class DailyScraper(Scraper):
         url = '/'.join([self.base_url, self.monthly_build_list_regex])
 
         print 'Retrieving list of builds from %s' % url
-        parser = DirectoryParser(url, authentication=self.authentication)
+        parser = DirectoryParser(url, authentication=self.authentication,
+                                 timeout=self.timeout_network)
         regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s$' % {
                     'DATE': date.strftime('%Y-%m-%d'),
                     'BRANCH': self.branch,
@@ -481,7 +485,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
         url = '/'.join([self.base_url, self.candidate_build_list_regex])
 
         print 'Retrieving list of candidate builds from %s' % url
-        parser = DirectoryParser(url, authentication=self.authentication)
+        parser = DirectoryParser(url, authentication=self.authentication,
+                                 timeout=self.timeout_network)
         if not parser.entries:
             message = 'Folder for specific candidate builds at has not been found'
             raise NotFoundError(message, url)
@@ -676,7 +681,8 @@ class TinderboxScraper(Scraper):
         # If a timestamp is given, retrieve just that build
         regex = '^' + self.timestamp + '$' if self.timestamp else r'^\d+$'
 
-        parser = DirectoryParser(url, authentication=self.authentication)
+        parser = DirectoryParser(url, authentication=self.authentication,
+                                 timeout=self.timeout_network)
         parser.entries = parser.filter(regex)
 
         # If date is given, retrieve the subset of builds on that date
@@ -796,18 +802,25 @@ def cli():
                            'the event of a failure, default: %default')
     parser.add_option('--retry-delay',
                       dest='retry_delay',
-                      default=10,
-                      type=int,
+                      default=10.,
+                      type=float,
                       metavar='RETRY_DELAY',
                       help='Amount of time (in seconds) to wait between retry '
                            'attempts, default: %default')
-    parser.add_option('--timeout',
-                      dest='timeout',
-                      default=180,
-                      type=int,
-                      metavar='TIMEOUT',
-                      help='Amount of time (in seconds) until download times '
+    parser.add_option('--timeout-download',
+                      dest='timeout_download',
+                      default=180.,
+                      type=float,
+                      metavar='TIMEOUT_DOWNLOAD',
+                      help='Amount of time (in seconds) until a download times '
                            'out, default: %default')
+    parser.add_option('--timeout-network',
+                      dest='timeout_network',
+                      default=20.,
+                      type=float,
+                      metavar='TIMEOUT_NETWORK',
+                      help='Amount of time (in seconds) until a network '
+                           'request times out, default: %default')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
@@ -866,7 +879,8 @@ def cli():
                         'authentication': (options.username, options.password),
                         'retry_attempts': options.retry_attempts,
                         'retry_delay': options.retry_delay,
-                        'timeout': options.timeout}
+                        'timeout_download': options.timeout_download,
+                        'timeout_network': options.timeout_network}
     scraper_options = {'candidate': {
                            'build_number': options.build_number,
                            'no_unsigned': options.no_unsigned},
