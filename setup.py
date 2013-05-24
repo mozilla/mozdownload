@@ -20,7 +20,8 @@ deps = ['mozinfo==0.3.3', 'progressbar==2.2', 'requests==1.2.2']
 
 setup(name='mozdownload',
       version=version,
-      description='Script to download builds for Firefox and Thunderbird from the Mozilla server.',
+      description='Script to download builds for Firefox and Thunderbird\
+                  from the Mozilla server.',
       long_description=description,
       # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[],
@@ -29,7 +30,7 @@ setup(name='mozdownload',
       author_email='tools@lists.mozilla.com',
       url='http://github.com/mozilla/mozdownload',
       license='Mozilla Public License 2.0 (MPL 2.0)',
-      packages = ['mozdownload'],
+      packages=['mozdownload'],
       zip_safe=False,
       install_requires=deps,
       entry_points="""
