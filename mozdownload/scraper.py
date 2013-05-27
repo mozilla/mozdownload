@@ -79,7 +79,7 @@ class Scraper(object):
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
-                 timeout_download=180., timeout_network=20.):
+                 timeout=180.):
 
         # Private properties for caching
         self._target = None
@@ -93,8 +93,8 @@ class Scraper(object):
         self.authentication = authentication
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
-        self.timeout_download = timeout_download
-        self.timeout_network = timeout_network
+        self.timeout_download = timeout
+        self.timeout_network = 60.
 
         # build the base URL
         self.application = application
@@ -807,20 +807,13 @@ def cli():
                       metavar='RETRY_DELAY',
                       help='Amount of time (in seconds) to wait between retry '
                            'attempts, default: %default')
-    parser.add_option('--timeout-download',
-                      dest='timeout_download',
+    parser.add_option('--timeout',
+                      dest='timeout',
                       default=180.,
                       type=float,
-                      metavar='TIMEOUT_DOWNLOAD',
+                      metavar='TIMEOUT',
                       help='Amount of time (in seconds) until a download times '
                            'out, default: %default')
-    parser.add_option('--timeout-network',
-                      dest='timeout_network',
-                      default=20.,
-                      type=float,
-                      metavar='TIMEOUT_NETWORK',
-                      help='Amount of time (in seconds) until a network '
-                           'request times out, default: %default')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
@@ -879,8 +872,7 @@ def cli():
                         'authentication': (options.username, options.password),
                         'retry_attempts': options.retry_attempts,
                         'retry_delay': options.retry_delay,
-                        'timeout_download': options.timeout_download,
-                        'timeout_network': options.timeout_network}
+                        'timeout': options.timeout}
     scraper_options = {'candidate': {
                            'build_number': options.build_number,
                            'no_unsigned': options.no_unsigned},
