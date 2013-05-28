@@ -20,8 +20,8 @@ deps = ['mozinfo==0.3.3', 'progressbar==2.2', 'requests==1.2.2']
 
 setup(name='mozdownload',
       version=version,
-      description='Script to download builds for Firefox and Thunderbird\
-                  from the Mozilla server.',
+      description='Script to download builds for Firefox and Thunderbird '
+                  'from the Mozilla server.',
       long_description=description,
       # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[],

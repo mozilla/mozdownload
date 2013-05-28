@@ -625,11 +625,11 @@ class TinderboxScraper(Scraper):
 
         regex = 'tinderbox-builds/%(BRANCH)s-%(PLATFORM)s%(L10N)s%(DEBUG)s'
 
-        return regex % {'BRANCH': self.branch,
-                        'PLATFORM': '' if self.locale_build else
-                        self.platform_regex,
-                        'L10N': 'l10n' if self.locale_build else '',
-                        'DEBUG': '-debug' if self.debug_build else ''}
+        return regex % {
+            'BRANCH': self.branch,
+            'PLATFORM': '' if self.locale_build else self.platform_regex,
+            'L10N': 'l10n' if self.locale_build else '',
+            'DEBUG': '-debug' if self.debug_build else ''}
 
     def date_matches(self, timestamp):
         """
@@ -760,9 +760,9 @@ def cli():
     parser.add_option('--url',
                       dest='url',
                       metavar='URL',
-                      help='URL to download. Note: Reserved characters (such\
-                            as &) must be escaped or put in quotes otherwise\
-                            CLI output may be abnormal.')
+                      help='URL to download. Note: Reserved characters (such '
+                           'as &) must be escaped or put in quotes otherwise '
+                           'CLI output may be abnormal.')
     parser.add_option('--version', '-v',
                       dest='version',
                       metavar='VERSION',
