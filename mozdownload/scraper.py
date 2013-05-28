@@ -221,8 +221,7 @@ class Scraper(object):
             try:
                 start_time = datetime.now()
 
-                # Enable streaming mode so we can download the content in
-                # chunks
+                # Enable streaming mode so we can download content in chunks
                 r = requests.get(self.final_url, stream=True,
                                  auth=self.authentication)
                 r.raise_for_status()
@@ -282,16 +281,15 @@ class DailyScraper(Scraper):
             # date and time can be extracted:
             # '20111212042025' -> '2011-12-12 04:20:25'
             self.date = datetime.strptime(build_id, '%Y%m%d%H%M%S')
-            self.builds, self.build_index = \
-                self.get_build_info_for_date(self.date, has_time=True)
+            self.builds, self.build_index = self.get_build_info_for_date(
+                self.date, has_time=True)
 
         elif date:
             # A date (without time) has been specified. Use its value and the
             # build index to find the requested build for that day.
             self.date = datetime.strptime(date, '%Y-%m-%d')
-            self.builds, self.build_index = \
-                self.get_build_info_for_date(self.date,
-                                             build_index=self.build_index)
+            self.builds, self.build_index = self.get_build_info_for_date(
+                self.date, build_index=self.build_index)
 
         else:
             # If no build id nor date have been specified the lastest available
@@ -316,8 +314,8 @@ class DailyScraper(Scraper):
 
             self.date = datetime.strptime(r.text.split('\n')[0],
                                           '%Y%m%d%H%M%S')
-            self.builds, self.build_index = \
-                self.get_build_info_for_date(self.date, has_time=True)
+            self.builds, self.build_index = self.get_build_info_for_date(
+                self.date, has_time=True)
 
     def get_build_info_for_date(self, date, has_time=False, build_index=None):
         url = '/'.join([self.base_url, self.monthly_build_list_regex])
@@ -382,10 +380,7 @@ class DailyScraper(Scraper):
 
     @property
     def monthly_build_list_regex(self):
-        """
-        Return the regex for the folder which contains the builds of a
-        month.
-        """
+        """Return the regex for the folder containing builds of a month."""
 
         # Regex for possible builds for the given date
         return r'nightly/%(YEAR)s/%(MONTH)s/' % {
@@ -397,12 +392,13 @@ class DailyScraper(Scraper):
         """Return the regex for the path"""
 
         try:
-            return self.monthly_build_list_regex + \
-                self.builds[self.build_index]
+            path = ''.join([self.monthly_build_list_regex,
+                            self.builds[self.build_index]])
+            return path
         except:
+            folder = ''.join([self.base_url, self.monthly_build_list_regex])
             raise NotFoundError("Specified sub folder cannot be found",
-                                self.base_url +
-                                self.monthly_build_list_regex)
+                                folder)
 
 
 class DirectScraper(Scraper):
@@ -472,8 +468,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
             self.builds = ['build%s' % build_number]
             self.build_index = 0
         else:
-            self.builds, self.build_index = \
-                self.get_build_info_for_version(self.version)
+            self.builds, self.build_index = self.get_build_info_for_version(
+                self.version)
 
         self.no_unsigned = no_unsigned
         self.unsigned = False
@@ -484,8 +480,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
         print 'Retrieving list of candidate builds from %s' % url
         parser = DirectoryParser(url, authentication=self.authentication)
         if not parser.entries:
-            message = \
-                'Folder for specific candidate builds at has not been found'
+            message = 'Folder for specific candidate builds at %s has not' \
+                'been found' % url
             raise NotFoundError(message, url)
 
         # If no index has been given, set it to the last build of the given
@@ -518,8 +514,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
-        template = \
-            '%(APP)s-%(VERSION)s-%(BUILD)s.%(LOCALE)s.%(PLATFORM)s.%(EXT)s'
+        template = '%(APP)s-%(VERSION)s-%(BUILD)s.%(LOCALE)s.' \
+                   '%(PLATFORM)s.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'BUILD': self.builds[self.build_index],
@@ -542,7 +538,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
                 raise
             else:
                 print "Signed build has not been found. Falling back to" \
-                    " unsigned build."
+                      " unsigned build."
                 self.unsigned = True
                 Scraper.download(self)
 
@@ -586,8 +582,8 @@ class TinderboxScraper(Scraper):
         # For localized builds we do not have to retrieve the list of builds
         # because only the last build is available
         if not self.locale_build:
-            self.builds, self.build_index = \
-                self.get_build_info(self.build_index)
+            self.builds, self.build_index = self.get_build_info(
+                self.build_index)
 
             try:
                 self.timestamp = self.builds[self.build_index]
