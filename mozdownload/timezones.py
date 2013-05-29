@@ -15,10 +15,8 @@ class PacificTimezone(tzinfo):
     def utcoffset(self, dt):
         return timedelta(hours=-8) + self.dst(dt)
 
-
     def tzname(self, dt):
         return "Pacific"
-
 
     def dst(self, dt):
         # Daylight saving starts on the second Sunday of March at 2AM standard
@@ -31,7 +29,6 @@ class PacificTimezone(tzinfo):
             return timedelta(hours=1)
         else:
             return timedelta(0)
-
 
     def first_sunday(self, year, month):
         date = datetime(year, month, 1, 0)

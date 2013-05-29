@@ -17,7 +17,7 @@ class DirectoryParser(HTMLParser):
         self.authentication = authentication
 
         self.active_url = None
-        self.entries = [ ]
+        self.entries = []
 
         HTMLParser.__init__(self)
 
