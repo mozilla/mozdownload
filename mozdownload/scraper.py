@@ -78,8 +78,8 @@ class Scraper(object):
 
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
-                 authentication=None, retry_attempts=0, retry_delay=10,
-                 timeout=180):
+                 authentication=None, retry_attempts=0, retry_delay=10.,
+                 timeout=180.):
 
         # Private properties for caching
         self._target = None
@@ -93,7 +93,8 @@ class Scraper(object):
         self.authentication = authentication
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
-        self.timeout = timeout
+        self.timeout_download = timeout
+        self.timeout_network = 60.
 
         # build the base URL
         self.application = application
@@ -110,7 +111,8 @@ class Scraper(object):
             try:
                 # Retrieve all entries from the remote virtual folder
                 parser = DirectoryParser(self.path,
-                                         authentication=self.authentication)
+                                         authentication=self.authentication,
+                                         timeout=self.timeout_network)
                 if not parser.entries:
                     raise NotFoundError('No entries found', self.path)
 
@@ -243,7 +245,7 @@ class Scraper(object):
                         pbar.update(bytes_downloaded)
 
                         t1 = total_seconds(datetime.now() - start_time)
-                        if t1 >= self.timeout:
+                        if t1 >= self.timeout_download:
                             raise TimeoutError
                 pbar.finish()
                 break
@@ -298,7 +300,8 @@ class DailyScraper(Scraper):
             url = '%s/nightly/latest-%s/' % (self.base_url, self.branch)
 
             print 'Retrieving the build status file from %s' % url
-            parser = DirectoryParser(url, authentication=self.authentication)
+            parser = DirectoryParser(url, authentication=self.authentication,
+                                     timeout=self.timeout_network)
             parser.entries = parser.filter(r'.*%s\.txt' % self.platform_regex)
             if not parser.entries:
                 message = 'Status file for %s build cannot be found' % \
@@ -321,7 +324,8 @@ class DailyScraper(Scraper):
         url = '/'.join([self.base_url, self.monthly_build_list_regex])
 
         print 'Retrieving list of builds from %s' % url
-        parser = DirectoryParser(url, authentication=self.authentication)
+        parser = DirectoryParser(url, authentication=self.authentication,
+                                 timeout=self.timeout_network)
         regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s$' % {
             'DATE': date.strftime('%Y-%m-%d'),
             'BRANCH': self.branch,
@@ -478,7 +482,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
         url = '/'.join([self.base_url, self.candidate_build_list_regex])
 
         print 'Retrieving list of candidate builds from %s' % url
-        parser = DirectoryParser(url, authentication=self.authentication)
+        parser = DirectoryParser(url, authentication=self.authentication,
+                                 timeout=self.timeout_network)
         if not parser.entries:
             message = 'Folder for specific candidate builds at %s has not' \
                 'been found' % url
@@ -672,7 +677,8 @@ class TinderboxScraper(Scraper):
         # If a timestamp is given, retrieve just that build
         regex = '^' + self.timestamp + '$' if self.timestamp else r'^\d+$'
 
-        parser = DirectoryParser(url, authentication=self.authentication)
+        parser = DirectoryParser(url, authentication=self.authentication,
+                                 timeout=self.timeout_network)
         parser.entries = parser.filter(regex)
 
         # If date is given, retrieve the subset of builds on that date
@@ -790,17 +796,17 @@ def cli():
                            'the event of a failure, default: %default')
     parser.add_option('--retry-delay',
                       dest='retry_delay',
-                      default=10,
-                      type=int,
+                      default=10.,
+                      type=float,
                       metavar='RETRY_DELAY',
                       help='Amount of time (in seconds) to wait between retry '
                            'attempts, default: %default')
     parser.add_option('--timeout',
                       dest='timeout',
-                      default=180,
-                      type=int,
+                      default=180.,
+                      type=float,
                       metavar='TIMEOUT',
-                      help='Amount of time (in seconds) until download times '
+                      help='Amount of time (in seconds) until a download times '
                            'out, default: %default')
 
     # Option group for candidate builds
