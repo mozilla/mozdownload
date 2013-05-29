@@ -23,12 +23,12 @@ import progressbar
 
 version = pkg_resources.require("mozdownload")[0].version
 
-__doc__= """
-Module to handle downloads for different types of ftp.mozilla.org hosted 
+__doc__ = """
+Module to handle downloads for different types of ftp.mozilla.org hosted
 applications.
 
 mozdownload version: %(version)s
-""" % {'version' : version}
+""" % {'version': version}
 
 APPLICATIONS = ['b2g', 'firefox', 'thunderbird']
 
@@ -78,8 +78,8 @@ class Scraper(object):
 
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
-                 authentication=None, retry_attempts=0, retry_delay=10,
-                 timeout=180):
+                 authentication=None, retry_attempts=0, retry_delay=10.,
+                 timeout=180.):
 
         # Private properties for caching
         self._target = None
@@ -93,7 +93,8 @@ class Scraper(object):
         self.authentication = authentication
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
-        self.timeout = timeout
+        self.timeout_download = timeout
+        self.timeout_network = 60.
 
         # build the base URL
         self.application = application
@@ -102,7 +103,7 @@ class Scraper(object):
     @property
     def binary(self):
         """Return the name of the build"""
-        
+
         attempt = 0
 
         while self._binary is None:
@@ -110,7 +111,8 @@ class Scraper(object):
             try:
                 # Retrieve all entries from the remote virtual folder
                 parser = DirectoryParser(self.path,
-                                         authentication=self.authentication)
+                                         authentication=self.authentication,
+                                         timeout=self.timeout_network)
                 if not parser.entries:
                     raise NotFoundError('No entries found', self.path)
 
@@ -125,7 +127,7 @@ class Scraper(object):
                         continue
                 else:
                     raise NotFoundError("Binary not found in folder",
-                                            self.path)
+                                        self.path)
             except (NotFoundError, requests.exceptions.RequestException), e:
                 if self.retry_attempts > 0:
                     # Print only if multiple attempts are requested
@@ -143,13 +145,11 @@ class Scraper(object):
 
         raise NotImplementedError(sys._getframe(0).f_code.co_name)
 
-
     @property
     def final_url(self):
         """Return the final URL of the build"""
 
         return '/'.join([self.path, self.binary])
-
 
     @property
     def path(self):
@@ -157,20 +157,17 @@ class Scraper(object):
 
         return '/'.join([self.base_url, self.path_regex])
 
-
     @property
     def path_regex(self):
         """Return the regex for the path to the build"""
 
         raise NotImplementedError(sys._getframe(0).f_code.co_name)
 
-
     @property
     def platform_regex(self):
         """Return the platform fragment of the URL"""
 
         return PLATFORM_FRAGMENTS[self.platform]
-
 
     @property
     def target(self):
@@ -181,22 +178,20 @@ class Scraper(object):
                                         self.build_filename(self.binary))
         return self._target
 
-
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
         raise NotImplementedError(sys._getframe(0).f_code.co_name)
 
-
     def detect_platform(self):
         """Detect the current platform"""
 
         # For Mac and Linux 32bit we do not need the bits appended
-        if mozinfo.os == 'mac' or (mozinfo.os == 'linux' and mozinfo.bits == 32):
+        if mozinfo.os == 'mac' or \
+                (mozinfo.os == 'linux' and mozinfo.bits == 32):
             return mozinfo.os
         else:
             return "%s%d" % (mozinfo.os, mozinfo.bits)
-
 
     def download(self):
         """Download the specified file"""
@@ -207,7 +202,8 @@ class Scraper(object):
             if hasattr(td, 'total_seconds'):
                 return td.total_seconds()
             else:
-                return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+                return (td.microseconds +
+                        (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
 
         attempt = 0
 
@@ -227,7 +223,7 @@ class Scraper(object):
             try:
                 start_time = datetime.now()
 
-                # Enable streaming mode so we can download the content in chunks
+                # Enable streaming mode so we can download content in chunks
                 r = requests.get(self.final_url, stream=True,
                                  auth=self.authentication)
                 r.raise_for_status()
@@ -237,8 +233,10 @@ class Scraper(object):
                 max_value = ((total_size / CHUNK_SIZE) + 1) * CHUNK_SIZE
                 bytes_downloaded = 0
                 widgets = [progressbar.Percentage(), ' ', progressbar.Bar(),
-                           ' ', progressbar.ETA(), ' ', progressbar.FileTransferSpeed()]
-                pbar = progressbar.ProgressBar(widgets=widgets, maxval=max_value).start()
+                           ' ', progressbar.ETA(), ' ',
+                           progressbar.FileTransferSpeed()]
+                pbar = progressbar.ProgressBar(widgets=widgets,
+                                               maxval=max_value).start()
 
                 with open(tmp_file, 'wb') as f:
                     for chunk in iter(lambda: r.raw.read(CHUNK_SIZE), ''):
@@ -247,7 +245,7 @@ class Scraper(object):
                         pbar.update(bytes_downloaded)
 
                         t1 = total_seconds(datetime.now() - start_time)
-                        if t1 >= self.timeout:
+                        if t1 >= self.timeout_download:
                             raise TimeoutError
                 pbar.finish()
                 break
@@ -281,18 +279,19 @@ class DailyScraper(Scraper):
             self.build_index = None
 
         if build_id:
-            # A build id has been specified. Split up its components so the date
-            # and time can be extracted: '20111212042025' -> '2011-12-12 04:20:25'
+            # A build id has been specified. Split up its components so the
+            # date and time can be extracted:
+            # '20111212042025' -> '2011-12-12 04:20:25'
             self.date = datetime.strptime(build_id, '%Y%m%d%H%M%S')
-            self.builds, self.build_index = self.get_build_info_for_date(self.date,
-                                                                         has_time=True)
+            self.builds, self.build_index = self.get_build_info_for_date(
+                self.date, has_time=True)
 
         elif date:
             # A date (without time) has been specified. Use its value and the
             # build index to find the requested build for that day.
             self.date = datetime.strptime(date, '%Y-%m-%d')
-            self.builds, self.build_index = self.get_build_info_for_date(self.date,
-                                                                         build_index=self.build_index)
+            self.builds, self.build_index = self.get_build_info_for_date(
+                self.date, build_index=self.build_index)
 
         else:
             # If no build id nor date have been specified the lastest available
@@ -301,39 +300,45 @@ class DailyScraper(Scraper):
             url = '%s/nightly/latest-%s/' % (self.base_url, self.branch)
 
             print 'Retrieving the build status file from %s' % url
-            parser = DirectoryParser(url, authentication=self.authentication)
+            parser = DirectoryParser(url, authentication=self.authentication,
+                                     timeout=self.timeout_network)
             parser.entries = parser.filter(r'.*%s\.txt' % self.platform_regex)
             if not parser.entries:
-                message = 'Status file for %s build cannot be found' % self.platform_regex
+                message = 'Status file for %s build cannot be found' % \
+                    self.platform_regex
                 raise NotFoundError(message, url)
 
-            # Read status file for the platform, retrieve build id, and convert to a date
+            # Read status file for the platform, retrieve build id,
+            # and convert to a date
             headers = {'Cache-Control': 'max-age=0'}
-            r = requests.get(url + parser.entries[-1], auth=self.authentication,
-                             headers=headers)
+            r = requests.get(url + parser.entries[-1],
+                             auth=self.authentication, headers=headers)
             r.raise_for_status()
 
-            self.date = datetime.strptime(r.text.split('\n')[0],'%Y%m%d%H%M%S')
-            self.builds, self.build_index = self.get_build_info_for_date(self.date,
-                                                                         has_time=True)
-
+            self.date = datetime.strptime(r.text.split('\n')[0],
+                                          '%Y%m%d%H%M%S')
+            self.builds, self.build_index = self.get_build_info_for_date(
+                self.date, has_time=True)
 
     def get_build_info_for_date(self, date, has_time=False, build_index=None):
         url = '/'.join([self.base_url, self.monthly_build_list_regex])
 
         print 'Retrieving list of builds from %s' % url
-        parser = DirectoryParser(url, authentication=self.authentication)
+        parser = DirectoryParser(url, authentication=self.authentication,
+                                 timeout=self.timeout_network)
         regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s$' % {
-                    'DATE': date.strftime('%Y-%m-%d'),
-                    'BRANCH': self.branch,
-                    'L10N': '' if self.locale == 'en-US' else '-l10n'}
+            'DATE': date.strftime('%Y-%m-%d'),
+            'BRANCH': self.branch,
+            'L10N': '' if self.locale == 'en-US' else '-l10n'}
         parser.entries = parser.filter(regex)
         if not parser.entries:
-            message = 'Folder for builds on %s has not been found' % self.date.strftime('%Y-%m-%d')
+            message = 'Folder for builds on %s has not been found' % \
+                self.date.strftime('%Y-%m-%d')
             raise NotFoundError(message, url)
 
         if has_time:
-            # If a time is included in the date, use it to determine the build's index
+            # If a time is included in the date, use it to determine the
+            # build's index
             regex = r'.*%s.*' % date.strftime('%H-%M-%S')
             build_index = parser.entries.index(parser.filter(regex)[0])
         else:
@@ -342,7 +347,6 @@ class DailyScraper(Scraper):
                 build_index = len(parser.entries) - 1
 
         return (parser.entries, build_index)
-
 
     @property
     def binary_regex(self):
@@ -362,7 +366,6 @@ class DailyScraper(Scraper):
                         'PLATFORM': self.platform_regex,
                         'EXT': self.extension}
 
-
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
@@ -375,30 +378,31 @@ class DailyScraper(Scraper):
             timestamp = self.date.strftime('%Y-%m-%d')
 
         return '%(TIMESTAMP)s-%(BRANCH)s-%(NAME)s' % {
-                   'TIMESTAMP': timestamp,
-                   'BRANCH': self.branch,
-                   'NAME': binary}
-
+            'TIMESTAMP': timestamp,
+            'BRANCH': self.branch,
+            'NAME': binary}
 
     @property
     def monthly_build_list_regex(self):
-        """Return the regex for the folder which contains the builds of a month."""
+        """Return the regex for the folder containing builds of a month."""
 
         # Regex for possible builds for the given date
         return r'nightly/%(YEAR)s/%(MONTH)s/' % {
-                  'YEAR': self.date.year,
-                  'MONTH': str(self.date.month).zfill(2) }
-
+            'YEAR': self.date.year,
+            'MONTH': str(self.date.month).zfill(2)}
 
     @property
     def path_regex(self):
         """Return the regex for the path"""
 
         try:
-            return self.monthly_build_list_regex + self.builds[self.build_index]
+            path = ''.join([self.monthly_build_list_regex,
+                            self.builds[self.build_index]])
+            return path
         except:
+            folder = ''.join([self.base_url, self.monthly_build_list_regex])
             raise NotFoundError("Specified sub folder cannot be found",
-                                    self.base_url + self.monthly_build_list_regex)
+                                folder)
 
 
 class DirectScraper(Scraper):
@@ -408,7 +412,6 @@ class DirectScraper(Scraper):
         self.url = url
 
         Scraper.__init__(self, *args, **kwargs)
-
 
     @property
     def target(self):
@@ -438,7 +441,6 @@ class ReleaseScraper(Scraper):
         return regex[self.platform] % {'APP': self.application,
                                        'EXT': self.extension}
 
-
     @property
     def path_regex(self):
         """Return the regex for the path"""
@@ -447,7 +449,6 @@ class ReleaseScraper(Scraper):
         return regex % {'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
                         'VERSION': self.version}
-
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
@@ -471,27 +472,29 @@ class ReleaseCandidateScraper(ReleaseScraper):
             self.builds = ['build%s' % build_number]
             self.build_index = 0
         else:
-            self.builds, self.build_index = self.get_build_info_for_version(self.version)
+            self.builds, self.build_index = self.get_build_info_for_version(
+                self.version)
 
         self.no_unsigned = no_unsigned
         self.unsigned = False
-
 
     def get_build_info_for_version(self, version, build_index=None):
         url = '/'.join([self.base_url, self.candidate_build_list_regex])
 
         print 'Retrieving list of candidate builds from %s' % url
-        parser = DirectoryParser(url, authentication=self.authentication)
+        parser = DirectoryParser(url, authentication=self.authentication,
+                                 timeout=self.timeout_network)
         if not parser.entries:
-            message = 'Folder for specific candidate builds at has not been found'
+            message = 'Folder for specific candidate builds at %s has not' \
+                'been found' % url
             raise NotFoundError(message, url)
 
-        # If no index has been given, set it to the last build of the given version.
+        # If no index has been given, set it to the last build of the given
+        # version.
         if build_index is None:
             build_index = len(parser.entries) - 1
 
         return (parser.entries, build_index)
-
 
     @property
     def candidate_build_list_regex(self):
@@ -500,8 +503,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
 
         # Regex for possible builds for the given date
         return r'nightly/%(VERSION)s-candidates/' % {
-                 'VERSION': self.version }
-
+            'VERSION': self.version}
 
     @property
     def path_regex(self):
@@ -514,18 +516,17 @@ class ReleaseCandidateScraper(ReleaseScraper):
                         'PLATFORM': self.platform_regex,
                         'UNSIGNED': "unsigned/" if self.unsigned else ""}
 
-
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
-        template = '%(APP)s-%(VERSION)s-%(BUILD)s.%(LOCALE)s.%(PLATFORM)s.%(EXT)s'
+        template = '%(APP)s-%(VERSION)s-%(BUILD)s.%(LOCALE)s.' \
+                   '%(PLATFORM)s.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'BUILD': self.builds[self.build_index],
                            'LOCALE': self.locale,
                            'PLATFORM': self.platform,
                            'EXT': self.extension}
-
 
     def download(self):
         """Download the specified file"""
@@ -541,7 +542,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
             if self.no_unsigned:
                 raise
             else:
-                print "Signed build has not been found. Falling back to unsigned build."
+                print "Signed build has not been found. Falling back to" \
+                      " unsigned build."
                 self.unsigned = True
                 Scraper.download(self)
 
@@ -565,7 +567,7 @@ class TinderboxScraper(Scraper):
         self.timestamp = None
 
         # Currently any time in RelEng is based on the Pacific time zone.
-        self.timezone = PacificTimezone();
+        self.timezone = PacificTimezone()
 
         # Internally we access builds via index
         if build_number is not None:
@@ -585,14 +587,15 @@ class TinderboxScraper(Scraper):
         # For localized builds we do not have to retrieve the list of builds
         # because only the last build is available
         if not self.locale_build:
-            self.builds, self.build_index = self.get_build_info(self.build_index)
-    
+            self.builds, self.build_index = self.get_build_info(
+                self.build_index)
+
             try:
                 self.timestamp = self.builds[self.build_index]
             except:
                 raise NotFoundError("Specified sub folder cannot be found",
-                                        self.base_url + self.monthly_build_list_regex)
-
+                                    self.base_url +
+                                    self.monthly_build_list_regex)
 
     @property
     def binary_regex(self):
@@ -612,16 +615,14 @@ class TinderboxScraper(Scraper):
                         'LOCALE': self.locale,
                         'EXT': self.extension}
 
-
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
         return '%(TIMESTAMP)s%(BRANCH)s%(DEBUG)s-%(NAME)s' % {
-                   'TIMESTAMP': self.timestamp + '-' if self.timestamp else '',
-                   'BRANCH': self.branch,
-                   'DEBUG': '-debug' if self.debug_build else '',
-                   'NAME': binary}
-
+            'TIMESTAMP': self.timestamp + '-' if self.timestamp else '',
+            'BRANCH': self.branch,
+            'DEBUG': '-debug' if self.debug_build else '',
+            'NAME': binary}
 
     @property
     def build_list_regex(self):
@@ -629,14 +630,16 @@ class TinderboxScraper(Scraper):
 
         regex = 'tinderbox-builds/%(BRANCH)s-%(PLATFORM)s%(L10N)s%(DEBUG)s'
 
-        return regex % {'BRANCH': self.branch,
-                        'PLATFORM': '' if self.locale_build else self.platform_regex,
-                        'L10N': 'l10n' if self.locale_build else '',
-                        'DEBUG': '-debug' if self.debug_build else ''}
-
+        return regex % {
+            'BRANCH': self.branch,
+            'PLATFORM': '' if self.locale_build else self.platform_regex,
+            'L10N': 'l10n' if self.locale_build else '',
+            'DEBUG': '-debug' if self.debug_build else ''}
 
     def date_matches(self, timestamp):
-        """Determines whether the timestamp date is equal to the argument date"""
+        """
+        Determines whether the timestamp date is equal to the argument date
+        """
 
         if self.date is None:
             return False
@@ -644,9 +647,8 @@ class TinderboxScraper(Scraper):
         timestamp = datetime.fromtimestamp(float(timestamp), self.timezone)
         if self.date.date() == timestamp.date():
             return True
-        
-        return False
 
+        return False
 
     @property
     def date_validation_regex(self):
@@ -654,19 +656,18 @@ class TinderboxScraper(Scraper):
 
         return r'^\d{4}-\d{1,2}-\d{1,2}$|^\d+$'
 
-
     def detect_platform(self):
         """Detect the current platform"""
 
         platform = Scraper.detect_platform(self)
 
-        # On OS X we have to special case the platform detection code and fallback
-        # to 64 bit builds for the en-US locale
-        if mozinfo.os == 'mac' and self.locale == 'en-US' and mozinfo.bits == 64:
+        # On OS X we have to special case the platform detection code and
+        # fallback to 64 bit builds for the en-US locale
+        if mozinfo.os == 'mac' and self.locale == 'en-US' and \
+                mozinfo.bits == 64:
             platform = "%s%d" % (mozinfo.os, mozinfo.bits)
 
         return platform
-
 
     def get_build_info(self, build_index=None):
         url = '/'.join([self.base_url, self.build_list_regex])
@@ -676,7 +677,8 @@ class TinderboxScraper(Scraper):
         # If a timestamp is given, retrieve just that build
         regex = '^' + self.timestamp + '$' if self.timestamp else r'^\d+$'
 
-        parser = DirectoryParser(url, authentication=self.authentication)
+        parser = DirectoryParser(url, authentication=self.authentication,
+                                 timeout=self.timeout_network)
         parser.entries = parser.filter(regex)
 
         # If date is given, retrieve the subset of builds on that date
@@ -693,7 +695,6 @@ class TinderboxScraper(Scraper):
 
         return (parser.entries, build_index)
 
-
     @property
     def path_regex(self):
         """Return the regex for the path"""
@@ -702,7 +703,6 @@ class TinderboxScraper(Scraper):
             return self.build_list_regex
 
         return '/'.join([self.build_list_regex, self.builds[self.build_index]])
-
 
     @property
     def platform_regex(self):
@@ -724,7 +724,7 @@ def cli():
     BUILD_TYPES = {'release': ReleaseScraper,
                    'candidate': ReleaseCandidateScraper,
                    'daily': DailyScraper,
-                   'tinderbox': TinderboxScraper }
+                   'tinderbox': TinderboxScraper}
 
     usage = 'usage: %prog [options]'
     parser = OptionParser(usage=usage, description=__doc__)
@@ -766,14 +766,14 @@ def cli():
     parser.add_option('--url',
                       dest='url',
                       metavar='URL',
-                      help='URL to download. Note: Reserved characters (such as &)\
-                           must be escaped or put in quotes otherwise CLI output\
-                           may be abnormal.')
+                      help='URL to download. Note: Reserved characters (such '
+                           'as &) must be escaped or put in quotes otherwise '
+                           'CLI output may be abnormal.')
     parser.add_option('--version', '-v',
                       dest='version',
                       metavar='VERSION',
-                      help='Version of the application to be used by release and\
-                            candidate builds, i.e. "3.6"')
+                      help='Version of the application to be used by release\
+                            and candidate builds, i.e. "3.6"')
     parser.add_option('--extension',
                       dest='extension',
                       metavar='EXTENSION',
@@ -796,17 +796,17 @@ def cli():
                            'the event of a failure, default: %default')
     parser.add_option('--retry-delay',
                       dest='retry_delay',
-                      default=10,
-                      type=int,
+                      default=10.,
+                      type=float,
                       metavar='RETRY_DELAY',
                       help='Amount of time (in seconds) to wait between retry '
                            'attempts, default: %default')
     parser.add_option('--timeout',
                       dest='timeout',
-                      default=180,
-                      type=int,
+                      default=180.,
+                      type=float,
                       metavar='TIMEOUT',
-                      help='Amount of time (in seconds) until download times '
+                      help='Amount of time (in seconds) until a download times '
                            'out, default: %default')
 
     # Option group for candidate builds
@@ -828,9 +828,9 @@ def cli():
                      metavar='BRANCH',
                      help='Name of the branch, default: "%default"')
     group.add_option('--build-id',
-                      dest='build_id',
-                      metavar='BUILD_ID',
-                      help='ID of the build to download')
+                     dest='build_id',
+                     metavar='BUILD_ID',
+                     help='ID of the build to download')
     group.add_option('--date',
                      dest='date',
                      metavar='DATE',
@@ -854,7 +854,8 @@ def cli():
     if not options.url \
        and not options.type in ['daily', 'tinderbox'] \
        and not options.version:
-        parser.error('The version of the application to download has not been specified.')
+        parser.error('The version of the application to download has not\
+            been specified.')
 
     # Instantiate scraper and download the build
     scraper_keywords = {'application': options.application,
@@ -867,20 +868,18 @@ def cli():
                         'retry_attempts': options.retry_attempts,
                         'retry_delay': options.retry_delay,
                         'timeout': options.timeout}
-    scraper_options = {'candidate': {
-                           'build_number': options.build_number,
-                           'no_unsigned': options.no_unsigned},
-                       'daily': {
-                           'branch': options.branch,
-                           'build_number': options.build_number,
-                           'build_id': options.build_id,
-                           'date': options.date},
-                       'tinderbox': {
-                           'branch': options.branch,
-                           'build_number': options.build_number,
-                           'date': options.date,
-                           'debug_build': options.debug_build}
-                       }
+    scraper_options = {
+        'candidate': {'build_number': options.build_number,
+                      'no_unsigned': options.no_unsigned},
+        'daily': {'branch': options.branch,
+                  'build_number': options.build_number,
+                  'build_id': options.build_id,
+                  'date': options.date},
+        'tinderbox': {'branch': options.branch,
+                      'build_number': options.build_number,
+                      'date': options.date,
+                      'debug_build': options.debug_build}
+    }
 
     kwargs = scraper_keywords.copy()
     kwargs.update(scraper_options.get(options.type, {}))
