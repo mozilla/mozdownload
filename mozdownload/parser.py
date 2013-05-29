@@ -18,7 +18,7 @@ class DirectoryParser(HTMLParser):
         self.timeout = timeout
 
         self.active_url = None
-        self.entries = [ ]
+        self.entries = []
 
         HTMLParser.__init__(self)
 
