@@ -318,6 +318,7 @@ class DailyScraper(Scraper):
                                           '%Y%m%d%H%M%S')
             self.builds, self.build_index = self.get_build_info_for_date(
                 self.date, has_time=True)
+
         Scraper.__init__(self, *args, **kwargs)
 
     def get_build_info_for_date(self, date, has_time=False, build_index=None):
@@ -342,7 +343,8 @@ class DailyScraper(Scraper):
             regex = r'.*%s.*' % date.strftime('%H-%M-%S')
             entries = parser.filter(regex)
             if not entries:
-                message = 'Folder for builds on %s has not been found' % self.date.strftime('%Y-%m-%d-%H-%M-%S')
+                message = 'Folder for builds on %s has not been found' % \
+                    self.date.strftime('%Y-%m-%d-%H-%M-%S')
                 raise NotFoundError(message, url)
             build_index = parser.entries.index(entries[0])
         else:
@@ -600,6 +602,7 @@ class TinderboxScraper(Scraper):
                 raise NotFoundError("Specified sub folder cannot be found",
                                     self.base_url +
                                     self.monthly_build_list_regex)
+
         Scraper.__init__(self, *args, **kwargs)
 
     @property
@@ -811,8 +814,8 @@ def cli():
                       default=180.,
                       type=float,
                       metavar='TIMEOUT',
-                      help='Amount of time (in seconds) until a download times '
-                           'out, default: %default')
+                      help='Amount of time (in seconds) until a download times'
+                           ' out, default: %default')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
