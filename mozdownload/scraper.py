@@ -100,6 +100,21 @@ class Scraper(object):
         self.application = application
         self.base_url = '/'.join([BASE_URL, self.application])
 
+        attempt = 0
+        while True:
+            attempt += 1
+            try:
+                self.get_build_info()
+                break
+            except (NotFoundError, requests.exceptions.RequestException), e:
+                if self.retry_attempts > 0:
+                    # Print only if multiple attempts are requested
+                    print "Build not found: '%s'" % e.message
+                    print "Retrying... (attempt %s)" % attempt
+                if attempt >= self.retry_attempts:
+                    raise
+                time.sleep(self.retry_delay)
+
     @property
     def binary(self):
         """Return the name of the build"""
@@ -177,6 +192,11 @@ class Scraper(object):
             self._target = os.path.join(self.directory,
                                         self.build_filename(self.binary))
         return self._target
+
+    def get_build_info(self):
+        """Returns additional build information in subclasses if necessary"""
+        # see Issue #81 for more information
+        pass
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
@@ -270,25 +290,33 @@ class DailyScraper(Scraper):
                  build_number=None, *args, **kwargs):
 
         self.branch = branch
+        self.build_id = build_id
+        self.d = date
+        self.build_number = build_number
+
+        Scraper.__init__(self, *args, **kwargs)
+
+    def get_build_info(self):
+        """Defines additional build information"""
 
         # Internally we access builds via index
-        if build_number is not None:
-            self.build_index = int(build_number) - 1
+        if self.build_number is not None:
+            self.build_index = int(self.build_number) - 1
         else:
             self.build_index = None
 
-        if build_id:
+        if self.build_id:
             # A build id has been specified. Split up its components so the
             # date and time can be extracted:
             # '20111212042025' -> '2011-12-12 04:20:25'
-            self.date = datetime.strptime(build_id, '%Y%m%d%H%M%S')
+            self.date = datetime.strptime(self.build_id, '%Y%m%d%H%M%S')
             self.builds, self.build_index = self.get_build_info_for_date(
                 self.date, has_time=True)
 
-        elif date:
+        elif self.d:
             # A date (without time) has been specified. Use its value and the
             # build index to find the requested build for that day.
-            self.date = datetime.strptime(date, '%Y-%m-%d')
+            self.date = datetime.strptime(self.d, '%Y-%m-%d')
             self.builds, self.build_index = self.get_build_info_for_date(
                 self.date, build_index=self.build_index)
 
@@ -318,8 +346,6 @@ class DailyScraper(Scraper):
                                           '%Y%m%d%H%M%S')
             self.builds, self.build_index = self.get_build_info_for_date(
                 self.date, has_time=True)
-
-        Scraper.__init__(self, *args, **kwargs)
 
     def get_build_info_for_date(self, date, has_time=False, build_index=None):
         url = '/'.join([self.base_url, self.monthly_build_list_regex])
@@ -472,18 +498,22 @@ class ReleaseCandidateScraper(ReleaseScraper):
 
     def __init__(self, build_number=None, no_unsigned=False, *args, **kwargs):
 
-        # Internally we access builds via index
-        if build_number is not None:
-            self.builds = ['build%s' % build_number]
-            self.build_index = 0
-        else:
-            self.builds, self.build_index = self.get_build_info_for_version(
-                self.version)
-
+        self.build_number = build_number
         self.no_unsigned = no_unsigned
         self.unsigned = False
 
         Scraper.__init__(self, *args, **kwargs)
+
+    def get_build_info(self):
+        "Defines additional build information"
+
+        # Internally we access builds via index
+        if self.build_number is not None:
+            self.builds = ['build%s' % self.build_number]
+            self.build_index = 0
+        else:
+            self.builds, self.build_index = self.get_build_info_for_version(
+                self.version)
 
     def get_build_info_for_version(self, version, build_index=None):
         url = '/'.join([self.base_url, self.candidate_build_list_regex])
@@ -862,8 +892,8 @@ def cli():
     if not options.url \
        and not options.type in ['daily', 'tinderbox'] \
        and not options.version:
-        parser.error('The version of the application to download has not\
-            been specified.')
+        parser.error('The version of the application to download has not' \
+            ' been specified.')
 
     # Instantiate scraper and download the build
     scraper_keywords = {'application': options.application,
