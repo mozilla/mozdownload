@@ -599,31 +599,40 @@ class TinderboxScraper(Scraper):
 
         self.branch = branch
         self.debug_build = debug_build
-        self.locale_build = self.locale != 'en-US'
         self.timestamp = None
-
+        self.build_number = build_number
+        self.d = date
         # Currently any time in RelEng is based on the Pacific time zone.
         self.timezone = PacificTimezone()
 
+        Scraper.__init__(self, *args, **kwargs)
+
+    def get_build_info(self):
+        "Defines additional build information"
+        
+        # Must define here not in __init__, otherwise breaks the code
+        self.locale_build = self.locale != 'en-US'
+
         # Internally we access builds via index
-        if build_number is not None:
-            self.build_index = int(build_number) - 1
+        if self.build_number is not None:
+            self.build_index = int(self.build_number) - 1
         else:
             self.build_index = None
 
-        if date is not None:
+        if self.d is not None:
             try:
-                self.date = datetime.fromtimestamp(float(date), self.timezone)
-                self.timestamp = date
+                self.date = datetime.fromtimestamp(float(self.d),
+                                                   self.timezone)
+                self.timestamp = self.d
             except:
-                self.date = datetime.strptime(date, '%Y-%m-%d')
+                self.date = datetime.strptime(self.d, '%Y-%m-%d')
         else:
             self.date = None
 
         # For localized builds we do not have to retrieve the list of builds
         # because only the last build is available
         if not self.locale_build:
-            self.builds, self.build_index = self.get_build_info(
+            self.builds, self.build_index = self.get_additional_build_info(
                 self.build_index)
 
             try:
@@ -632,8 +641,6 @@ class TinderboxScraper(Scraper):
                 raise NotFoundError("Specified sub folder cannot be found",
                                     self.base_url +
                                     self.monthly_build_list_regex)
-
-        Scraper.__init__(self, *args, **kwargs)
 
     @property
     def binary_regex(self):
@@ -707,7 +714,7 @@ class TinderboxScraper(Scraper):
 
         return platform
 
-    def get_build_info(self, build_index=None):
+    def get_additional_build_info(self, build_index=None):
         url = '/'.join([self.base_url, self.build_list_regex])
 
         print 'Retrieving list of builds from %s' % url
