@@ -79,7 +79,7 @@ class Scraper(object):
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
-                 timeout=180.):
+                 timeout=0.):
 
         # Private properties for caching
         self._target = None
@@ -245,7 +245,8 @@ class Scraper(object):
                         pbar.update(bytes_downloaded)
 
                         t1 = total_seconds(datetime.now() - start_time)
-                        if t1 >= self.timeout_download:
+                        if t1 >= self.timeout_download and \
+                                self.timeout_download != 0.:
                             raise TimeoutError
                 pbar.finish()
                 break
@@ -803,7 +804,7 @@ def cli():
                            'attempts, default: %default')
     parser.add_option('--timeout',
                       dest='timeout',
-                      default=180.,
+                      default=0.,
                       type=float,
                       metavar='TIMEOUT',
                       help='Amount of time (in seconds) until a download times '
