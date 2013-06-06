@@ -844,6 +844,11 @@ def cli():
                      dest='debug_build',
                      action="store_true",
                      help="Download a debug build")
+    group.add_option("--revision",
+                     dest='revision',
+                     help='Get a build based on the revision. This requires\
+                           the use of --branch too. If --branch is not passed\
+                           then mozilla-central is assumed')
     parser.add_option_group(group)
 
     # TODO: option group for nightly builds
@@ -856,6 +861,25 @@ def cli():
        and not options.version:
         parser.error('The version of the application to download has not\
             been specified.')
+
+    if options.revision:
+        URL_PLATFORM_FRAGMENTS = {'linux': 'linux',
+                              'linux64': 'linux64',
+                              'mac': 'macosx',
+                              'mac64': 'macosx64',
+                              'win32': 'win32',
+                              'win64': 'win64'}
+        buildjson = \
+            requests.get('https://tbpl.mozilla.org/php/getRevisionBuilds.php?branch=%s&rev=%s'\
+                         % (options.branch, options.revision)).json()
+        for buildinfo in buildjson:
+            if URL_PLATFORM_FRAGMENTS[options.platform] in buildinfo['log']:
+                options.build_id = buildinfo['log'].split('/')[8]
+                options.type = 'tinderbox'
+                break
+
+        if options.build_id is None:
+            parser.error('Can not get a build id, please check the arguments passed in')
 
     # Instantiate scraper and download the build
     scraper_keywords = {'application': options.application,
