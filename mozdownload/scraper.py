@@ -245,8 +245,8 @@ class Scraper(object):
                         pbar.update(bytes_downloaded)
 
                         t1 = total_seconds(datetime.now() - start_time)
-                        if t1 >= self.timeout_download and \
-                                self.timeout_download is not None:
+                        if self.timeout_download is not None and \
+                                t1 >= self.timeout_download:
                             raise TimeoutError
                 pbar.finish()
                 break
@@ -804,11 +804,10 @@ def cli():
                            'attempts, default: %default')
     parser.add_option('--timeout',
                       dest='timeout',
-                      default=None,
                       type=float,
                       metavar='TIMEOUT',
-                      help='Amount of time (in seconds) until a download times '
-                           'out, default: %default')
+                      help='Amount of time (in seconds) until a download times'
+                           ' out, default: %default')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",

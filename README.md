@@ -71,7 +71,6 @@ Run `mozdownload --help` for detailed information on the command line options.
                               Amount of time (in seconds) to wait between retry attempts,
                               default: 10
       --timeout=TIMEOUT       Amount of time (in seconds) until download times out, default: 0
-                              The value 0 will be ignored
 
       Candidate builds:       Extra options for candidate builds.
 
