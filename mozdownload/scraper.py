@@ -245,7 +245,7 @@ class Scraper(object):
                         pbar.update(bytes_downloaded)
 
                         t1 = total_seconds(datetime.now() - start_time)
-                        if self.timeout_download is not None and \
+                        if self.timeout_download and \
                                 t1 >= self.timeout_download:
                             raise TimeoutError
                 pbar.finish()
