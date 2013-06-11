@@ -195,7 +195,6 @@ class Scraper(object):
 
     def get_build_info(self):
         """Returns additional build information in subclasses if necessary"""
-        # see Issue #81 for more information
         pass
 
     def build_filename(self, binary):
@@ -291,7 +290,7 @@ class DailyScraper(Scraper):
 
         self.branch = branch
         self.build_id = build_id
-        self.d = date
+        self.temp_date = date
         self.build_number = build_number
 
         Scraper.__init__(self, *args, **kwargs)
@@ -313,10 +312,10 @@ class DailyScraper(Scraper):
             self.builds, self.build_index = self.get_build_info_for_date(
                 self.date, has_time=True)
 
-        elif self.d:
+        elif self.temp_date:
             # A date (without time) has been specified. Use its value and the
             # build index to find the requested build for that day.
-            self.date = datetime.strptime(self.d, '%Y-%m-%d')
+            self.date = datetime.strptime(self.temp_date, '%Y-%m-%d')
             self.builds, self.build_index = self.get_build_info_for_date(
                 self.date, build_index=self.build_index)
 
@@ -598,10 +597,11 @@ class TinderboxScraper(Scraper):
                  debug_build=False, *args, **kwargs):
 
         self.branch = branch
-        self.debug_build = debug_build
-        self.timestamp = None
         self.build_number = build_number
-        self.d = date
+        self.debug_build = debug_build
+        self.temp_date = date
+
+        self.timestamp = None
         # Currently any time in RelEng is based on the Pacific time zone.
         self.timezone = PacificTimezone()
 
@@ -609,9 +609,6 @@ class TinderboxScraper(Scraper):
 
     def get_build_info(self):
         "Defines additional build information"
-        
-        # Must define here not in __init__, otherwise breaks the code
-        self.locale_build = self.locale != 'en-US'
 
         # Internally we access builds via index
         if self.build_number is not None:
@@ -619,20 +616,21 @@ class TinderboxScraper(Scraper):
         else:
             self.build_index = None
 
-        if self.d is not None:
+        if self.temp_date is not None:
             try:
-                self.date = datetime.fromtimestamp(float(self.d),
+                self.date = datetime.fromtimestamp(float(self.temp_date),
                                                    self.timezone)
-                self.timestamp = self.d
+                self.timestamp = self.temp_date
             except:
-                self.date = datetime.strptime(self.d, '%Y-%m-%d')
+                self.date = datetime.strptime(self.temp_date, '%Y-%m-%d')
         else:
             self.date = None
 
+        self.locale_build = self.locale != 'en-US'
         # For localized builds we do not have to retrieve the list of builds
         # because only the last build is available
         if not self.locale_build:
-            self.builds, self.build_index = self.get_additional_build_info(
+            self.builds, self.build_index = self.get_build_info_for_date(
                 self.build_index)
 
             try:
@@ -714,7 +712,7 @@ class TinderboxScraper(Scraper):
 
         return platform
 
-    def get_additional_build_info(self, build_index=None):
+    def get_build_info_for_date(self, build_index=None):
         url = '/'.join([self.base_url, self.build_list_regex])
 
         print 'Retrieving list of builds from %s' % url
@@ -899,8 +897,8 @@ def cli():
     if not options.url \
        and not options.type in ['daily', 'tinderbox'] \
        and not options.version:
-        parser.error('The version of the application to download has not' \
-            ' been specified.')
+        parser.error('The version of the application to download has not'
+                     ' been specified.')
 
     # Instantiate scraper and download the build
     scraper_keywords = {'application': options.application,
