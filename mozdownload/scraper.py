@@ -290,7 +290,7 @@ class DailyScraper(Scraper):
 
         self.branch = branch
         self.build_id = build_id
-        self.temp_date = date
+        self.date = date
         self.build_number = build_number
 
         Scraper.__init__(self, *args, **kwargs)
@@ -312,10 +312,10 @@ class DailyScraper(Scraper):
             self.builds, self.build_index = self.get_build_info_for_date(
                 self.date, has_time=True)
 
-        elif self.temp_date:
+        elif self.date:
             # A date (without time) has been specified. Use its value and the
             # build index to find the requested build for that day.
-            self.date = datetime.strptime(self.temp_date, '%Y-%m-%d')
+            self.date = datetime.strptime(self.date, '%Y-%m-%d')
             self.builds, self.build_index = self.get_build_info_for_date(
                 self.date, build_index=self.build_index)
 
@@ -599,7 +599,7 @@ class TinderboxScraper(Scraper):
         self.branch = branch
         self.build_number = build_number
         self.debug_build = debug_build
-        self.temp_date = date
+        self.date = date
 
         self.timestamp = None
         # Currently any time in RelEng is based on the Pacific time zone.
@@ -616,13 +616,13 @@ class TinderboxScraper(Scraper):
         else:
             self.build_index = None
 
-        if self.temp_date is not None:
+        if self.date is not None:
             try:
-                self.date = datetime.fromtimestamp(float(self.temp_date),
+                self.date = datetime.fromtimestamp(float(self.date),
                                                    self.timezone)
-                self.timestamp = self.temp_date
+                self.timestamp = self.date
             except:
-                self.date = datetime.strptime(self.temp_date, '%Y-%m-%d')
+                self.date = datetime.strptime(self.date, '%Y-%m-%d')
         else:
             self.date = None
 
