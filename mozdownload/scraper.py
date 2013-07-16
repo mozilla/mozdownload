@@ -282,13 +282,13 @@ class Scraper(object):
         os.rename(tmp_file, self.target)
 
     def show_matching_builds(self, builds):
-        """Output the matching builds if there's more than one"""
-        if len(builds) > 1:
-            print 'Found %s builds: %s' % (
-                len(builds),
-                len(builds) > 10 and
-                ' ... '.join([', '.join(builds[:5]), ', '.join(builds[-5:])]) or
-                ', '.join(builds))
+        """Output the matching builds"""
+        print 'Found %s build%s: %s' % (
+            len(builds),
+            len(builds) > 1 and 's' or '',
+            len(builds) > 10 and
+            ' ... '.join([', '.join(builds[:5]), ', '.join(builds[-5:])]) or
+            ', '.join(builds))
 
 
 class DailyScraper(Scraper):
