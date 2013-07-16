@@ -446,7 +446,8 @@ class DirectScraper(Scraper):
 
     @property
     def target(self):
-        return urllib.splitquery(self.final_url)[0].rpartition('/')[-1]
+        filename = urllib.splitquery(self.final_url)[0].rpartition('/')[-1]
+        return os.path.join(self.directory, filename)
 
     @property
     def final_url(self):

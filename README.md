@@ -87,3 +87,7 @@ Run `mozdownload --help` for detailed information on the command line options.
 
       --debug-build           Download a debug build
 
+
+## Running the tests
+
+To run the tests, clone mozbase and run `./setup_development.py` to install the dependances. Then run `./test.py` from the top level directory.
