@@ -364,7 +364,8 @@ class DailyScraper(Scraper):
         """Return whether or not the given dir contains a build."""
 
         url = '/'.join([self.base_url, self.monthly_build_list_regex, dir])
-        parser = DirectoryParser(url)
+        parser = DirectoryParser(url, authentication=self.authentication,
+                                 timeout=self.timeout_network)
 
         pattern = re.compile(self.binary_regex, re.IGNORECASE)
         for entry in parser.entries:
