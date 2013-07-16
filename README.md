@@ -70,7 +70,7 @@ Run `mozdownload --help` for detailed information on the command line options.
       --retry-delay=RETRY_DELAY
                               Amount of time (in seconds) to wait between retry attempts,
                               default: 10
-      --timeout=TIMEOUT       Amount of time (in seconds) until download times out, default: 180
+      --timeout=TIMEOUT       Amount of time (in seconds) until download times out
 
       Candidate builds:       Extra options for candidate builds.
 
