@@ -283,6 +283,15 @@ class Scraper(object):
 
         os.rename(tmp_file, self.target)
 
+    def show_matching_builds(self, builds):
+        """Output the matching builds"""
+        print 'Found %s build%s: %s' % (
+            len(builds),
+            len(builds) > 1 and 's' or '',
+            len(builds) > 10 and
+            ' ... '.join([', '.join(builds[:5]), ', '.join(builds[-5:])]) or
+            ', '.join(builds))
+
 
 class DailyScraper(Scraper):
     """Class to download a daily build from the Mozilla server"""
@@ -363,6 +372,8 @@ class DailyScraper(Scraper):
             message = 'Folder for builds on %s has not been found' % \
                 self.date.strftime('%Y-%m-%d')
             raise NotFoundError(message, url)
+
+        self.show_matching_builds(parser.entries)
 
         if has_time:
             # If a time is included in the date, use it to determine the
@@ -527,6 +538,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
             message = 'Folder for specific candidate builds at %s has not' \
                 'been found' % url
             raise NotFoundError(message, url)
+
+        self.show_matching_builds(parser.entries)
 
         # If no index has been given, set it to the last build of the given
         # version.
@@ -734,6 +747,8 @@ class TinderboxScraper(Scraper):
         if not parser.entries:
             message = 'No builds have been found'
             raise NotFoundError(message, url)
+
+        self.show_matching_builds(parser.entries)
 
         # If no index has been given, set it to the last build of the day.
         if build_index is None:
