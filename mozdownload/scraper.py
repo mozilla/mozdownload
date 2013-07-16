@@ -13,6 +13,7 @@ import requests
 import sys
 import time
 import urllib
+from urlparse import urlparse
 
 import mozinfo
 
@@ -446,9 +447,8 @@ class DirectScraper(Scraper):
 
     @property
     def target(self):
-        from urlparse import urlparse
         target = urlparse(self.final_url)
-        return target.path.rpartition('/')[-1] or target.netloc
+        return target.path.rpartition('/')[-1] or target.hostname
 
     @property
     def final_url(self):
