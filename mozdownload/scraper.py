@@ -281,6 +281,15 @@ class Scraper(object):
 
         os.rename(tmp_file, self.target)
 
+    def show_matching_builds(self, builds):
+        """Output the matching builds if there's more than one"""
+        if len(builds) > 1:
+            print 'Found %s builds: %s' % (
+                len(builds),
+                len(builds) > 10 and
+                ' ... '.join([', '.join(builds[:5]), ', '.join(builds[-5:])]) or
+                ', '.join(builds))
+
 
 class DailyScraper(Scraper):
     """Class to download a daily build from the Mozilla server"""
@@ -362,12 +371,7 @@ class DailyScraper(Scraper):
                 self.date.strftime('%Y-%m-%d')
             raise NotFoundError(message, url)
 
-        if len(parser.entries) > 1:
-            print 'Found %s builds: %s' % (
-                len(parser.entries),
-                len(parser.entries) > 10 and
-                ' ... '.join([', '.join(parser.entries[:5]), ', '.join(parser.entries[-5:])]) or
-                ', '.join(parser.entries))
+        self.show_matching_builds(parser.entries)
 
         if has_time:
             # If a time is included in the date, use it to determine the
@@ -532,12 +536,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
                 'been found' % url
             raise NotFoundError(message, url)
 
-        if len(parser.entries) > 1:
-            print 'Found %s builds: %s' % (
-                len(parser.entries),
-                len(parser.entries) > 10 and
-                ' ... '.join([', '.join(parser.entries[:5]), ', '.join(parser.entries[-5:])]) or
-                ', '.join(parser.entries))
+        self.show_matching_builds(parser.entries)
 
         # If no index has been given, set it to the last build of the given
         # version.
@@ -746,12 +745,7 @@ class TinderboxScraper(Scraper):
             message = 'No builds have been found'
             raise NotFoundError(message, url)
 
-        if len(parser.entries) > 1:
-            print 'Found %s builds: %s' % (
-                len(parser.entries),
-                len(parser.entries) > 10 and
-                ' ... '.join([', '.join(parser.entries[:5]), ', '.join(parser.entries[-5:])]) or
-                ', '.join(parser.entries))
+        self.show_matching_builds(parser.entries)
 
         # If no index has been given, set it to the last build of the day.
         if build_index is None:
