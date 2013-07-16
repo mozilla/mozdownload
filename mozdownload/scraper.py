@@ -447,10 +447,8 @@ class DirectScraper(Scraper):
     @property
     def target(self):
         from urlparse import urlparse
-        target = urlparse(self.final_url).path.rpartition('/')[-1]
-        if not target:
-            raise NotFoundError('There is no file to be downloaded', self.final_url)
-        return target
+        target = urlparse(self.final_url)
+        return target.path.rpartition('/')[-1] or target.netloc
 
     @property
     def final_url(self):
