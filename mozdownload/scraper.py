@@ -13,6 +13,7 @@ import requests
 import sys
 import time
 import urllib
+from urlparse import urlparse
 
 import mozinfo
 
@@ -79,7 +80,7 @@ class Scraper(object):
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
-                 timeout=180.):
+                 timeout=None):
 
         # Private properties for caching
         self._target = None
@@ -99,6 +100,21 @@ class Scraper(object):
         # build the base URL
         self.application = application
         self.base_url = '/'.join([BASE_URL, self.application])
+
+        attempt = 0
+        while True:
+            attempt += 1
+            try:
+                self.get_build_info()
+                break
+            except (NotFoundError, requests.exceptions.RequestException), e:
+                if self.retry_attempts > 0:
+                    # Print only if multiple attempts are requested
+                    print "Build not found: '%s'" % e.message
+                    print "Retrying... (attempt %s)" % attempt
+                if attempt >= self.retry_attempts:
+                    raise
+                time.sleep(self.retry_delay)
 
     @property
     def binary(self):
@@ -178,6 +194,10 @@ class Scraper(object):
                                         self.build_filename(self.binary))
         return self._target
 
+    def get_build_info(self):
+        """Returns additional build information in subclasses if necessary"""
+        pass
+
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
@@ -245,7 +265,8 @@ class Scraper(object):
                         pbar.update(bytes_downloaded)
 
                         t1 = total_seconds(datetime.now() - start_time)
-                        if t1 >= self.timeout_download:
+                        if self.timeout_download and \
+                                t1 >= self.timeout_download:
                             raise TimeoutError
                 pbar.finish()
                 break
@@ -262,6 +283,15 @@ class Scraper(object):
 
         os.rename(tmp_file, self.target)
 
+    def show_matching_builds(self, builds):
+        """Output the matching builds"""
+        print 'Found %s build%s: %s' % (
+            len(builds),
+            len(builds) > 1 and 's' or '',
+            len(builds) > 10 and
+            ' ... '.join([', '.join(builds[:5]), ', '.join(builds[-5:])]) or
+            ', '.join(builds))
+
 
 class DailyScraper(Scraper):
     """Class to download a daily build from the Mozilla server"""
@@ -269,27 +299,34 @@ class DailyScraper(Scraper):
     def __init__(self, branch='mozilla-central', build_id=None, date=None,
                  build_number=None, *args, **kwargs):
 
-        Scraper.__init__(self, *args, **kwargs)
         self.branch = branch
+        self.build_id = build_id
+        self.date = date
+        self.build_number = build_number
+
+        Scraper.__init__(self, *args, **kwargs)
+
+    def get_build_info(self):
+        """Defines additional build information"""
 
         # Internally we access builds via index
-        if build_number is not None:
-            self.build_index = int(build_number) - 1
+        if self.build_number is not None:
+            self.build_index = int(self.build_number) - 1
         else:
             self.build_index = None
 
-        if build_id:
+        if self.build_id:
             # A build id has been specified. Split up its components so the
             # date and time can be extracted:
             # '20111212042025' -> '2011-12-12 04:20:25'
-            self.date = datetime.strptime(build_id, '%Y%m%d%H%M%S')
+            self.date = datetime.strptime(self.build_id, '%Y%m%d%H%M%S')
             self.builds, self.build_index = self.get_build_info_for_date(
                 self.date, has_time=True)
 
-        elif date:
+        elif self.date:
             # A date (without time) has been specified. Use its value and the
             # build index to find the requested build for that day.
-            self.date = datetime.strptime(date, '%Y-%m-%d')
+            self.date = datetime.strptime(self.date, '%Y-%m-%d')
             self.builds, self.build_index = self.get_build_info_for_date(
                 self.date, build_index=self.build_index)
 
@@ -336,11 +373,18 @@ class DailyScraper(Scraper):
                 self.date.strftime('%Y-%m-%d')
             raise NotFoundError(message, url)
 
+        self.show_matching_builds(parser.entries)
+
         if has_time:
             # If a time is included in the date, use it to determine the
             # build's index
             regex = r'.*%s.*' % date.strftime('%H-%M-%S')
-            build_index = parser.entries.index(parser.filter(regex)[0])
+            entries = parser.filter(regex)
+            if not entries:
+                message = 'Folder for builds on %s has not been found' % \
+                    self.date.strftime('%Y-%m-%d-%H-%M-%S')
+                raise NotFoundError(message, url)
+            build_index = parser.entries.index(entries[0])
         else:
             # If no index has been given, set it to the last build of the day.
             if build_index is None:
@@ -415,7 +459,8 @@ class DirectScraper(Scraper):
 
     @property
     def target(self):
-        return urllib.splitquery(self.final_url)[0].rpartition('/')[-1]
+        target = urlparse(self.final_url)
+        return target.path.rpartition('/')[-1] or target.hostname
 
     @property
     def final_url(self):
@@ -465,18 +510,23 @@ class ReleaseCandidateScraper(ReleaseScraper):
     """Class to download a release candidate build from the Mozilla server"""
 
     def __init__(self, build_number=None, no_unsigned=False, *args, **kwargs):
+
+        self.build_number = build_number
+        self.no_unsigned = no_unsigned
+        self.unsigned = False
+
         Scraper.__init__(self, *args, **kwargs)
 
+    def get_build_info(self):
+        "Defines additional build information"
+
         # Internally we access builds via index
-        if build_number is not None:
-            self.builds = ['build%s' % build_number]
+        if self.build_number is not None:
+            self.builds = ['build%s' % self.build_number]
             self.build_index = 0
         else:
             self.builds, self.build_index = self.get_build_info_for_version(
                 self.version)
-
-        self.no_unsigned = no_unsigned
-        self.unsigned = False
 
     def get_build_info_for_version(self, version, build_index=None):
         url = '/'.join([self.base_url, self.candidate_build_list_regex])
@@ -488,6 +538,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
             message = 'Folder for specific candidate builds at %s has not' \
                 'been found' % url
             raise NotFoundError(message, url)
+
+        self.show_matching_builds(parser.entries)
 
         # If no index has been given, set it to the last build of the given
         # version.
@@ -559,35 +611,42 @@ class TinderboxScraper(Scraper):
 
     def __init__(self, branch='mozilla-central', build_number=None, date=None,
                  debug_build=False, *args, **kwargs):
-        Scraper.__init__(self, *args, **kwargs)
 
         self.branch = branch
+        self.build_number = build_number
         self.debug_build = debug_build
-        self.locale_build = self.locale != 'en-US'
-        self.timestamp = None
+        self.date = date
 
+        self.timestamp = None
         # Currently any time in RelEng is based on the Pacific time zone.
         self.timezone = PacificTimezone()
 
+        Scraper.__init__(self, *args, **kwargs)
+
+    def get_build_info(self):
+        "Defines additional build information"
+
         # Internally we access builds via index
-        if build_number is not None:
-            self.build_index = int(build_number) - 1
+        if self.build_number is not None:
+            self.build_index = int(self.build_number) - 1
         else:
             self.build_index = None
 
-        if date is not None:
+        if self.date is not None:
             try:
-                self.date = datetime.fromtimestamp(float(date), self.timezone)
-                self.timestamp = date
+                self.date = datetime.fromtimestamp(float(self.date),
+                                                   self.timezone)
+                self.timestamp = self.date
             except:
-                self.date = datetime.strptime(date, '%Y-%m-%d')
+                self.date = datetime.strptime(self.date, '%Y-%m-%d')
         else:
             self.date = None
 
+        self.locale_build = self.locale != 'en-US'
         # For localized builds we do not have to retrieve the list of builds
         # because only the last build is available
         if not self.locale_build:
-            self.builds, self.build_index = self.get_build_info(
+            self.builds, self.build_index = self.get_build_info_for_index(
                 self.build_index)
 
             try:
@@ -669,7 +728,7 @@ class TinderboxScraper(Scraper):
 
         return platform
 
-    def get_build_info(self, build_index=None):
+    def get_build_info_for_index(self, build_index=None):
         url = '/'.join([self.base_url, self.build_list_regex])
 
         print 'Retrieving list of builds from %s' % url
@@ -688,6 +747,8 @@ class TinderboxScraper(Scraper):
         if not parser.entries:
             message = 'No builds have been found'
             raise NotFoundError(message, url)
+
+        self.show_matching_builds(parser.entries)
 
         # If no index has been given, set it to the last build of the day.
         if build_index is None:
@@ -803,11 +864,10 @@ def cli():
                            'attempts, default: %default')
     parser.add_option('--timeout',
                       dest='timeout',
-                      default=180.,
                       type=float,
                       metavar='TIMEOUT',
-                      help='Amount of time (in seconds) until a download times '
-                           'out, default: %default')
+                      help='Amount of time (in seconds) until a download times'
+                           ' out')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
@@ -854,8 +914,8 @@ def cli():
     if not options.url \
        and not options.type in ['daily', 'tinderbox'] \
        and not options.version:
-        parser.error('The version of the application to download has not\
-            been specified.')
+        parser.error('The version of the application to download has not'
+                     ' been specified.')
 
     # Instantiate scraper and download the build
     scraper_keywords = {'application': options.application,
