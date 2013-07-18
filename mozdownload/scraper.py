@@ -80,7 +80,7 @@ class Scraper(object):
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
-                 timeout=None):
+                 timeout=None, install=False):
 
         # Private properties for caching
         self._target = None
@@ -96,6 +96,8 @@ class Scraper(object):
         self.retry_delay = retry_delay
         self.timeout_download = timeout
         self.timeout_network = 60.
+
+        self.install = install
 
         # build the base URL
         self.application = application
@@ -282,6 +284,18 @@ class Scraper(object):
                 time.sleep(self.retry_delay)
 
         os.rename(tmp_file, self.target)
+        return self.target
+
+    def install_package(self, src):
+        import string
+        import mozinstall
+        # check if package is zip, exe, tar.gz, tar.bz2 or dmg file
+        # run mozinstall
+        if src.lower().endswith(('.zip', '.exe', '.tar.gz', 'tar.bz2', 'dmg')):
+            print "Now installing. Please wait...\n"
+            mozinstall.install(src, self.directory)
+        else:
+            raise TypeError("File cannot be installed. Is not of type .zip, .exe, .tar.gz, tar.bz2 or dmg")
 
     def show_matching_builds(self, builds):
         """Output the matching builds"""
@@ -802,6 +816,13 @@ def cli():
                       metavar='DIRECTORY',
                       help='Target directory for the download, default: '
                            'current working directory')
+    parser.add_option('--install', '-I',
+                      action="store_true",
+                      dest='install',
+                      default=False,
+                      metavar='INSTALL',
+                      help='If True subsequent installation, default: '
+                           'False')
     parser.add_option('--build-number',
                       dest='build_number',
                       type="int",
@@ -923,6 +944,7 @@ def cli():
                         'platform': options.platform,
                         'version': options.version,
                         'directory': options.directory,
+                        'install': options.install,
                         'extension': options.extension,
                         'authentication': (options.username, options.password),
                         'retry_attempts': options.retry_attempts,
@@ -949,7 +971,10 @@ def cli():
     else:
         build = BUILD_TYPES[options.type](**kwargs)
 
-    build.download()
+    package = build.download()
+
+    if options.install:
+        build.install_package(package)
 
 if __name__ == "__main__":
     cli()
