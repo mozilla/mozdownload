@@ -111,10 +111,11 @@ class Scraper(object):
                 if self.retry_attempts > 0:
                     # Print only if multiple attempts are requested
                     print "Build not found: '%s'" % e.message
+                    print 'Will retry in %s seconds...' % self.retry_delay
+                    time.sleep(self.retry_delay)
                     print "Retrying... (attempt %s)" % attempt
                 if attempt >= self.retry_attempts:
                     raise
-                time.sleep(self.retry_delay)
 
     @property
     def binary(self):
@@ -148,10 +149,11 @@ class Scraper(object):
                 if self.retry_attempts > 0:
                     # Print only if multiple attempts are requested
                     print "Build not found: '%s'" % e.message
+                    print 'Will retry in %s seconds...' % self.retry_delay
+                    time.sleep(self.retry_delay)
                     print "Retrying... (attempt %s)" % attempt
                 if attempt >= self.retry_attempts:
                     raise
-                time.sleep(self.retry_delay)
 
         return self._binary
 
@@ -276,6 +278,8 @@ class Scraper(object):
                 if self.retry_attempts > 0:
                     # Print only if multiple attempts are requested
                     print 'Download failed: "%s"' % e.message
+                    print 'Will retry in %s seconds...' % self.retry_delay
+                    time.sleep(self.retry_delay)
                     print "Retrying... (attempt %s)" % attempt
                 if attempt >= self.retry_attempts:
                     raise
