@@ -653,11 +653,11 @@ class TinderboxScraper(Scraper):
 
         if self.date is not None:
             try:
+                self.date = datetime.strptime(self.date, '%Y-%m-%d')
+            except:
+                self.timestamp = self.date
                 self.date = datetime.fromtimestamp(float(self.date),
                                                    self.timezone)
-                self.timestamp = self.date
-            except:
-                self.date = datetime.strptime(self.date, '%Y-%m-%d')
         else:
             self.date = None
 
