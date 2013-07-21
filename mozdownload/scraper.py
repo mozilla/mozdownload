@@ -80,7 +80,7 @@ class Scraper(object):
     """Generic class to download an application from the Mozilla server"""
 
     def __init__(self, directory, version, platform=None,
-                 application='firefox', locale='en-US', extension=None,
+                 application='firefox', locale=None, extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
                  is_stub_installer=False, timeout=None, log_level='INFO',
                  base_url=BASE_URL):
@@ -90,7 +90,12 @@ class Scraper(object):
         self._binary = None
 
         self.directory = directory
-        self.locale = locale
+        if not locale and application == 'b2g':
+            self.locale = 'multi'
+        elif not locale:
+            self.locale = 'en-US'
+        else:
+            self.locale = locale
         self.platform = platform or self.detect_platform()
         self.version = version
         self.extension = extension or DEFAULT_FILE_EXTENSIONS[self.platform]
@@ -107,6 +112,9 @@ class Scraper(object):
         # build the base URL
         self.application = application
         self.base_url = urljoin(base_url, self.application)
+
+        if self.application == 'b2g' and self.platform == 'win32':
+            self.extension = 'zip'
 
         attempt = 0
         while True:
@@ -426,6 +434,7 @@ class DailyScraper(Scraper):
             'DATE': date.strftime('%Y-%m-%d'),
             'BRANCH': self.branch,
             'L10N': '' if self.locale == 'en-US' else '(-l10n)?'}
+
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
 
@@ -499,6 +508,12 @@ class DailyScraper(Scraper):
         try:
             path = urljoin(self.monthly_build_list_regex,
                            self.builds[self.build_index])
+            if self.application == 'b2g' and self.locale != 'multi':
+                path = urljoin(self.monthly_build_list_regex,
+                                self.builds[self.build_index], self.locale)
+            else:
+                path = urljoin(self.monthly_build_list_regex,
+                                self.builds[self.build_index])
             return path
         except:
             folder = urljoin(self.base_url, self.monthly_build_list_regex)
@@ -862,9 +877,9 @@ def cli():
                            'and tinderbox builds)')
     parser.add_option('--locale', '-l',
                       dest='locale',
-                      default='en-US',
                       metavar='LOCALE',
-                      help='Locale of the application, default: "%default"')
+                      help='Locale of the application, default: en-US except '
+                           'if application is b2g (default: multi')
     parser.add_option('--platform', '-p',
                       dest='platform',
                       choices=PLATFORM_FRAGMENTS.keys(),
