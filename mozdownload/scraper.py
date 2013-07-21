@@ -33,7 +33,7 @@ applications.
 mozdownload version: %(version)s
 """ % {'version': version}
 
-APPLICATIONS = ['b2g', 'firefox', 'thunderbird']
+APPLICATIONS = ('b2g', 'firefox', 'thunderbird')
 
 # Base URL for the path to all builds
 BASE_URL = 'https://ftp.mozilla.org/pub/mozilla.org'
@@ -54,6 +54,14 @@ DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
                            'mac64': 'dmg',
                            'win32': 'exe',
                            'win64': 'exe'}
+
+MULTI_LOCALE_APPLICATIONS = ('b2g')
+
+
+class NotSupportedError(Exception):
+    """Exception for a build not being supported"""
+    def __init__(self, message):
+        Exception.__init__(self, message)
 
 
 class NotFoundError(Exception):
@@ -80,7 +88,7 @@ class Scraper(object):
     """Generic class to download an application from the Mozilla server"""
 
     def __init__(self, directory, version, platform=None,
-                 application='firefox', locale='en-US', extension=None,
+                 application='firefox', locale=None, extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
                  is_stub_installer=False, timeout=None, log_level='INFO',
                  base_url=BASE_URL):
@@ -90,10 +98,16 @@ class Scraper(object):
         self._binary = None
 
         self.directory = directory
-        self.locale = locale
+        if not locale:
+            if application in MULTI_LOCALE_APPLICATIONS:
+                self.locale = 'multi'
+            else:
+                self.locale = 'en-US'
+        else:
+            self.locale = locale
+
         self.platform = platform or self.detect_platform()
         self.version = version
-        self.extension = extension or DEFAULT_FILE_EXTENSIONS[self.platform]
         self.authentication = authentication
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
@@ -107,6 +121,16 @@ class Scraper(object):
         # build the base URL
         self.application = application
         self.base_url = urljoin(base_url, self.application)
+
+        if extension:
+            self.extension = extension
+        else:
+            if self.application in MULTI_LOCALE_APPLICATIONS and \
+                    self.platform in ('win32', 'win64'):
+                # builds for MULTI_LOCALE_APPLICATIONS only exist in zip
+                self.extension = 'zip'
+            else:
+                self.extension = DEFAULT_FILE_EXTENSIONS[self.platform]
 
         attempt = 0
         while True:
@@ -402,6 +426,11 @@ class DailyScraper(Scraper):
         """Return whether or not the given dir contains a build."""
 
         url = urljoin(self.base_url, self.monthly_build_list_regex, dir)
+
+        if self.application in MULTI_LOCALE_APPLICATIONS \
+                and self.locale != 'multi':
+            url = urljoin(url, self.locale)
+
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
 
@@ -425,7 +454,8 @@ class DailyScraper(Scraper):
         regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s$' % {
             'DATE': date.strftime('%Y-%m-%d'),
             'BRANCH': self.branch,
-            'L10N': '' if self.locale == 'en-US' else '(-l10n)?'}
+            # ensure to select the correct subfolder for localized builds
+            'L10N': '' if self.locale in ('en-US', 'multi') else '(-l10n)?'}
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
 
@@ -499,6 +529,9 @@ class DailyScraper(Scraper):
         try:
             path = urljoin(self.monthly_build_list_regex,
                            self.builds[self.build_index])
+            if self.application in MULTI_LOCALE_APPLICATIONS \
+                    and self.locale != 'multi':
+                path = urljoin(path, self.locale)
             return path
         except:
             folder = urljoin(self.base_url, self.monthly_build_list_regex)
@@ -862,9 +895,9 @@ def cli():
                            'and tinderbox builds)')
     parser.add_option('--locale', '-l',
                       dest='locale',
-                      default='en-US',
                       metavar='LOCALE',
-                      help='Locale of the application, default: "%default"')
+                      help='Locale of the application, default: "en-US or '
+                           'multi"')
     parser.add_option('--platform', '-p',
                       dest='platform',
                       choices=PLATFORM_FRAGMENTS.keys(),
@@ -1018,6 +1051,10 @@ def cli():
     kwargs = scraper_keywords.copy()
     kwargs.update(scraper_options.get(options.type, {}))
 
+    if options.application == 'b2g' and \
+            options.type in ('candidate', 'release'):
+        error_msg = "%s build is not yet supported for B2G" % options.type
+        raise NotSupportedError(error_msg)
     if options.url:
         build = DirectScraper(options.url, **kwargs)
     else:
