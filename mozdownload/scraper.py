@@ -88,17 +88,12 @@ class Scraper(object):
         # Private properties for caching
         self._target = None
         self._binary = None
+        self._extension = extension
 
         self.directory = directory
-        if not locale and application == 'b2g':
-            self.locale = 'multi'
-        elif not locale:
-            self.locale = 'en-US'
-        else:
-            self.locale = locale
+        self.locale = locale or application == 'b2g' and 'multi' or 'en-US'
         self.platform = platform or self.detect_platform()
         self.version = version
-        self.extension = extension or DEFAULT_FILE_EXTENSIONS[self.platform]
         self.authentication = authentication
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
@@ -112,9 +107,6 @@ class Scraper(object):
         # build the base URL
         self.application = application
         self.base_url = urljoin(base_url, self.application)
-
-        if self.application == 'b2g' and self.platform == 'win32':
-            self.extension = 'zip'
 
         attempt = 0
         while True:
@@ -191,6 +183,19 @@ class Scraper(object):
         """Return the regex for the binary filename"""
 
         raise NotImplementedError(sys._getframe(0).f_code.co_name)
+
+    @property
+    def extension(self):
+        """
+        Returns the default file extension according to platform and
+        application .
+        """
+
+        if self.application == 'b2g' and self.platform == 'win32':
+            self._extension = 'zip'
+        else:
+            self._extension = DEFAULT_FILE_EXTENSIONS[self.platform]
+        return self._extension
 
     @property
     def final_url(self):
@@ -409,7 +414,10 @@ class DailyScraper(Scraper):
     def is_build_dir(self, dir):
         """Return whether or not the given dir contains a build."""
 
-        url = urljoin(self.base_url, self.monthly_build_list_regex, dir)
+        if self.application in ('b2g') and self.locale != 'multi':
+            url = urljoin(self.base_url, self.monthly_build_list_regex, dir, self.locale)
+        else:
+            url = urljoin(self.base_url, self.monthly_build_list_regex, dir)
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
 
@@ -430,11 +438,9 @@ class DailyScraper(Scraper):
         self.logger.info('Retrieving list of builds from %s' % url)
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
-        regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s$' % {
+        regex = r'%(DATE)s-(\d+-)+%(BRANCH)s(-l10n)?$' % {
             'DATE': date.strftime('%Y-%m-%d'),
-            'BRANCH': self.branch,
-            'L10N': '' if self.locale == 'en-US' else '(-l10n)?'}
-
+            'BRANCH': self.branch}
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
 
@@ -514,9 +520,11 @@ class DailyScraper(Scraper):
             else:
                 path = urljoin(self.monthly_build_list_regex,
                                 self.builds[self.build_index])
+            if self.application == 'b2g' and self.locale != 'multi':
+                path = urljoin(path, self.locale)
             return path
         except:
-            folder = urljoin(self.base_url, self.monthly_build_list_regex)
+            folder = '/'.join([self.base_url, self.monthly_build_list_regex])
             raise NotFoundError("Specified sub folder cannot be found",
                                 folder)
 
@@ -878,8 +886,8 @@ def cli():
     parser.add_option('--locale', '-l',
                       dest='locale',
                       metavar='LOCALE',
-                      help='Locale of the application, default: en-US except '
-                           'if application is b2g (default: multi')
+                      help='Locale of the application, default: "multi" '
+                           '(b2g) else en-US')
     parser.add_option('--platform', '-p',
                       dest='platform',
                       choices=PLATFORM_FRAGMENTS.keys(),
