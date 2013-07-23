@@ -405,7 +405,7 @@ class DailyScraper(Scraper):
                 message = 'Folder for builds on %s has not been found' % \
                     self.date.strftime('%Y-%m-%d-%H-%M-%S')
                 raise NotFoundError(message, url)
-            self.show_matching_builds([entries[0]])
+            self.show_matching_builds(entries)
             build_index = parser.entries.index(entries[0])
         else:
             # If no index has been given, set it to the last build of the day.
