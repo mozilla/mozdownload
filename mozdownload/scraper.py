@@ -652,9 +652,12 @@ class TinderboxScraper(Scraper):
             self.build_index = None
 
         if self.date is not None:
+            # try/except acts like if/else clause
+            # if cli does not supply --date, then timestamp is used
             try:
                 self.date = datetime.strptime(self.date, '%Y-%m-%d')
             except:
+                # self.timestamp needed as string in get_build_info_for_index
                 self.timestamp = self.date
                 self.date = datetime.fromtimestamp(float(self.date),
                                                    self.timezone)
