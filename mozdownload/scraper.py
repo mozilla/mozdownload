@@ -652,17 +652,12 @@ class TinderboxScraper(Scraper):
             self.build_index = None
 
         if self.date is not None:
-            # try/except acts like if/else clause
-            # if cli does not supply --date, then timestamp is used
             try:
+                # date is provided in the format 2013-07-23
                 self.date = datetime.strptime(self.date, '%Y-%m-%d')
             except:
-                # self.timestamp needed as string in get_build_info_for_index
+                # date is provided as a unix timestamp
                 self.timestamp = self.date
-                self.date = datetime.fromtimestamp(float(self.date),
-                                                   self.timezone)
-        else:
-            self.date = None
 
         self.locale_build = self.locale != 'en-US'
         # For localized builds we do not have to retrieve the list of builds
@@ -670,13 +665,6 @@ class TinderboxScraper(Scraper):
         if not self.locale_build:
             self.builds, self.build_index = self.get_build_info_for_index(
                 self.build_index)
-
-            try:
-                self.timestamp = self.builds[self.build_index]
-            except:
-                raise NotFoundError("Specified sub folder cannot be found",
-                                    self.base_url +
-                                    self.monthly_build_list_regex)
 
     @property
     def binary_regex(self):
@@ -754,16 +742,16 @@ class TinderboxScraper(Scraper):
         url = '/'.join([self.base_url, self.build_list_regex])
 
         print 'Retrieving list of builds from %s' % url
-
-        # If a timestamp is given, retrieve just that build
-        regex = '^' + self.timestamp + '$' if self.timestamp else r'^\d+$'
-
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
-        parser.entries = parser.filter(regex)
+        parser.entries = parser.filter(r'^\d+$')
 
-        # If date is given, retrieve the subset of builds on that date
-        if self.date is not None:
+        if self.timestamp:
+            # If a timestamp is given, retrieve just that build
+            parser.entries = self.timestamp in parser.entries and [self.timestamp]
+
+        elif self.date:
+            # If date is given, retrieve the subset of builds on that date
             parser.entries = filter(self.date_matches, parser.entries)
 
         if not parser.entries:
