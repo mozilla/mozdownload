@@ -406,7 +406,8 @@ class DailyScraper(Scraper):
                     self.date.strftime('%Y-%m-%d-%H-%M-%S')
                 raise NotFoundError(message, url)
             self.show_matching_builds(entries)
-            build_index = parser.entries.index(entries[0])
+            if build_index is None:
+                build_index = len(parser.entries) - 1
         else:
             # If no index has been given, set it to the last build of the day.
             self.show_matching_builds(parser.entries)
