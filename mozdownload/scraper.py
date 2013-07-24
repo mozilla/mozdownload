@@ -400,19 +400,16 @@ class DailyScraper(Scraper):
             # If a time is included in the date, use it to determine the
             # build's index
             regex = r'.*%s.*' % date.strftime('%H-%M-%S')
-            entries = parser.filter(regex)
-            if not entries:
+            parser.entries = parser.filter(regex)
+            if not parser.entries:
                 message = 'Folder for builds on %s has not been found' % \
                     self.date.strftime('%Y-%m-%d-%H-%M-%S')
                 raise NotFoundError(message, url)
-            self.show_matching_builds(entries)
-            if build_index is None:
-                build_index = len(entries) - 1
-        else:
-            # If no index has been given, set it to the last build of the day.
-            self.show_matching_builds(parser.entries)
-            if build_index is None:
-                build_index = len(parser.entries) - 1
+
+        # If no index has been given, set it to the last build of the day.
+        self.show_matching_builds(parser.entries)
+        if build_index is None:
+            build_index = len(parser.entries) - 1
 
         return (parser.entries, build_index)
 
