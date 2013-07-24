@@ -1,3 +1,18 @@
+1.8 / 2013-07-25
+================
+  * Multiple matches are shown when specifying a unique build ID (#102)
+  * Filter potential build dirs by whether or not they contain a build (#11)
+  * Download the file specified with --url to the correct target folder (#105)
+  * Add pause between initial attempt and first retry (#106)
+  * Output details of matching builds (#17)
+  * Fallback to hostname if downloading from a URL without specifying a path (#89)
+  * Removed default timeout for downloads (#91)
+  * Fixed issues with --retry-attempts when download fails (#81)
+  * Add timeout for network requests (#86)
+  * Comply with PEP 8 (#63)
+  * Disable caching when fetching build information (#13)
+  * Add support for python requests (#83)
+
 1.7.2 / 2013-05-13
 ==================
   *  Add support for hidden release candidate builds (#77)
