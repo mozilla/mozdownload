@@ -55,6 +55,8 @@ DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
                            'win32': 'exe',
                            'win64': 'exe'}
 
+MULTI_LOCALE_APPLICATIONS = ('b2g')
+
 
 class NotFoundError(Exception):
     """Exception for a resource not being found (e.g. no logs)"""
@@ -91,7 +93,12 @@ class Scraper(object):
         self._extension = extension
 
         self.directory = directory
-        self.locale = locale or application == 'b2g' and 'multi' or 'en-US'
+        if not locale and application == 'b2g':
+            self.locale = 'multi'
+        elif not locale:
+            self.locale = 'en-US'
+        else:
+            self.locale = locale
         self.platform = platform or self.detect_platform()
         self.version = version
         self.authentication = authentication
@@ -186,16 +193,16 @@ class Scraper(object):
 
     @property
     def extension(self):
-        """
-        Returns the default file extension according to platform and
-        application .
-        """
-
-        if self.application == 'b2g' and self.platform == 'win32':
-            self._extension = 'zip'
+        """Returns default file extension according to platform/application."""
+        if self._extension is not None:
+            return self._extension
         else:
-            self._extension = DEFAULT_FILE_EXTENSIONS[self.platform]
-        return self._extension
+            if self.application in MULTI_LOCALE_APPLICATIONS and \
+                    self.platform in ('win32', 'win64'):
+                extension = 'zip'
+            else:
+                extension = DEFAULT_FILE_EXTENSIONS[self.platform]
+            return extension
 
     @property
     def final_url(self):
@@ -414,10 +421,12 @@ class DailyScraper(Scraper):
     def is_build_dir(self, dir):
         """Return whether or not the given dir contains a build."""
 
-        if self.application in ('b2g') and self.locale != 'multi':
-            url = urljoin(self.base_url, self.monthly_build_list_regex, dir, self.locale)
-        else:
-            url = urljoin(self.base_url, self.monthly_build_list_regex, dir)
+        url = urljoin(self.base_url, self.monthly_build_list_regex, dir)
+
+        if self.application in MULTI_LOCALE_APPLICATIONS \
+                and self.locale != 'multi':
+            url = urljoin(url, self.locale)
+
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
 
@@ -514,7 +523,8 @@ class DailyScraper(Scraper):
         try:
             path = urljoin(self.monthly_build_list_regex,
                            self.builds[self.build_index])
-            if self.application == 'b2g' and self.locale != 'multi':
+            if self.application in MULTI_LOCALE_APPLICATIONS \
+                    and self.locale != 'multi':
                 path = urljoin(self.monthly_build_list_regex,
                                 self.builds[self.build_index], self.locale)
             else:
@@ -887,7 +897,7 @@ def cli():
                       dest='locale',
                       metavar='LOCALE',
                       help='Locale of the application, default: "multi" '
-                           '(b2g) else en-US')
+                           '(b2g) else "en-US"')
     parser.add_option('--platform', '-p',
                       dest='platform',
                       choices=PLATFORM_FRAGMENTS.keys(),
