@@ -18,8 +18,6 @@ mozdownload -a firefox -t release -p win32 -v 21.0 -l es-ES
 ```
 
 ### Candidates
-* unable to find unsigned candidate builds #108
-
 ```
 mozdownload -t candidate -p win32 -v 21.0
 mozdownload -a firefox -t candidate -p linux -v 21.0
@@ -33,9 +31,6 @@ mozdownload -a firefox -t candidate -p win32 -v 21.0 --build-number=1
 ```
 
 ### Daily
-* some folders do not contain builds #11
-* multiple matches are shown when specifying a unique build id #102
-
 ```
 mozdownload -t daily -p win32
 mozdownload -t daily -p win32 --branch=mozilla-central
@@ -68,7 +63,7 @@ mozdownload -a firefox -t tinderbox -p linux64 --branch=mozilla-central
 mozdownload -a firefox -t tinderbox -p mac64 --branch=mozilla-central
 mozdownload -a firefox -t tinderbox -p win32 --branch=mozilla-central
 mozdownload -a firefox -t tinderbox -p win64 --branch=mozilla-central
-mozdownload -a firefox -t tinderbox -p win32 --branch=mozilla-central --extension=tests.zip
+mozdownload -a firefox -t tinderbox -p linux --branch=mozilla-central --extension=txt
 mozdownload -a firefox -t tinderbox -p win32 --branch=mozilla-central --debug-build
 mozdownload -a firefox -t tinderbox -p win32 --branch=mozilla-central -d firefox-tinderbox-builds
 mozdownload -a firefox -t tinderbox -p win32 --branch=mozilla-central -l el
@@ -95,8 +90,6 @@ mozdownload -a thunderbird -t release -p win32 -v 16.0 -l es-ES
 ```
 
 ### Candidates
-* unable to find unsigned candidate builds #108
-
 ```
 mozdownload -a thunderbird -t candidate -p linux -v 10.0.5esr
 mozdownload -a thunderbird -t candidate -p linux64 -v 10.0.5esr
@@ -109,26 +102,23 @@ mozdownload -a thunderbird -t candidate -p win32 -v 10.0.5esr --build-number=1
 ```
 
 ### Daily
-* multiple matches are shown when specifying a unique build id #102
-
 ```
 mozdownload -a thunderbird -t daily -p linux --branch=comm-central
 mozdownload -a thunderbird -t daily -p linux64 --branch=comm-central
 mozdownload -a thunderbird -t daily -p mac --branch=comm-central
 mozdownload -a thunderbird -t daily -p win32 --branch=comm-central
 mozdownload -a thunderbird -t daily -p win64 --branch=comm-central
-mozdownload -a thunderbird -t daily -p win32 --branch=comm-central --extension=tests.zip
+mozdownload -a thunderbird -t daily -p linux --branch=comm-central --extension=txt
 mozdownload -a thunderbird -t daily -p win32 --branch=comm-central -d thunderbird-daily-builds
 mozdownload -a thunderbird -t daily -p win32 --branch=comm-central -l it
 mozdownload -a thunderbird -t daily -p win32 --branch=comm-central -l sv-SE
-mozdownload -a thunderbird -t daily -p win32 --branch=comm-central --build-id=20130710030204
+mozdownload -a thunderbird -t daily -p win32 --branch=comm-central --build-id=20130710110153
 mozdownload -a thunderbird -t daily -p win32 --branch=comm-central --date=2013-07-10
-mozdownload -a thunderbird -t daily -p win32 --branch=comm-central --date=2013-07-10 --build-number=1
+mozdownload -a thunderbird -t daily -p mac --branch=comm-central --date=2013-07-10 --build-number=1
 mozdownload -a thunderbird -t daily -p win32 --branch=comm-aurora
 ```
 
 ### Tinderbox
-* some folders do not contain builds #11
 * unable to download tinderbox builds by timestamp #103
 
 ```
@@ -137,14 +127,14 @@ mozdownload -a thunderbird -t tinderbox -p linux64 --branch=comm-central
 mozdownload -a thunderbird -t tinderbox -p mac64 --branch=comm-central
 mozdownload -a thunderbird -t tinderbox -p win32 --branch=comm-central
 mozdownload -a thunderbird -t tinderbox -p win64 --branch=comm-central
-mozdownload -a thunderbird -t tinderbox -p win32 --branch=comm-central --extension=tests.zip
+mozdownload -a thunderbird -t tinderbox -p linux --branch=comm-central --extension=txt
 mozdownload -a thunderbird -t tinderbox -p win32 --branch=comm-central --debug-build
 mozdownload -a thunderbird -t tinderbox -p win32 --branch=comm-central -d thunderbird-tinderbox-builds
 mozdownload -a thunderbird -t tinderbox -p win32 --branch=comm-central -l el
 mozdownload -a thunderbird -t tinderbox -p win32 --branch=comm-central -l pt-PT
-mozdownload -a thunderbird -t tinderbox -p win32 --branch=comm-central --date=2013-07-17
-mozdownload -a thunderbird -t tinderbox -p win32 --branch=comm-central --date=2013-07-17 --build-number=1
-mozdownload -a thunderbird -t tinderbox -p win32 --branch=comm-central --date=1374084645
+mozdownload -a thunderbird -t tinderbox -p win32 --branch=comm-central --date=2013-07-24
+mozdownload -a thunderbird -t tinderbox -p win32 --branch=comm-central --date=2013-07-24 --build-number=1
+mozdownload -a thunderbird -t tinderbox -p win32 --branch=comm-central --date=1374660125
 mozdownload -a thunderbird -t tinderbox -p win32 --branch=comm-aurora
 ```
 
@@ -177,7 +167,6 @@ mozdownload -a b2g -t daily -p win32 --branch=mozilla-central --build-id=2013070
 Not currently supported
 
 ## URL
-* downloaded url resources are not placed in target directory #105
 * need test case for password protected URL resource [bug 895835](https://bugzilla.mozilla.org/show_bug.cgi?id=895835)
 
 ```
@@ -187,8 +176,6 @@ mozdownload --url=https://mozqa.com/index.html --username=username --password=pa
 ```
 
 ## Errors
-* first retry attempt does not pause for the retry delay #106
-
 ```
 mozdownload -a firefox -t daily -p win32 --branch=invalid
 mozdownload -a firefox -t daily -p win32 --branch=invalid --retry-attempts=2
@@ -198,5 +185,5 @@ mozdownload -a firefox -t release -p win32 -v invalid --retry-attempts=2
 mozdownload -a firefox -t release -p win32 -v invalid --retry-attempts=2 --retry-delay=0
 mozdownload -a firefox -t release -p win32 -v latest --timeout=0.1
 mozdownload -a firefox -t release -p win32 -v latest --timeout=0.1 --retry-attempts=2
-mozdownload -a firefox -t release -p win32 -v latest --timeout=0.1 --retry-delay=0
+mozdownload -a firefox -t release -p win32 -v latest --timeout=0.1 --retry-attempts=2 --retry-delay=0
 ```
