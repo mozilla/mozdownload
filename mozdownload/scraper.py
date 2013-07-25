@@ -747,7 +747,7 @@ class TinderboxScraper(Scraper):
         parser.entries = parser.filter(r'^\d+$')
 
         if self.timestamp:
-            # If a timestamp is given, retrieve just that build
+            # If a timestamp is given, retrieve the folder with the timestamp as name
             parser.entries = self.timestamp in parser.entries and [self.timestamp]
 
         elif self.date:
