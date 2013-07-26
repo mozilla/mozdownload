@@ -116,8 +116,15 @@ class Scraper(object):
                     print 'Will retry in %s seconds...' % self.retry_delay
                     time.sleep(self.retry_delay)
                     print "Retrying... (attempt %s)" % attempt
+
+                has_response = hasattr(e, 'response')
+
                 if attempt >= self.retry_attempts:
-                    raise
+                    if has_response and e.response.status_code == 404:
+                        message = "Specified build has not been found"
+                        raise NotFoundError(message, e.response.url)
+                    else:
+                        raise
 
     @property
     def binary(self):
@@ -154,8 +161,15 @@ class Scraper(object):
                     print 'Will retry in %s seconds...' % self.retry_delay
                     time.sleep(self.retry_delay)
                     print "Retrying... (attempt %s)" % attempt
+
+                has_response = hasattr(e, 'response')
+
                 if attempt >= self.retry_attempts:
-                    raise
+                    if has_response and e.response.status_code == 404:
+                        message = "Specified build has not been found"
+                        raise NotFoundError(message, self.path)
+                    else:
+                        raise
 
         return self._binary
 
