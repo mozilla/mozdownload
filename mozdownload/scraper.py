@@ -13,6 +13,7 @@ import requests
 import sys
 import time
 import urllib
+import locale
 from urlparse import urlparse
 
 import mozinfo
@@ -183,6 +184,16 @@ class Scraper(object):
         raise NotImplementedError(sys._getframe(0).f_code.co_name)
 
     @property
+    def locales_path(self):
+        return '/'.join([self.base_url, self.locales_path_regex])
+
+    @property
+    def locales_path_regex(self):
+        """Return the regex for the path to the build"""
+
+        raise NotImplementedError(sys._getframe(0).f_code.co_name)
+
+    @property
     def platform_regex(self):
         """Return the platform fragment of the URL"""
 
@@ -215,6 +226,28 @@ class Scraper(object):
             return mozinfo.os
         else:
             return "%s%d" % (mozinfo.os, mozinfo.bits)
+
+    def locale_regex(self, locale):
+        restricted_names = ['xpi']
+        return (locale not in restricted_names)
+
+    @property
+    def available_locales(self):
+        attempts = 0
+        while True:
+            try:
+                parser = DirectoryParser(self.locales_path,
+                                 authentication=self.authentication,
+                                 timeout=self.timeout_network)
+
+                return parser.filter(self.locale_regex)
+
+            except (requests.exceptions.RequestException, TimeoutError),e:
+                if attempts >= self.retry_attempts:
+                    raise
+            attempts += 1
+        return locales
+
 
     def download(self):
         """Download the specified file"""
@@ -288,6 +321,13 @@ class Scraper(object):
 
         os.rename(tmp_file, self.target)
 
+    def show_locales(self):
+        try:
+            locales = self.available_locales
+            print 'Available locales:', ', '.join(locales)
+        except NotImplementedError:
+            print 'Show locales is not available for this type of build.'
+
     def show_matching_builds(self, builds):
         """Output the matching builds"""
         print 'Found %s build%s: %s' % (
@@ -351,7 +391,7 @@ class DailyScraper(Scraper):
                 raise NotFoundError(message, url)
 
             # Read status file for the platform, retrieve build id,
-            # and convert to a date
+             # and convert to a date
             headers = {'Cache-Control': 'max-age=0'}
             r = requests.get(url + parser.entries[-1],
                              auth=self.authentication, headers=headers)
@@ -362,10 +402,10 @@ class DailyScraper(Scraper):
             self.builds, self.build_index = self.get_build_info_for_date(
                 self.date, has_time=True)
 
-    def is_build_dir(self, dir):
+    def is_build_dir(self, path):
         """Return whether or not the given dir contains a build."""
 
-        url = urljoin(self.base_url, self.monthly_build_list_regex, dir)
+        url = urljoin(self.base_url, self.monthly_build_list_regex, path)
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
 
@@ -505,6 +545,12 @@ class ReleaseScraper(Scraper):
                  'win64': r'^%(APP)s.*\.%(EXT)s$'}
         return regex[self.platform] % {'APP': self.application,
                                        'EXT': self.extension}
+
+    @property
+    def locales_path_regex(self):
+        regex = r'releases/%(VERSION)s/%(PLATFORM)s'
+        return regex % {'PLATFORM': self.platform_regex,
+                        'VERSION': self.version}
 
     @property
     def path_regex(self):
@@ -873,6 +919,10 @@ def cli():
                       metavar='TIMEOUT',
                       help='Amount of time (in seconds) until a download times'
                            ' out')
+    parser.add_option('--show-locales',
+                      dest='show_locales',
+                      action='store_true',
+                      help='Displays a list of available locales for a build')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
@@ -954,7 +1004,10 @@ def cli():
     else:
         build = BUILD_TYPES[options.type](**kwargs)
 
-    build.download()
+    if options.show_locales:
+        build.show_locales()
+    else:
+        build.download()
 
 if __name__ == "__main__":
     cli()
