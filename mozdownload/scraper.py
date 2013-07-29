@@ -227,9 +227,10 @@ class Scraper(object):
         else:
             return "%s%d" % (mozinfo.os, mozinfo.bits)
 
-    def locale_regex(self, locale):
+    def filter_locales(self, parser):
         restricted_names = ['xpi']
-        return (locale not in restricted_names)
+        is_locale = lambda l: l not in restricted_names
+        return set(parser.filter(is_locale))
 
     @property
     def available_locales(self):
@@ -240,7 +241,7 @@ class Scraper(object):
                                  authentication=self.authentication,
                                  timeout=self.timeout_network)
 
-                return parser.filter(self.locale_regex)
+                return self.filter_locales(parser)
 
             except (requests.exceptions.RequestException, TimeoutError),e:
                 if attempts >= self.retry_attempts:
@@ -506,6 +507,22 @@ class DailyScraper(Scraper):
             folder = urljoin(self.base_url, self.monthly_build_list_regex)
             raise NotFoundError("Specified sub folder cannot be found",
                                 folder)
+
+    @property
+    def locales_path_regex(self):
+        return self.path_regex
+
+    def filter_locales(self, parser):
+        regex = r'^%(APP)s-.*\.([\w\-]+)\.%(PLATFORM)s'
+        regex = regex % {'APP': self.application,
+                        'PLATFORM': self.platform_regex}
+        pattern = re.compile(regex, re.IGNORECASE)
+        locales = set()
+        for entry in parser.entries:
+            match = pattern.match(entry)
+            if match:
+                locales.add(match.groups()[0])
+        return locales
 
 
 class DirectScraper(Scraper):
@@ -829,6 +846,9 @@ class TinderboxScraper(Scraper):
 
         return PLATFORM_FRAGMENTS[self.platform]
 
+    @property
+    def locales_regex(self):
+        pass
 
 def cli():
     """Main function for the downloader"""
