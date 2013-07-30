@@ -232,6 +232,20 @@ class Scraper(object):
         is_locale = lambda l: l not in restricted_names
         return set(parser.filter(is_locale))
 
+
+    def extract_locales(self, parser):
+        regex = r'^%(APP)s-([\w\d\-\.]+)\.([\w\-]+).(%(PLATFORMS)s)'
+        regex = regex % {'APP': self.application,
+                        'PLATFORMS': '|'.join(PLATFORM_FRAGMENTS.values())}
+        pattern = re.compile(regex, re.IGNORECASE)
+        locales = set()
+        for entry in parser.entries:
+            match = pattern.match(entry)
+            
+            if match:
+                locales.add(match.groups()[1])
+        return locales
+
     @property
     def available_locales(self):
         attempts = 0
@@ -321,6 +335,17 @@ class Scraper(object):
                 time.sleep(self.retry_delay)
 
         os.rename(tmp_file, self.target)
+
+    def download_all_locales(self):
+        try:
+            for locale in self.available_locales:
+                print "Downloading build for locale:", locale
+                self.locale = locale
+                self._target = None
+                self._binary = None
+                self.download()
+        except NotImplementedError:
+            print 'Download of all locales is not available for this type of build.'
 
     def show_locales(self):
         try:
@@ -513,16 +538,7 @@ class DailyScraper(Scraper):
         return self.path_regex
 
     def filter_locales(self, parser):
-        regex = r'^%(APP)s-.*\.([\w\-]+)\.%(PLATFORM)s'
-        regex = regex % {'APP': self.application,
-                        'PLATFORM': self.platform_regex}
-        pattern = re.compile(regex, re.IGNORECASE)
-        locales = set()
-        for entry in parser.entries:
-            match = pattern.match(entry)
-            if match:
-                locales.add(match.groups()[0])
-        return locales
+        return self.extract_locales(parser)
 
 
 class DirectScraper(Scraper):
@@ -846,9 +862,6 @@ class TinderboxScraper(Scraper):
 
         return PLATFORM_FRAGMENTS[self.platform]
 
-    @property
-    def locales_regex(self):
-        pass
 
 def cli():
     """Main function for the downloader"""
@@ -1026,6 +1039,8 @@ def cli():
 
     if options.show_locales:
         build.show_locales()
+    elif options.locale.lower() == 'all':
+        build.download_all_locales()
     else:
         build.download()
 
