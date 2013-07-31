@@ -13,7 +13,6 @@ import requests
 import sys
 import time
 import urllib
-import locale
 from urlparse import urlparse
 
 import mozinfo
@@ -241,7 +240,6 @@ class Scraper(object):
         locales = set()
         for entry in parser.entries:
             match = pattern.match(entry)
-            
             if match:
                 locales.add(match.groups()[1])
         return locales
