@@ -870,7 +870,7 @@ def cli():
                               'win32': 'win32',
                               'win64': 'win64'}
         buildjson = \
-            requests.get('https://tbpl.mozilla.org/php/getRevisionBuilds.php?branch=%s&rev=%s'\
+            requests.get('https://tbpl.mozilla.org/php/getRevisionBuilds.php?branch=%s&rev=%s'
                          % (options.branch, options.revision)).json()
         for buildinfo in buildjson:
             if URL_PLATFORM_FRAGMENTS[options.platform] in buildinfo['log']:
@@ -879,7 +879,7 @@ def cli():
                 break
 
         if options.build_id is None:
-            parser.error('Can not get a build id, please check the arguments passed in')
+            NotFoundError('Can not get a build id, please check the arguments passed in')
 
     # Instantiate scraper and download the build
     scraper_keywords = {'application': options.application,
