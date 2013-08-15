@@ -81,7 +81,7 @@ class Scraper(object):
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
-                 timeout=None, debugLevel=mozlog.DEBUG):
+                 timeout=None, debugLevel=mozlog.INFO):
 
         # Private properties for caching
         self._target = None
@@ -114,8 +114,8 @@ class Scraper(object):
             except (NotFoundError, requests.exceptions.RequestException), e:
                 if self.retry_attempts > 0:
                     # Log only if multiple attempts are requested
-                    self.logger.error("Build not found: '%s'" % e.message)
-                    self.logger.debug('Will retry in %s seconds...' % self.retry_delay)
+                    self.logger.info("Build not found: '%s'" % e.message)
+                    self.logger.info('Will retry in %s seconds...' % self.retry_delay)
                     time.sleep(self.retry_delay)
                     self.logger.info("Retrying... (attempt %s)" % attempt)
                 if attempt >= self.retry_attempts:
@@ -152,8 +152,8 @@ class Scraper(object):
             except (NotFoundError, requests.exceptions.RequestException), e:
                 if self.retry_attempts > 0:
                     # Log only if multiple attempts are requested
-                    self.logger.error("Build not found: '%s'" % e.message)
-                    self.logger.debug('Will retry in %s seconds...' % self.retry_delay)
+                    self.logger.info("Build not found: '%s'" % e.message)
+                    self.logger.info('Will retry in %s seconds...' % self.retry_delay)
                     time.sleep(self.retry_delay)
                     self.logger.info("Retrying... (attempt %s)" % attempt)
                 if attempt >= self.retry_attempts:
@@ -281,8 +281,8 @@ class Scraper(object):
                     os.remove(tmp_file)
                 if self.retry_attempts > 0:
                     # Log only if multiple attempts are requested
-                    self.logger.error('Download failed: "%s"' % e.message)
-                    self.logger.debug('Will retry in %s seconds...' % self.retry_delay)
+                    self.logger.info('Download failed: "%s"' % e.message)
+                    self.logger.info('Will retry in %s seconds...' % self.retry_delay)
                     time.sleep(self.retry_delay)
                     self.logger.info("Retrying... (attempt %s)" % attempt)
                 if attempt >= self.retry_attempts:
@@ -305,7 +305,7 @@ class DailyScraper(Scraper):
     """Class to download a daily build from the Mozilla server"""
 
     def __init__(self, branch='mozilla-central', build_id=None, date=None,
-                 build_number=None, debugLevel=mozlog.DEBUG, *args, **kwargs):
+                 build_number=None, *args, **kwargs):
 
         self.branch = branch
         self.build_id = build_id
@@ -610,7 +610,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
             # Try to download the signed candidate build
             Scraper.download(self)
         except NotFoundError, e:
-            self.logger.error(str(e))
+            self.logger.info(str(e))
 
             # If the signed build cannot be downloaded and unsigned builds are
             # allowed, try to download the unsigned build instead
