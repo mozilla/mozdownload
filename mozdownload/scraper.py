@@ -52,8 +52,8 @@ DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
                            'linux64': 'tar.bz2',
                            'mac': 'dmg',
                            'mac64': 'dmg',
-                           'win32': 'exe',
-                           'win64': 'exe'}
+                           'win32': r'(\installer.)?exe',
+                           'win64': r'(\installer.)?exe'}
 
 
 class NotFoundError(Exception):
