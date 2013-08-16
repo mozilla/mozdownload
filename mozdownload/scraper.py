@@ -312,7 +312,7 @@ class DailyScraper(Scraper):
         self.date = date
         self.build_number = build_number
 
-        Scraper.__init__(self, debugLevel, *args, **kwargs)
+        Scraper.__init__(self, *args, **kwargs)
 
     def get_build_info(self):
         """Defines additional build information"""
