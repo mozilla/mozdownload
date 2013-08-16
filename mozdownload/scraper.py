@@ -14,6 +14,7 @@ import sys
 import time
 import urllib
 from urlparse import urlparse
+from logging import Formatter, StreamHandler
 
 import mozinfo
 import mozlog
@@ -54,6 +55,35 @@ DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
                            'win32': 'exe',
                            'win64': 'exe'}
 
+
+class MozFormatter(Formatter):
+    """
+    MozFormatter class used to standardize formatting
+    If a different format is desired, this can be explicitly
+    overriden with the log handler's setFormatter() method
+    """
+    level_length = 0
+    max_level_length = len('TEST-START')
+
+    def __init__(self):
+        """
+        Formatter.__init__ has fmt and datefmt parameters that won't have
+        any affect on a MozFormatter instance. Bypass it to avoid confusion.
+        """
+
+    def format(self, record):
+        record.message = record.getMessage()
+
+        # Handles padding so record levels align nicely
+        if len(record.levelname) > self.level_length:
+            pad = 0
+            if len(record.levelname) <= self.max_level_length:
+                self.level_length = len(record.levelname)
+        else:
+            pad = self.level_length - len(record.levelname) + 1
+        sep = ':'.rjust(pad)
+        fmt = '[%(levelname)s]' + sep + ' %(message)s'
+        return fmt % record.__dict__
 
 class NotFoundError(Exception):
     """Exception for a resource not being found (e.g. no logs)"""
@@ -98,7 +128,9 @@ class Scraper(object):
         self.timeout_download = timeout
         self.timeout_network = 60.
 
-        self.logger = mozlog.getLogger('Scraper')
+        handler = StreamHandler()
+        handler.setFormatter(MozFormatter())
+        self.logger = mozlog.getLogger('Scraper', handler)
         self.logger.setLevel(debugLevel);
 
         # build the base URL
