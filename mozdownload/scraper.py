@@ -81,7 +81,7 @@ class MozFormatter(Formatter):
                 self.level_length = len(record.levelname)
         else:
             pad = self.level_length - len(record.levelname) + 1
-        sep = ':'.rjust(pad)
+        sep = ''.rjust(pad)
         fmt = '[%(levelname)s]' + sep + ' %(message)s'
         return fmt % record.__dict__
 
