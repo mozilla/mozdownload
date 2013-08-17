@@ -63,7 +63,6 @@ class MozFormatter(Formatter):
     overriden with the log handler's setFormatter() method
     """
     level_length = 0
-    max_level_length = len('TEST-START')
 
     def __init__(self):
         """
@@ -77,8 +76,7 @@ class MozFormatter(Formatter):
         # Handles padding so record levels align nicely
         if len(record.levelname) > self.level_length:
             pad = 0
-            if len(record.levelname) <= self.max_level_length:
-                self.level_length = len(record.levelname)
+            self.level_length = len(record.levelname)
         else:
             pad = self.level_length - len(record.levelname) + 1
         sep = ''.rjust(pad)
@@ -111,7 +109,7 @@ class Scraper(object):
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
-                 timeout=None, debugLevel=mozlog.INFO):
+                 timeout=None, log_level=mozlog.INFO):
 
         # Private properties for caching
         self._target = None
@@ -130,8 +128,8 @@ class Scraper(object):
 
         handler = StreamHandler()
         handler.setFormatter(MozFormatter())
-        self.logger = mozlog.getLogger('Scraper', handler)
-        self.logger.setLevel(debugLevel);
+        self.logger = mozlog.getLogger(self.__class__.__name__, handler)
+        self.logger.setLevel(log_level);
 
         # build the base URL
         self.application = application
@@ -146,7 +144,7 @@ class Scraper(object):
             except (NotFoundError, requests.exceptions.RequestException), e:
                 if self.retry_attempts > 0:
                     # Log only if multiple attempts are requested
-                    self.logger.info("Build not found: '%s'" % e.message)
+                    self.logger.warning("Build not found: '%s'" % e.message)
                     self.logger.info('Will retry in %s seconds...' % self.retry_delay)
                     time.sleep(self.retry_delay)
                     self.logger.info("Retrying... (attempt %s)" % attempt)
@@ -184,7 +182,7 @@ class Scraper(object):
             except (NotFoundError, requests.exceptions.RequestException), e:
                 if self.retry_attempts > 0:
                     # Log only if multiple attempts are requested
-                    self.logger.info("Build not found: '%s'" % e.message)
+                    self.logger.warning("Build not found: '%s'" % e.message)
                     self.logger.info('Will retry in %s seconds...' % self.retry_delay)
                     time.sleep(self.retry_delay)
                     self.logger.info("Retrying... (attempt %s)" % attempt)
@@ -313,7 +311,7 @@ class Scraper(object):
                     os.remove(tmp_file)
                 if self.retry_attempts > 0:
                     # Log only if multiple attempts are requested
-                    self.logger.info('Download failed: "%s"' % e.message)
+                    self.logger.warning('Download failed: "%s"' % e.message)
                     self.logger.info('Will retry in %s seconds...' % self.retry_delay)
                     time.sleep(self.retry_delay)
                     self.logger.info("Retrying... (attempt %s)" % attempt)
@@ -649,8 +647,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
             if self.no_unsigned:
                 raise
             else:
-                self.logger.info("Signed build has not been found. Falling back to" \
-                                 " unsigned build.")
+                self.logger.warning("Signed build has not been found. Falling back to" \
+                                    " unsigned build.")
                 self.unsigned = True
                 Scraper.download(self)
 
