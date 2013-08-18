@@ -79,19 +79,17 @@ class Scraper(object):
     """Generic class to download an application from the Mozilla server"""
 
     def __init__(self, directory, version, platform=None,
-                 application='firefox', locale='en-US', extension=None,
-                 authentication=None, retry_attempts=0, retry_delay=10.,
-                 timeout=None):
+                 application='firefox', extension=None,  authentication=None,
+                 retry_attempts=0, retry_delay=10., timeout=None):
 
         # Private properties for caching
         self._target = None
         self._binary = None
 
         self.directory = directory
-        self.locale = locale
-        self.platform = platform or self.detect_platform()
         self.version = version
-        self.extension = extension or DEFAULT_FILE_EXTENSIONS[self.platform]
+        self.platform = platform
+        self.extension = extension
         self.authentication = authentication
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
@@ -102,21 +100,6 @@ class Scraper(object):
         self.application = application
         self.base_url = urljoin(BASE_URL, self.application)
 
-        attempt = 0
-        while True:
-            attempt += 1
-            try:
-                self.get_build_info()
-                break
-            except (NotFoundError, requests.exceptions.RequestException), e:
-                if self.retry_attempts > 0:
-                    # Print only if multiple attempts are requested
-                    print "Build not found: '%s'" % e.message
-                    print 'Will retry in %s seconds...' % self.retry_delay
-                    time.sleep(self.retry_delay)
-                    print "Retrying... (attempt %s)" % attempt
-                if attempt >= self.retry_attempts:
-                    raise
 
     @property
     def binary(self):
@@ -183,8 +166,8 @@ class Scraper(object):
         raise NotImplementedError(sys._getframe(0).f_code.co_name)
 
     @property
-    def locales_path(self):
-        return '/'.join([self.base_url, self.locales_path_regex])
+    def locales_paths(self):
+        return ['/'.join([self.base_url, self.locales_path_regex])]
 
     @property
     def locales_path_regex(self):
@@ -226,13 +209,15 @@ class Scraper(object):
         else:
             return "%s%d" % (mozinfo.os, mozinfo.bits)
 
-    def filter_locales(self, parser):
+    def filter_locales(self, entries):
+        '''Filters out unecessary entries which aren't locale name. e.g. xpi'''
+
         restricted_names = ['xpi']
-        is_locale = lambda l: l not in restricted_names
-        return set(parser.filter(is_locale))
+        return [l for l in entries if l not in restricted_names]
 
+    def extract_locales_from_filenames(self, parser):
+        '''Tries to extract locale from build filename'''
 
-    def extract_locales(self, parser):
         regex = r'^%(APP)s-([\w\d\-\.]+)\.([\w\-]+).(%(PLATFORMS)s)'
         regex = regex % {'APP': self.application,
                         'PLATFORMS': '|'.join(PLATFORM_FRAGMENTS.values())}
@@ -246,25 +231,51 @@ class Scraper(object):
 
     @property
     def available_locales(self):
-        attempts = 0
-        while True:
-            try:
-                parser = DirectoryParser(self.locales_path,
-                                 authentication=self.authentication,
-                                 timeout=self.timeout_network)
+        '''Returns a set of available locales for selected build'''
 
-                return self.filter_locales(parser)
-
-            except (requests.exceptions.RequestException, TimeoutError),e:
-                if attempts >= self.retry_attempts:
-                    raise
-            attempts += 1
+        self.download_build_info()
+        locales = set()
+        for locales_path in self.locales_paths:
+            attempts = 0
+            while True:
+                print "try available_locales", attempts, self.retry_attempts
+                try:
+                    parser = DirectoryParser(locales_path,
+                                     authentication=self.authentication,
+                                     timeout=self.timeout_network)
+                    locales |= set(self.filter_locales(parser.entries))
+                    break
+                except (requests.exceptions.RequestException, TimeoutError), e:
+                    if attempts >= self.retry_attempts:
+                        raise
+                attempts += 1
         return locales
 
+    def download_build_info(self):
+        # Moved safe check of this fields from class constructor because
+        # detect_platform requires self.locale field to be available
+        self.platform = self.platform or self.detect_platform()
+        self.extension = self.extension or\
+                         DEFAULT_FILE_EXTENSIONS[self.platform]
+
+        attempt = 0
+        while True:
+            attempt += 1
+            try:
+                self.get_build_info()
+                break
+            except (NotFoundError, requests.exceptions.RequestException), e:
+                if self.retry_attempts > 0:
+                    # Print only if multiple attempts are requested
+                    print "Build not found: '%s'" % e.message
+                    print 'Will retry in %s seconds...' % self.retry_delay
+                    time.sleep(self.retry_delay)
+                    print "Retrying... (attempt %s)" % attempt
+                if attempt >= self.retry_attempts:
+                    raise
 
     def download(self):
         """Download the specified file"""
-
         def total_seconds(td):
             # Keep backward compatibility with Python 2.6 which doesn't have
             # this method
@@ -334,23 +345,25 @@ class Scraper(object):
 
         os.rename(tmp_file, self.target)
 
-    def download_all_locales(self):
-        try:
-            for locale in self.available_locales:
-                print "Downloading build for locale:", locale
-                self.locale = locale
-                self._target = None
-                self._binary = None
-                self.download()
-        except NotImplementedError:
-            print 'Download of all locales is not available for this type of build.'
+    def download_locales(self, locales):
+        '''Downloads all builds for given list of locales'''
+        locales = set(locales)
+        lower_locales = map(lambda x: x.lower(), locales)
+        available_locales = set(self.available_locales)
 
-    def show_locales(self):
-        try:
-            locales = self.available_locales
-            print 'Available locales:', ', '.join(locales)
-        except NotImplementedError:
-            print 'Show locales is not available for this type of build.'
+        if 'all' in locales:
+            locales |= available_locales
+            locales.remove('all')
+        elif locales.difference(available_locales):
+            raise NotFoundError("Not found builds for locales",
+                    ', '.join(locales - available_locales))
+
+        for locale in locales:
+            print "Downloading build for locale:", locale
+            self.locale = locale
+            self._target = None
+            self._binary = None
+            self.download()
 
     def show_matching_builds(self, builds):
         """Output the matching builds"""
@@ -400,7 +413,7 @@ class DailyScraper(Scraper):
                 self.date, build_index=self.build_index)
 
         else:
-            # If no build id nor date have been specified the lastest available
+            # If no build id nor date have been specified the latest available
             # build of the given branch has to be identified. We also have to
             # retrieve the date of the build via its build id.
             url = '%s/nightly/latest-%s/' % (self.base_url, self.branch)
@@ -415,7 +428,7 @@ class DailyScraper(Scraper):
                 raise NotFoundError(message, url)
 
             # Read status file for the platform, retrieve build id,
-             # and convert to a date
+            # and convert to a date
             headers = {'Cache-Control': 'max-age=0'}
             r = requests.get(url + parser.entries[-1],
                              auth=self.authentication, headers=headers)
@@ -536,8 +549,23 @@ class DailyScraper(Scraper):
         return self.path_regex
 
     def filter_locales(self, parser):
-        return self.extract_locales(parser)
+        return self.extract_locales_from_filenames(parser)
 
+    def locales_paths(self):
+        url = '/'.join([self.base_url, self.monthly_build_list_regex])
+
+        print 'Retrieving list of builds from %s' % url
+        parser = DirectoryParser(url, authentication=self.authentication,
+                                 timeout=self.timeout_network)
+        regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s$' % {
+            'DATE': date.strftime('%Y-%m-%d'),
+            'BRANCH': self.branch,
+            'L10N': '' if self.locale == 'en-US' else '(-l10n)?'}
+        parser.entries = parser.filter(regex)
+        parser.entries = parser.filter(self.is_build_dir)
+        normal_url =         regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s$' % {
+            'DATE': date.strftime('%Y-%m-%d'),
+            'BRANCH': self.branch,
 
 class DirectScraper(Scraper):
     """Class to download a file from a specified URL"""
@@ -891,8 +919,8 @@ def cli():
                       help='Number of the build (for candidate, daily, '
                            'and tinderbox builds)')
     parser.add_option('--locale', '-l',
+                      action='append',
                       dest='locale',
-                      default='en-US',
                       metavar='LOCALE',
                       help='Locale of the application, default: "%default"')
     parser.add_option('--platform', '-p',
@@ -995,6 +1023,10 @@ def cli():
     # TODO: option group for nightly builds
     (options, args) = parser.parse_args()
 
+    # Checks if user specified locale, if not then sets default value
+    if not options.locale:
+        options.locale = ['en-US']
+
     # Check for required options and arguments
     # Note: Will be optional when ini file support has been landed
     if not options.url \
@@ -1005,7 +1037,6 @@ def cli():
 
     # Instantiate scraper and download the build
     scraper_keywords = {'application': options.application,
-                        'locale': options.locale,
                         'platform': options.platform,
                         'version': options.version,
                         'directory': options.directory,
@@ -1035,12 +1066,13 @@ def cli():
     else:
         build = BUILD_TYPES[options.type](**kwargs)
 
+    locales = options.locale if options.locale else ['en-US']
+
     if options.show_locales:
-        build.show_locales()
-    elif options.locale.lower() == 'all':
-        build.download_all_locales()
+        print 'Available locales:', ', '.join(build.available_locales)
+        return
     else:
-        build.download()
+        build.download_locales(locales)
 
 if __name__ == "__main__":
     cli()
