@@ -19,6 +19,7 @@ import mozinfo
 
 from parser import DirectoryParser
 from timezones import PacificTimezone
+from utils import urljoin
 
 import progressbar
 
@@ -99,7 +100,7 @@ class Scraper(object):
 
         # build the base URL
         self.application = application
-        self.base_url = '/'.join([BASE_URL, self.application])
+        self.base_url = urljoin(BASE_URL, self.application)
 
         attempt = 0
         while True:
@@ -167,13 +168,13 @@ class Scraper(object):
     def final_url(self):
         """Return the final URL of the build"""
 
-        return '/'.join([self.path, self.binary])
+        return urljoin(self.path, self.binary)
 
     @property
     def path(self):
         """Return the path to the build"""
 
-        return '/'.join([self.base_url, self.path_regex])
+        return urljoin(self.base_url, self.path_regex)
 
     @property
     def path_regex(self):
@@ -364,7 +365,7 @@ class DailyScraper(Scraper):
     def is_build_dir(self, dir):
         """Return whether or not the given dir contains a build."""
 
-        url = '/'.join([self.base_url, self.monthly_build_list_regex, dir])
+        url = urljoin(self.base_url, self.monthly_build_list_regex, dir)
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
 
@@ -380,7 +381,7 @@ class DailyScraper(Scraper):
 
 
     def get_build_info_for_date(self, date, has_time=False, build_index=None):
-        url = '/'.join([self.base_url, self.monthly_build_list_regex])
+        url = urljoin(self.base_url, self.monthly_build_list_regex)
 
         print 'Retrieving list of builds from %s' % url
         parser = DirectoryParser(url, authentication=self.authentication,
@@ -449,7 +450,7 @@ class DailyScraper(Scraper):
         """Return the regex for the folder containing builds of a month."""
 
         # Regex for possible builds for the given date
-        return r'nightly/%(YEAR)s/%(MONTH)s/' % {
+        return r'nightly/%(YEAR)s/%(MONTH)s' % {
             'YEAR': self.date.year,
             'MONTH': str(self.date.month).zfill(2)}
 
@@ -458,11 +459,11 @@ class DailyScraper(Scraper):
         """Return the regex for the path"""
 
         try:
-            path = ''.join([self.monthly_build_list_regex,
-                            self.builds[self.build_index]])
+            path = urljoin(self.monthly_build_list_regex,
+                            self.builds[self.build_index])
             return path
         except:
-            folder = ''.join([self.base_url, self.monthly_build_list_regex])
+            folder = urljoin(self.base_url, self.monthly_build_list_regex)
             raise NotFoundError("Specified sub folder cannot be found",
                                 folder)
 
@@ -548,7 +549,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
                 self.version)
 
     def get_build_info_for_version(self, version, build_index=None):
-        url = '/'.join([self.base_url, self.candidate_build_list_regex])
+        url = urljoin(self.base_url, self.candidate_build_list_regex)
 
         print 'Retrieving list of candidate builds from %s' % url
         parser = DirectoryParser(url, authentication=self.authentication,
@@ -739,7 +740,7 @@ class TinderboxScraper(Scraper):
         return platform
 
     def get_build_info_for_index(self, build_index=None):
-        url = '/'.join([self.base_url, self.build_list_regex])
+        url = urljoin(self.base_url, self.build_list_regex)
 
         print 'Retrieving list of builds from %s' % url
         parser = DirectoryParser(url, authentication=self.authentication,
@@ -773,7 +774,7 @@ class TinderboxScraper(Scraper):
         if self.locale_build:
             return self.build_list_regex
 
-        return '/'.join([self.build_list_regex, self.builds[self.build_index]])
+        return urljoin(self.build_list_regex, self.builds[self.build_index])
 
     @property
     def platform_regex(self):
