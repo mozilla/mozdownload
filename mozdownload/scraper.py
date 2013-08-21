@@ -720,12 +720,6 @@ class TinderboxScraper(Scraper):
 
         return False
 
-    @property
-    def date_validation_regex(self):
-        """Return the regex for a valid date argument value"""
-
-        return r'^\d{4}-\d{1,2}-\d{1,2}$|^\d+$'
-
     def detect_platform(self):
         """Detect the current platform"""
 
