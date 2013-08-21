@@ -33,7 +33,7 @@ applications.
 mozdownload version: %(version)s
 """ % {'version': version}
 
-APPLICATIONS = ['b2g', 'firefox', 'thunderbird']
+APPLICATIONS = ('b2g', 'firefox', 'thunderbird')
 
 # Base URL for the path to all builds
 BASE_URL = 'https://ftp.mozilla.org/pub/mozilla.org'
@@ -90,15 +90,16 @@ class Scraper(object):
         # Private properties for caching
         self._target = None
         self._binary = None
-        self._extension = extension
 
         self.directory = directory
-        if not locale and application == 'b2g':
-            self.locale = 'multi'
-        elif not locale:
-            self.locale = 'en-US'
+        if not locale:
+            if application in MULTI_LOCALE_APPLICATIONS:
+                self.locale = 'multi'
+            else:
+                self.locale = 'en-US'
         else:
             self.locale = locale
+
         self.platform = platform or self.detect_platform()
         self.version = version
         self.authentication = authentication
@@ -114,6 +115,16 @@ class Scraper(object):
         # build the base URL
         self.application = application
         self.base_url = urljoin(base_url, self.application)
+
+        if extension is not None:
+            self.extension = extension
+        else:
+            if self.application in MULTI_LOCALE_APPLICATIONS and \
+                    self.platform in ('win32', 'win64'):
+                extension = 'zip'
+            else:
+                extension = DEFAULT_FILE_EXTENSIONS[self.platform]
+            self.extension = extension
 
         attempt = 0
         while True:
@@ -190,19 +201,6 @@ class Scraper(object):
         """Return the regex for the binary filename"""
 
         raise NotImplementedError(sys._getframe(0).f_code.co_name)
-
-    @property
-    def extension(self):
-        """Returns default file extension according to platform/application."""
-        if self._extension is not None:
-            return self._extension
-        else:
-            if self.application in MULTI_LOCALE_APPLICATIONS and \
-                    self.platform in ('win32', 'win64'):
-                extension = 'zip'
-            else:
-                extension = DEFAULT_FILE_EXTENSIONS[self.platform]
-            return extension
 
     @property
     def final_url(self):
@@ -534,7 +532,7 @@ class DailyScraper(Scraper):
                 path = urljoin(path, self.locale)
             return path
         except:
-            folder = '/'.join([self.base_url, self.monthly_build_list_regex])
+            folder = ''.join([self.base_url, self.monthly_build_list_regex])
             raise NotFoundError("Specified sub folder cannot be found",
                                 folder)
 
@@ -896,8 +894,8 @@ def cli():
     parser.add_option('--locale', '-l',
                       dest='locale',
                       metavar='LOCALE',
-                      help='Locale of the application, default: "multi" '
-                           '(b2g) else "en-US"')
+                      help='Locale of the application, default: "en-US" '
+                           'except b2g: "multi"')
     parser.add_option('--platform', '-p',
                       dest='platform',
                       choices=PLATFORM_FRAGMENTS.keys(),
