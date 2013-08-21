@@ -14,7 +14,6 @@ import sys
 import time
 import urllib
 from urlparse import urlparse
-from logging import Formatter, StreamHandler
 
 import mozinfo
 import mozlog
@@ -54,34 +53,6 @@ DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
                            'mac64': 'dmg',
                            'win32': 'exe',
                            'win64': 'exe'}
-
-
-class MozFormatter(Formatter):
-    """
-    MozFormatter class used to standardize formatting
-    If a different format is desired, this can be explicitly
-    overriden with the log handler's setFormatter() method
-    """
-    level_length = 0
-
-    def __init__(self):
-        """
-        Formatter.__init__ has fmt and datefmt parameters that won't have
-        any affect on a MozFormatter instance. Bypass it to avoid confusion.
-        """
-
-    def format(self, record):
-        record.message = record.getMessage()
-
-        # Handles padding so record levels align nicely
-        if len(record.levelname) > self.level_length:
-            pad = 0
-            self.level_length = len(record.levelname)
-        else:
-            pad = self.level_length - len(record.levelname) + 1
-        sep = ''.rjust(pad)
-        fmt = '[%(levelname)s]' + sep + ' %(message)s'
-        return fmt % record.__dict__
 
 class NotFoundError(Exception):
     """Exception for a resource not being found (e.g. no logs)"""
@@ -126,9 +97,7 @@ class Scraper(object):
         self.timeout_download = timeout
         self.timeout_network = 60.
 
-        handler = StreamHandler()
-        handler.setFormatter(MozFormatter())
-        self.logger = mozlog.getLogger(self.__class__.__name__, handler)
+        self.logger = mozlog.getLogger(self.__class__.__name__)
         self.logger.setLevel(log_level);
 
         # build the base URL
@@ -640,7 +609,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
             # Try to download the signed candidate build
             Scraper.download(self)
         except NotFoundError, e:
-            self.logger.info(str(e))
+            self.logger.exception(str(e))
 
             # If the signed build cannot be downloaded and unsigned builds are
             # allowed, try to download the unsigned build instead
@@ -913,6 +882,14 @@ def cli():
                       help='Amount of time (in seconds) until a download times'
                            ' out')
 
+    parser.add_option('--console-level',
+                      dest='log_level',
+                      default=0,
+                      type=int,
+                      metavar='CONSOLE_LEVEL',
+                      help="Available levels are ERROR (2), WARNING (1), \
+                            INFO (0), DEBUG (-1)',default='%default'")
+
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
                         "Extra options for candidate builds.")
@@ -953,6 +930,12 @@ def cli():
     # TODO: option group for nightly builds
     (options, args) = parser.parse_args()
 
+    log_level = {2:mozlog.ERROR,
+                 1:mozlog.WARNING,
+                 0:mozlog.INFO,
+                 -1:mozlog.DEBUG,
+                 }[int(options.log_level)]
+
     # Check for required options and arguments
     # Note: Will be optional when ini file support has been landed
     if not options.url \
@@ -971,7 +954,8 @@ def cli():
                         'authentication': (options.username, options.password),
                         'retry_attempts': options.retry_attempts,
                         'retry_delay': options.retry_delay,
-                        'timeout': options.timeout}
+                        'timeout': options.timeout,
+                        'log_level':log_level}
     scraper_options = {
         'candidate': {'build_number': options.build_number,
                       'no_unsigned': options.no_unsigned},
