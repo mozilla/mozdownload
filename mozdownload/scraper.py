@@ -532,7 +532,7 @@ class DailyScraper(Scraper):
                 path = urljoin(path, self.locale)
             return path
         except:
-            folder = ''.join([self.base_url, self.monthly_build_list_regex])
+            folder = urljoin(self.base_url, self.monthly_build_list_regex)
             raise NotFoundError("Specified sub folder cannot be found",
                                 folder)
 
