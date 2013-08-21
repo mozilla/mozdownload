@@ -81,7 +81,7 @@ class Scraper(object):
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
-                 timeout=None):
+                 stub=False, timeout=None):
 
         # Private properties for caching
         self._target = None
@@ -95,6 +95,7 @@ class Scraper(object):
         self.authentication = authentication
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
+        self.stub = stub
         self.timeout_download = timeout
         self.timeout_network = 60.
 
@@ -229,7 +230,7 @@ class Scraper(object):
                         (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10 ** 6
 
         attempt = 0
-
+        print self.target
         if not os.path.isdir(self.directory):
             os.makedirs(self.directory)
 
@@ -419,8 +420,8 @@ class DailyScraper(Scraper):
                         'linux64': r'\.%(EXT)s$',
                         'mac': r'\.%(EXT)s$',
                         'mac64': r'\.%(EXT)s$',
-                        'win32': r'(\.installer)\.%(EXT)s$',
-                        'win64': r'(\.installer)\.%(EXT)s$'}
+                        'win32': r'(\.installer)-stub\.%(EXT)s$' if self.stub else r'(\.installer)\.%(EXT)s$',
+                        'win64': r'(\.installer)-stub\.%(EXT)s$' if self.stub else r'(\.installer)\.%(EXT)s$'}
         regex = regex_base_name + regex_suffix[self.platform]
 
         return regex % {'APP': self.application,
@@ -500,8 +501,8 @@ class ReleaseScraper(Scraper):
                  'linux64': r'^%(APP)s-.*\.%(EXT)s$',
                  'mac': r'^%(APP)s.*\.%(EXT)s$',
                  'mac64': r'^%(APP)s.*\.%(EXT)s$',
-                 'win32': r'^%(APP)s.*\.%(EXT)s$',
-                 'win64': r'^%(APP)s.*\.%(EXT)s$'}
+                 'win32': r'^%(APP)s.*Stub.*\.%(EXT)s$' if self.stub else r'^%(APP)s.*\.%(EXT)s$',
+                 'win64': r'^%(APP)s.*Stub.*\.%(EXT)s$' if self.stub else r'^%(APP)s.*\.%(EXT)s$'}
         return regex[self.platform] % {'APP': self.application,
                                        'EXT': self.extension}
 
@@ -823,6 +824,10 @@ def cli():
                       choices=PLATFORM_FRAGMENTS.keys(),
                       metavar='PLATFORM',
                       help='Platform of the application')
+    parser.add_option('--stub',
+                      dest='stub',
+                      action='store_true',
+                      help='Download installer stub')
     parser.add_option('--type', '-t',
                       dest='type',
                       choices=BUILD_TYPES.keys(),
@@ -932,6 +937,7 @@ def cli():
                         'authentication': (options.username, options.password),
                         'retry_attempts': options.retry_attempts,
                         'retry_delay': options.retry_delay,
+                        'stub': options.stub,
                         'timeout': options.timeout}
     scraper_options = {
         'candidate': {'build_number': options.build_number,
