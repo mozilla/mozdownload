@@ -80,7 +80,7 @@ class Scraper(object):
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
-                 timeout=None, log_level=mozlog.INFO):
+                 timeout=None, log_level='INFO'):
 
         # Private properties for caching
         self._target = None
@@ -98,7 +98,7 @@ class Scraper(object):
         self.timeout_network = 60.
 
         self.logger = mozlog.getLogger(self.__class__.__name__)
-        self.logger.setLevel(log_level);
+        self.logger.setLevel(getattr(mozlog, log_level.upper()))
 
         # build the base URL
         self.application = application
@@ -881,14 +881,12 @@ def cli():
                       metavar='TIMEOUT',
                       help='Amount of time (in seconds) until a download times'
                            ' out')
-
-    parser.add_option('--console-level',
+    parser.add_option('--log-level',
+                      action='store',
                       dest='log_level',
-                      default=0,
-                      type=int,
-                      metavar='CONSOLE_LEVEL',
-                      help="Available levels are ERROR (2), WARNING (1), \
-                            INFO (0), DEBUG (-1)',default='%default'")
+                      default='INFO',
+                      metavar='str',
+                      help='threshold for log output (default: %default)')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
@@ -930,12 +928,6 @@ def cli():
     # TODO: option group for nightly builds
     (options, args) = parser.parse_args()
 
-    log_level = {2:mozlog.ERROR,
-                 1:mozlog.WARNING,
-                 0:mozlog.INFO,
-                 -1:mozlog.DEBUG,
-                 }[int(options.log_level)]
-
     # Check for required options and arguments
     # Note: Will be optional when ini file support has been landed
     if not options.url \
@@ -955,7 +947,7 @@ def cli():
                         'retry_attempts': options.retry_attempts,
                         'retry_delay': options.retry_delay,
                         'timeout': options.timeout,
-                        'log_level':log_level}
+                        'log_level': options.log_level}
     scraper_options = {
         'candidate': {'build_number': options.build_number,
                       'no_unsigned': options.no_unsigned},
