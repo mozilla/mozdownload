@@ -82,7 +82,7 @@ class Scraper(object):
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
-                 is_stub_installer=False, timeout=None, log_level='INFO'):
+                 is_stub_installer=False, timeout=None, log_level='INFO', base_url=BASE_URL):
 
         # Private properties for caching
         self._target = None
@@ -105,7 +105,7 @@ class Scraper(object):
 
         # build the base URL
         self.application = application
-        self.base_url = urljoin(BASE_URL, self.application)
+        self.base_url = urljoin(base_url, self.application)
 
         attempt = 0
         while True:
