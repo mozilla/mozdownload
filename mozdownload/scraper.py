@@ -230,7 +230,7 @@ class Scraper(object):
                         (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10 ** 6
 
         attempt = 0
-        print self.target
+
         if not os.path.isdir(self.directory):
             os.makedirs(self.directory)
 
@@ -420,8 +420,11 @@ class DailyScraper(Scraper):
                         'linux64': r'\.%(EXT)s$',
                         'mac': r'\.%(EXT)s$',
                         'mac64': r'\.%(EXT)s$',
-                        'win32': r'(\.installer)-stub\.%(EXT)s$' if self.stub else r'(\.installer)\.%(EXT)s$',
-                        'win64': r'(\.installer)-stub\.%(EXT)s$' if self.stub else r'(\.installer)\.%(EXT)s$'}
+                        'win32': r'(\.installer)%(STUB)\.%(EXT)s$' % {
+                        '-stub' if self.stub else ''},
+                        'win64': r'(\.installer)%(STUB)\.%(EXT)s$' % {
+                        '-stub' if self.stub else ''}
+                        }
         regex = regex_base_name + regex_suffix[self.platform]
 
         return regex % {'APP': self.application,
@@ -827,7 +830,8 @@ def cli():
     parser.add_option('--stub',
                       dest='stub',
                       action='store_true',
-                      help='Download installer stub')
+                      help='Stub installer. '
+                           'Only applicable to Windows builds.')
     parser.add_option('--type', '-t',
                       dest='type',
                       choices=BUILD_TYPES.keys(),
