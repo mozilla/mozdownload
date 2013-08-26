@@ -445,9 +445,11 @@ class DailyScraper(Scraper):
         self.logger.info('Retrieving list of builds from %s' % url)
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
-        regex = r'%(DATE)s-(\d+-)+%(BRANCH)s(-l10n)?$' % {
+        regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s$' % {
             'DATE': date.strftime('%Y-%m-%d'),
-            'BRANCH': self.branch}
+            'BRANCH': self.branch,
+            # ensure to select the correct subfolder for localized builds
+            'L10N': '' if self.locale == 'en-US' else '(-l10n)?'}
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
 
@@ -528,7 +530,8 @@ class DailyScraper(Scraper):
             else:
                 path = urljoin(self.monthly_build_list_regex,
                                 self.builds[self.build_index])
-            if self.application == 'b2g' and self.locale != 'multi':
+            if self.application in MULTI_LOCALE_APPLICATIONS and \
+                    self.locale != 'multi':
                 path = urljoin(path, self.locale)
             return path
         except:
