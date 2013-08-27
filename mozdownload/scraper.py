@@ -226,7 +226,7 @@ class Scraper(object):
                 return td.total_seconds()
             else:
                 return (td.microseconds +
-                        (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+                        (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10 ** 6
 
         attempt = 0
 
@@ -379,7 +379,6 @@ class DailyScraper(Scraper):
                 continue
         return False
 
-
     def get_build_info_for_date(self, date, has_time=False, build_index=None):
         url = urljoin(self.base_url, self.monthly_build_list_regex)
 
@@ -460,7 +459,7 @@ class DailyScraper(Scraper):
 
         try:
             path = urljoin(self.monthly_build_list_regex,
-                            self.builds[self.build_index])
+                           self.builds[self.build_index])
             return path
         except:
             folder = urljoin(self.base_url, self.monthly_build_list_regex)
@@ -671,7 +670,7 @@ class TinderboxScraper(Scraper):
     def binary_regex(self):
         """Return the regex for the binary"""
 
-        regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.'
+        regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.%(PLATFORM)s'
         regex_suffix = {'linux': r'.*\.%(EXT)s$',
                         'linux64': r'.*\.%(EXT)s$',
                         'mac': r'.*\.%(EXT)s$',
@@ -683,6 +682,7 @@ class TinderboxScraper(Scraper):
 
         return regex % {'APP': self.application,
                         'LOCALE': self.locale,
+                        'PLATFORM': PLATFORM_FRAGMENTS[self.platform],
                         'EXT': self.extension}
 
     def build_filename(self, binary):
