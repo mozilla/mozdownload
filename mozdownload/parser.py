@@ -14,6 +14,7 @@ class DirectoryParser(HTMLParser):
     """Class to parse directory listings"""
 
     def __init__(self, url, authentication=None, timeout=None):
+        self.url = url
         self.authentication = authentication
         self.timeout = timeout
 
@@ -24,7 +25,7 @@ class DirectoryParser(HTMLParser):
 
         # Force the server to not send cached content
         headers = {'Cache-Control': 'max-age=0'}
-        r = requests.get(url, auth=self.authentication,
+        r = requests.get(self.url, auth=self.authentication,
                          headers=headers, timeout=self.timeout)
         r.raise_for_status()
         self.feed(r.text)
