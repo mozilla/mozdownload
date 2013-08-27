@@ -420,15 +420,16 @@ class DailyScraper(Scraper):
                         'linux64': r'\.%(EXT)s$',
                         'mac': r'\.%(EXT)s$',
                         'mac64': r'\.%(EXT)s$',
-                        'win32': r'(\.installer)%(STUB)\.%(EXT)s$',
-                        'win64': r'(\.installer)%(STUB)\.%(EXT)s$'}
+                        'win32': r'(\.installer)%(STUB)s\.%(EXT)s$',
+                        'win64': r'(\.installer)%(STUB)s\.%(EXT)s$'}
         regex = regex_base_name + regex_suffix[self.platform]
 
         return regex % {'APP': self.application,
                         'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
                         'EXT': self.extension,
-                        'STUB': '-stub' if self.is_stub_installer else ''}
+                        'STUB': '-stub' if self.is_stub_installer and
+                                self.application == 'firefox' else ''}
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
@@ -504,9 +505,11 @@ class ReleaseScraper(Scraper):
                  'mac64': r'^%(APP)s.*\.%(EXT)s$',
                  'win32': r'^%(APP)s.*%(STUB)s.*\.%(EXT)s$',
                  'win64': r'^%(APP)s.*%(STUB)s.*\.%(EXT)s$'}
-        return regex[self.platform] % {'APP': self.application,
-                                       'EXT': self.extension,
-                                       'STUB': 'Stub' if self.is_stub_installer else ''}
+        return regex[self.platform] % {
+            'APP': self.application,
+            'EXT': self.extension,
+            'STUB': 'Stub' if self.is_stub_installer and
+                    self.application == 'firefox' else ''}
 
     @property
     def path_regex(self):
