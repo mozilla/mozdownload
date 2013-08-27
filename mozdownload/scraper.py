@@ -670,9 +670,9 @@ class TinderboxScraper(Scraper):
     def binary_regex(self):
         """Return the regex for the binary"""
 
-        regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.'
+        regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.%(PLATFORM)s'
         regex_suffix = {'linux': r'.*\.%(EXT)s$',
-                        'linux64': r'.*x86_64\.%(EXT)s$',
+                        'linux64': r'.*\.%(EXT)s$',
                         'mac': r'.*\.%(EXT)s$',
                         'mac64': r'.*\.%(EXT)s$',
                         'win32': r'.*(\.installer)\.%(EXT)s$',
@@ -682,6 +682,7 @@ class TinderboxScraper(Scraper):
 
         return regex % {'APP': self.application,
                         'LOCALE': self.locale,
+                        'PLATFORM': PLATFORM_FRAGMENTS[self.platform],
                         'EXT': self.extension}
 
     def build_filename(self, binary):
