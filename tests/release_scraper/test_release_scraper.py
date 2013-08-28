@@ -5,14 +5,12 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-import sys
 import unittest
 
 import mozhttpd
 
 from mozdownload import ReleaseScraper
 
-sys.path.insert(0, os.path.abspath(".."))
 import mozhttpd_template_test as mhttpd
 
 
@@ -21,15 +19,14 @@ class ReleaseScraperTest(mhttpd.MozHttpdTest):
 
     def test_version_latest(self):
         """Testing the basic functionality of the ReleaseScraper Class"""
-        server_address = "http://%s:%s" % (self.httpd.host, self.httpd.port)
-        wdir = '/'.join([server_address, mhttpd.WDIR])
-        scraper = ReleaseScraper(os.getcwd(), 'latest', platform='win32',
-                                 base_url=wdir)
+        scraper = ReleaseScraper(directory=self.temp_dir,
+                                 version='latest',
+                                 platform='win32',
+                                 base_url=self.wdir)
         scraper.download()
         self.assertEqual(scraper.target,
-                         os.path.join(os.getcwd(),
+                         os.path.join(self.temp_dir,
                                       os.path.basename(scraper.target)))
-        os.remove(os.path.join(os.getcwd(), os.path.basename(scraper.target)))
 
 if __name__ == '__main__':
     unittest.main()

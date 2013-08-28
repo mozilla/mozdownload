@@ -5,11 +5,14 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
+import tempfile
 import unittest
 
+import mozfile
 import mozhttpd
 
-WDIR = os.path.join('tests', 'downloadable_tests')
+WDIR = 'downloadable_tests'
+HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 @mozhttpd.handlers.json_response
@@ -22,16 +25,23 @@ class MozHttpdTest(unittest.TestCase):
 
     def setUp(self):
         """Starts server that lists all files in the directory"""
-        self.httpd = mozhttpd.MozHttpd(port=8080, docroot='.',
+        self.httpd = mozhttpd.MozHttpd(port=8080, docroot=HERE,
                                        urlhandlers=[{'method': 'GET',
                                                     'path': '/api/resources/([^/]+)/?',
                                                     'function': resource_get}])
         print "\nServing '%s' at %s:%s" % (self.httpd.docroot,
                                            self.httpd.host, self.httpd.port)
         self.httpd.start(block=False)
+        self.server_address = "http://%s:%s" % (self.httpd.host,
+                                                self.httpd.port)
+        self.wdir = '/'.join([self.server_address, WDIR])
+
+        # Create a temporary directory for potential downloads
+        self.temp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
         self.httpd.stop()
+        mozfile.rmtree(self.temp_dir)
 
 if __name__ == '__main__':
     unittest.main()
