@@ -13,6 +13,7 @@ mozdownload -a firefox -t release -p mac -v latest
 mozdownload -a firefox -t release -p win32 -v latest
 mozdownload -a firefox -t release -p win32 -v latest -d firefox-release-builds
 mozdownload -a firefox -t release -p win32 -v latest -l de
+mozdownload -a firefox -t release -p win32 -v latest --stub
 mozdownload -a firefox -t release -p win32 -v 21.0
 mozdownload -a firefox -t release -p win32 -v 21.0 -l es-ES
 ```
@@ -28,6 +29,7 @@ mozdownload -a firefox -t candidate -p win32 -v 21.0 -d firefox-candidate-builds
 mozdownload -a firefox -t candidate -p win32 -v 21.0 -l cs
 mozdownload -a firefox -t candidate -p win32 -v 21.0 -l en-GB
 mozdownload -a firefox -t candidate -p win32 -v 21.0 --build-number=1
+mozdownload -a firefox -t candidate -p win32 -v 21.0 --stub
 ```
 
 ### Daily
@@ -47,6 +49,7 @@ mozdownload -a firefox -t daily -p win32 --branch=mozilla-central -l sv-SE
 mozdownload -a firefox -t daily -p win32 --branch=mozilla-central --build-id=20130706031213
 mozdownload -a firefox -t daily -p win32 --branch=mozilla-central --date=2013-07-02
 mozdownload -a firefox -t daily -p win32 --branch=mozilla-central --date=2013-07-02 --build-number=1
+mozdownload -a firefox -t daily -p win32 --branch=mozilla-central --stub
 mozdownload -a firefox -t daily -p win32 --branch=mozilla-aurora
 mozdownload -a firefox -t daily -p win32 --branch=ux
 ```

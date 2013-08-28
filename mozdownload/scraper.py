@@ -81,7 +81,7 @@ class Scraper(object):
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
-                 timeout=None):
+                 is_stub_installer=False, timeout=None):
 
         # Private properties for caching
         self._target = None
@@ -95,6 +95,7 @@ class Scraper(object):
         self.authentication = authentication
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
+        self.is_stub_installer = is_stub_installer
         self.timeout_download = timeout
         self.timeout_network = 60.
 
@@ -419,14 +420,15 @@ class DailyScraper(Scraper):
                         'linux64': r'\.%(EXT)s$',
                         'mac': r'\.%(EXT)s$',
                         'mac64': r'\.%(EXT)s$',
-                        'win32': r'(\.installer)\.%(EXT)s$',
-                        'win64': r'(\.installer)\.%(EXT)s$'}
+                        'win32': r'(\.installer)%(STUB)s\.%(EXT)s$',
+                        'win64': r'(\.installer)%(STUB)s\.%(EXT)s$'}
         regex = regex_base_name + regex_suffix[self.platform]
 
         return regex % {'APP': self.application,
                         'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
-                        'EXT': self.extension}
+                        'EXT': self.extension,
+                        'STUB': '-stub' if self.is_stub_installer else ''}
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
@@ -500,10 +502,12 @@ class ReleaseScraper(Scraper):
                  'linux64': r'^%(APP)s-.*\.%(EXT)s$',
                  'mac': r'^%(APP)s.*\.%(EXT)s$',
                  'mac64': r'^%(APP)s.*\.%(EXT)s$',
-                 'win32': r'^%(APP)s.*\.%(EXT)s$',
-                 'win64': r'^%(APP)s.*\.%(EXT)s$'}
-        return regex[self.platform] % {'APP': self.application,
-                                       'EXT': self.extension}
+                 'win32': r'^%(APP)s.*%(STUB)s.*\.%(EXT)s$',
+                 'win64': r'^%(APP)s.*%(STUB)s.*\.%(EXT)s$'}
+        return regex[self.platform] % {
+            'APP': self.application,
+            'EXT': self.extension,
+            'STUB': 'Stub' if self.is_stub_installer else ''}
 
     @property
     def path_regex(self):
@@ -823,6 +827,11 @@ def cli():
                       choices=PLATFORM_FRAGMENTS.keys(),
                       metavar='PLATFORM',
                       help='Platform of the application')
+    parser.add_option('--stub',
+                      dest='is_stub_installer',
+                      action='store_true',
+                      help='Stub installer. '
+                           'Only applicable to Windows builds.')
     parser.add_option('--type', '-t',
                       dest='type',
                       choices=BUILD_TYPES.keys(),
@@ -932,6 +941,7 @@ def cli():
                         'authentication': (options.username, options.password),
                         'retry_attempts': options.retry_attempts,
                         'retry_delay': options.retry_delay,
+                        'is_stub_installer': options.is_stub_installer,
                         'timeout': options.timeout}
     scraper_options = {
         'candidate': {'build_number': options.build_number,
