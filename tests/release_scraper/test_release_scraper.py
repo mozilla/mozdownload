@@ -26,7 +26,9 @@ class ReleaseScraperTest(mhttpd.MozHttpdTest):
         scraper = ReleaseScraper(os.getcwd(), 'latest', platform='win32',
                                  base_url=wdir)
         scraper.download()
-        self.assertEqual(scraper.target, os.path.join(os.getcwd(), os.path.basename(scraper.target)))
+        self.assertEqual(scraper.target,
+                         os.path.join(os.getcwd(),
+                                      os.path.basename(scraper.target)))
         os.remove(os.path.join(os.getcwd(), os.path.basename(scraper.target)))
 
 if __name__ == '__main__':
