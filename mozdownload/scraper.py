@@ -428,8 +428,7 @@ class DailyScraper(Scraper):
                         'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
                         'EXT': self.extension,
-                        'STUB': '-stub' if self.is_stub_installer and
-                                self.application == 'firefox' else ''}
+                        'STUB': '-stub' if self.is_stub_installer else ''}
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
@@ -508,8 +507,7 @@ class ReleaseScraper(Scraper):
         return regex[self.platform] % {
             'APP': self.application,
             'EXT': self.extension,
-            'STUB': 'Stub' if self.is_stub_installer and
-                    self.application == 'firefox' else ''}
+            'STUB': 'Stub' if self.is_stub_installer else ''}
 
     @property
     def path_regex(self):
