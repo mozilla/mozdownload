@@ -117,10 +117,9 @@ class Scraper(object):
                     time.sleep(self.retry_delay)
                     print "Retrying... (attempt %s)" % attempt
 
-                has_response = hasattr(e, 'response')
-
                 if attempt >= self.retry_attempts:
-                    if has_response and e.response.status_code == 404:
+                    if hasattr(e, 'response') and \
+                            e.response.status_code == 404:
                         message = "Specified build has not been found"
                         raise NotFoundError(message, e.response.url)
                     else:
@@ -162,10 +161,9 @@ class Scraper(object):
                     time.sleep(self.retry_delay)
                     print "Retrying... (attempt %s)" % attempt
 
-                has_response = hasattr(e, 'response')
-
                 if attempt >= self.retry_attempts:
-                    if has_response and e.response.status_code == 404:
+                    if hasattr(e, 'response') and \
+                            e.response.status_code == 404:
                         message = "Specified build has not been found"
                         raise NotFoundError(message, self.path)
                     else:
