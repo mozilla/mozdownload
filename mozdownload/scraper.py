@@ -400,8 +400,9 @@ class DailyScraper(Scraper):
             parser.entries = parser.filter(regex)
 
         if not parser.entries:
+            date_format = '%Y-%m-%d-%H-%M-%S' if has_time else '%Y-%m-%d'
             message = 'Folder for builds on %s has not been found' % \
-                self.date.strftime('%Y-%m-%d-%H-%M-%S' if has_time else '%Y-%m-%d')
+                self.date.strftime(date_format)
             raise NotFoundError(message, url)
 
         # If no index has been given, set it to the last build of the day.
@@ -746,8 +747,10 @@ class TinderboxScraper(Scraper):
         parser.entries = parser.filter(r'^\d+$')
 
         if self.timestamp:
-            # If a timestamp is given, retrieve the folder with the timestamp as name
-            parser.entries = self.timestamp in parser.entries and [self.timestamp]
+            # If a timestamp is given, retrieve the folder with the timestamp
+            # as name
+            parser.entries = self.timestamp in parser.entries and \
+                [self.timestamp]
 
         elif self.date:
             # If date is given, retrieve the subset of builds on that date
