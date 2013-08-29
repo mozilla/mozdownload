@@ -60,6 +60,10 @@ class DirectoryParserTest(mhttpd.MozHttpdTest):
         dirs.sort()
         self.assertEqual(parser.entries, dirs)
 
+        # Test filter method with a function
+        parser.entries = parser.filter(lambda x: x == dirs[0])
+        self.assertEqual(parser.entries, [dirs[0]])
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -15,7 +15,7 @@ import unittest
 import mozhttpd
 import requests
 
-from mozdownload import DirectScraper, NotImplementedError, Scraper, TimeoutError
+from mozdownload import DirectScraper, NotFoundError, NotImplementedError, Scraper, TimeoutError
 
 import mozhttpd_template_test as mhttpd
 
@@ -84,13 +84,12 @@ class BaseScraperTest(mhttpd.MozHttpdTest):
                                  version=None)
         self.assertRaises(requests.exceptions.RequestException, scraper2.download)
 
-    def test_notimplemented(self):
+    def test_exceptions(self):
         scraper = Scraper(directory=self.temp_dir,
                           version=None)
-        for attr in ['binary_regex', 'path_regex']:
+        for attr in ['binary', 'binary_regex', 'path_regex']:
             self.assertRaises(NotImplementedError, getattr, scraper, attr)
         self.assertRaises(NotImplementedError, scraper.build_filename, 'invalid binary')
-
 
 if __name__ == '__main__':
     unittest.main()
