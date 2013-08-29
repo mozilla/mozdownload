@@ -55,6 +55,7 @@ DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
                            'win32': 'exe',
                            'win64': 'exe'}
 
+
 class NotFoundError(Exception):
     """Exception for a resource not being found (e.g. no logs)"""
     def __init__(self, message, location):
@@ -116,7 +117,8 @@ class Scraper(object):
                 if self.retry_attempts > 0:
                     # Log only if multiple attempts are requested
                     self.logger.warning("Build not found: '%s'" % e.message)
-                    self.logger.info('Will retry in %s seconds...' % self.retry_delay)
+                    self.logger.info('Will retry in %s seconds...' %
+                                     (self.retry_delay))
                     time.sleep(self.retry_delay)
                     self.logger.info("Retrying... (attempt %s)" % attempt)
 
@@ -160,7 +162,8 @@ class Scraper(object):
                 if self.retry_attempts > 0:
                     # Log only if multiple attempts are requested
                     self.logger.warning("Build not found: '%s'" % e.message)
-                    self.logger.info('Will retry in %s seconds...' % self.retry_delay)
+                    self.logger.info('Will retry in %s seconds...' %
+                                     (self.retry_delay))
                     time.sleep(self.retry_delay)
                     self.logger.info("Retrying... (attempt %s)" % attempt)
 
@@ -251,10 +254,12 @@ class Scraper(object):
 
         # Don't re-download the file
         if os.path.isfile(os.path.abspath(self.target)):
-            self.logger.info("File has already been downloaded: %s" % (self.target))
+            self.logger.info("File has already been downloaded: %s" %
+                             (self.target))
             return
 
-        self.logger.info('Downloading from: %s' % (urllib.unquote(self.final_url)))
+        self.logger.info('Downloading from: %s' %
+                         (urllib.unquote(self.final_url)))
         tmp_file = self.target + ".part"
 
         while True:
@@ -295,7 +300,8 @@ class Scraper(object):
                 if self.retry_attempts > 0:
                     # Log only if multiple attempts are requested
                     self.logger.warning('Download failed: "%s"' % e.message)
-                    self.logger.info('Will retry in %s seconds...' % self.retry_delay)
+                    self.logger.info('Will retry in %s seconds...' %
+                                     (self.retry_delay))
                     time.sleep(self.retry_delay)
                     self.logger.info("Retrying... (attempt %s)" % attempt)
                 if attempt >= self.retry_attempts:
@@ -633,8 +639,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
             if self.no_unsigned:
                 raise
             else:
-                self.logger.warning("Signed build has not been found. Falling back to" \
-                                    " unsigned build.")
+                self.logger.warning("Signed build has not been found. "
+                                    "Falling back to unsigned build.")
                 self.unsigned = True
                 Scraper.download(self)
 
