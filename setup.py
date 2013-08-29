@@ -14,9 +14,13 @@ try:
 except (OSError, IOError):
     description = None
 
-version = '1.8'
+version = '1.9'
 
-deps = ['mozinfo==0.3.3', 'progressbar==2.2', 'requests==1.2.2', 'mozlog==1.3']
+deps = ['mozinfo==0.6',
+        'progressbar==2.2',
+        'requests==1.2.2',
+        'mozlog==1.3'
+       ]
 
 setup(name='mozdownload',
       version=version,

@@ -4,6 +4,7 @@
 
 """Module to store various helper functions used in mozdownload."""
 
+
 def urljoin(*fragments):
     """Concatenates multi part strings into urls"""
 

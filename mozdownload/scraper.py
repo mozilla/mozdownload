@@ -81,7 +81,7 @@ class Scraper(object):
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
-                 timeout=None, log_level='INFO'):
+                 is_stub_installer=False, timeout=None, log_level='INFO'):
 
         # Private properties for caching
         self._target = None
@@ -95,6 +95,7 @@ class Scraper(object):
         self.authentication = authentication
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
+        self.is_stub_installer = is_stub_installer
         self.timeout_download = timeout
         self.timeout_network = 60.
 
@@ -118,8 +119,14 @@ class Scraper(object):
                     self.logger.info('Will retry in %s seconds...' % self.retry_delay)
                     time.sleep(self.retry_delay)
                     self.logger.info("Retrying... (attempt %s)" % attempt)
+
                 if attempt >= self.retry_attempts:
-                    raise
+                    if hasattr(e, 'response') and \
+                            e.response.status_code == 404:
+                        message = "Specified build has not been found"
+                        raise NotFoundError(message, e.response.url)
+                    else:
+                        raise
 
     @property
     def binary(self):
@@ -156,8 +163,14 @@ class Scraper(object):
                     self.logger.info('Will retry in %s seconds...' % self.retry_delay)
                     time.sleep(self.retry_delay)
                     self.logger.info("Retrying... (attempt %s)" % attempt)
+
                 if attempt >= self.retry_attempts:
-                    raise
+                    if hasattr(e, 'response') and \
+                            e.response.status_code == 404:
+                        message = "Specified build has not been found"
+                        raise NotFoundError(message, self.path)
+                    else:
+                        raise
 
         return self._binary
 
@@ -229,7 +242,7 @@ class Scraper(object):
                 return td.total_seconds()
             else:
                 return (td.microseconds +
-                        (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+                        (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10 ** 6
 
         attempt = 0
 
@@ -382,7 +395,6 @@ class DailyScraper(Scraper):
                 continue
         return False
 
-
     def get_build_info_for_date(self, date, has_time=False, build_index=None):
         url = urljoin(self.base_url, self.monthly_build_list_regex)
 
@@ -403,8 +415,9 @@ class DailyScraper(Scraper):
             parser.entries = parser.filter(regex)
 
         if not parser.entries:
+            date_format = '%Y-%m-%d-%H-%M-%S' if has_time else '%Y-%m-%d'
             message = 'Folder for builds on %s has not been found' % \
-                self.date.strftime('%Y-%m-%d-%H-%M-%S' if has_time else '%Y-%m-%d')
+                self.date.strftime(date_format)
             raise NotFoundError(message, url)
 
         # If no index has been given, set it to the last build of the day.
@@ -423,14 +436,15 @@ class DailyScraper(Scraper):
                         'linux64': r'\.%(EXT)s$',
                         'mac': r'\.%(EXT)s$',
                         'mac64': r'\.%(EXT)s$',
-                        'win32': r'(\.installer)\.%(EXT)s$',
-                        'win64': r'(\.installer)\.%(EXT)s$'}
+                        'win32': r'(\.installer)%(STUB)s\.%(EXT)s$',
+                        'win64': r'(\.installer)%(STUB)s\.%(EXT)s$'}
         regex = regex_base_name + regex_suffix[self.platform]
 
         return regex % {'APP': self.application,
                         'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
-                        'EXT': self.extension}
+                        'EXT': self.extension,
+                        'STUB': '-stub' if self.is_stub_installer else ''}
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
@@ -463,7 +477,7 @@ class DailyScraper(Scraper):
 
         try:
             path = urljoin(self.monthly_build_list_regex,
-                            self.builds[self.build_index])
+                           self.builds[self.build_index])
             return path
         except:
             folder = urljoin(self.base_url, self.monthly_build_list_regex)
@@ -504,10 +518,12 @@ class ReleaseScraper(Scraper):
                  'linux64': r'^%(APP)s-.*\.%(EXT)s$',
                  'mac': r'^%(APP)s.*\.%(EXT)s$',
                  'mac64': r'^%(APP)s.*\.%(EXT)s$',
-                 'win32': r'^%(APP)s.*\.%(EXT)s$',
-                 'win64': r'^%(APP)s.*\.%(EXT)s$'}
-        return regex[self.platform] % {'APP': self.application,
-                                       'EXT': self.extension}
+                 'win32': r'^%(APP)s.*%(STUB)s.*\.%(EXT)s$',
+                 'win64': r'^%(APP)s.*%(STUB)s.*\.%(EXT)s$'}
+        return regex[self.platform] % {
+            'APP': self.application,
+            'EXT': self.extension,
+            'STUB': 'Stub' if self.is_stub_installer else ''}
 
     @property
     def path_regex(self):
@@ -674,7 +690,7 @@ class TinderboxScraper(Scraper):
     def binary_regex(self):
         """Return the regex for the binary"""
 
-        regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.'
+        regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.%(PLATFORM)s'
         regex_suffix = {'linux': r'.*\.%(EXT)s$',
                         'linux64': r'.*\.%(EXT)s$',
                         'mac': r'.*\.%(EXT)s$',
@@ -686,6 +702,7 @@ class TinderboxScraper(Scraper):
 
         return regex % {'APP': self.application,
                         'LOCALE': self.locale,
+                        'PLATFORM': PLATFORM_FRAGMENTS[self.platform],
                         'EXT': self.extension}
 
     def build_filename(self, binary):
@@ -745,8 +762,10 @@ class TinderboxScraper(Scraper):
         parser.entries = parser.filter(r'^\d+$')
 
         if self.timestamp:
-            # If a timestamp is given, retrieve the folder with the timestamp as name
-            parser.entries = self.timestamp in parser.entries and [self.timestamp]
+            # If a timestamp is given, retrieve the folder with the timestamp
+            # as name
+            parser.entries = self.timestamp in parser.entries and \
+                [self.timestamp]
 
         elif self.date:
             # If date is given, retrieve the subset of builds on that date
@@ -826,6 +845,11 @@ def cli():
                       choices=PLATFORM_FRAGMENTS.keys(),
                       metavar='PLATFORM',
                       help='Platform of the application')
+    parser.add_option('--stub',
+                      dest='is_stub_installer',
+                      action='store_true',
+                      help='Stub installer. '
+                           'Only applicable to Windows builds.')
     parser.add_option('--type', '-t',
                       dest='type',
                       choices=BUILD_TYPES.keys(),
@@ -941,8 +965,10 @@ def cli():
                         'authentication': (options.username, options.password),
                         'retry_attempts': options.retry_attempts,
                         'retry_delay': options.retry_delay,
+                        'is_stub_installer': options.is_stub_installer,
                         'timeout': options.timeout,
                         'log_level': options.log_level}
+
     scraper_options = {
         'candidate': {'build_number': options.build_number,
                       'no_unsigned': options.no_unsigned},
