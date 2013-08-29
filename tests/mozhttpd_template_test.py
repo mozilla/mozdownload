@@ -11,6 +11,8 @@ import unittest
 import mozfile
 import mozhttpd
 
+from mozdownload.utils import urljoin
+
 WDIR = 'downloadable_tests'
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -34,7 +36,7 @@ class MozHttpdTest(unittest.TestCase):
         self.httpd.start(block=False)
         self.server_address = "http://%s:%s" % (self.httpd.host,
                                                 self.httpd.port)
-        self.wdir = '/'.join([self.server_address, WDIR])
+        self.wdir = urljoin(self.server_address, WDIR)
 
         # Create a temporary directory for potential downloads
         self.temp_dir = tempfile.mkdtemp()
