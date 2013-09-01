@@ -863,7 +863,7 @@ def cli():
                       dest='version',
                       metavar='VERSION',
                       help='Version of the application to be used by release\
-                            and candidate builds, i.e. "3.6"')
+                            and candidate builds, i.e. "3.6" (REQUIRED VALUE)')
     parser.add_option('--extension',
                       dest='extension',
                       metavar='EXTENSION',
@@ -938,11 +938,19 @@ def cli():
     # TODO: option group for nightly builds
     (options, args) = parser.parse_args()
 
+    # Gives instructions to user when no arguments were passed
+    if len(sys.argv) == 1:
+        print __doc__
+        parser.print_usage()
+        print "Specify --help for more information on options. " \
+              "Please see the README for examples."
+
     # Check for required options and arguments
     # Note: Will be optional when ini file support has been landed
     if not options.url \
        and not options.type in ['daily', 'tinderbox'] \
-       and not options.version:
+       and not options.version\
+       and len(sys.argv) > 1:
         parser.error('The version of the application to download has not'
                      ' been specified.')
 
@@ -974,12 +982,14 @@ def cli():
     kwargs = scraper_keywords.copy()
     kwargs.update(scraper_options.get(options.type, {}))
 
-    if options.url:
-        build = DirectScraper(options.url, **kwargs)
-    else:
-        build = BUILD_TYPES[options.type](**kwargs)
+    # Avoid error when no arguments are passed and give easy instructions
+    if len(sys.argv) > 1:
+        if options.url:
+            build = DirectScraper(options.url, **kwargs)
+        else:
+            build = BUILD_TYPES[options.type](**kwargs)
 
-    build.download()
+        build.download()
 
 if __name__ == "__main__":
     cli()
