@@ -558,6 +558,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
 
         # Internally we access builds via index
         if self.build_number is not None:
+            self.builds, self.build_index = self.get_build_info_for_version(
+                self.version)
             self.builds = ['build%s' % self.build_number]
             self.build_index = 0
         else:
