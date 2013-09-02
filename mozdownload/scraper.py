@@ -863,7 +863,7 @@ def cli():
                       dest='version',
                       metavar='VERSION',
                       help='Version of the application to be used by release\
-                            and candidate builds, i.e. "3.6" (REQUIRED VALUE)')
+                            and candidate builds, i.e. "3.6"')
     parser.add_option('--extension',
                       dest='extension',
                       metavar='EXTENSION',
