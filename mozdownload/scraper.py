@@ -557,12 +557,11 @@ class ReleaseCandidateScraper(ReleaseScraper):
         "Defines additional build information"
 
         # Internally we access builds via index
+        self.builds, self.build_index = self.get_build_info_for_version(
+            self.version)
         if self.build_number is not None:
             self.builds = ['build%s' % self.build_number]
             self.build_index = 0
-        else:
-            self.builds, self.build_index = self.get_build_info_for_version(
-                self.version)
 
     def get_build_info_for_version(self, version, build_index=None):
         url = urljoin(self.base_url, self.candidate_build_list_regex)
