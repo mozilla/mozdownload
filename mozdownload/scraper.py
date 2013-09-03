@@ -26,7 +26,7 @@ import progressbar
 version = pkg_resources.require("mozdownload")[0].version
 
 __doc__ = """
-Module to handle downloads for different types of ftp.mozilla.org hosted
+Module to handle downloads for different types of ftp.mozilla.org hosted \
 applications.
 
 mozdownload version: %(version)s
