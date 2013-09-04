@@ -26,7 +26,7 @@ import progressbar
 version = pkg_resources.require("mozdownload")[0].version
 
 __doc__ = """
-Module to handle downloads for different types of ftp.mozilla.org hosted
+Module to handle downloads for different types of ftp.mozilla.org hosted \
 applications.
 
 mozdownload version: %(version)s
@@ -936,6 +936,14 @@ def cli():
 
     # TODO: option group for nightly builds
     (options, args) = parser.parse_args()
+
+    # Gives instructions to user when no arguments were passed
+    if len(sys.argv) == 1:
+        print __doc__
+        parser.print_usage()
+        print "Specify --help for more information on options. " \
+              "Please see the README for examples."
+        return
 
     # Check for required options and arguments
     # Note: Will be optional when ini file support has been landed
