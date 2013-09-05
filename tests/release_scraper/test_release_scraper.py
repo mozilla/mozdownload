@@ -23,10 +23,10 @@ class ReleaseScraperTest(mhttpd.MozHttpdTest):
                                  version='latest',
                                  platform='win32',
                                  base_url=self.wdir)
-        scraper.download()
-        self.assertEqual(scraper.target,
-                         os.path.join(self.temp_dir,
-                                      os.path.basename(scraper.target)))
+
+        target_cmp = os.path.join(self.temp_dir,
+                                  'firefox-latest.en-US.win32.exe')
+        self.assertEqual(scraper.target, target_cmp)
 
 if __name__ == '__main__':
     unittest.main()

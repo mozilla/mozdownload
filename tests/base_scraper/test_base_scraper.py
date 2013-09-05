@@ -9,13 +9,16 @@
 # - detect_platform
 # - show_matching_builds
 
+# - TimeoutError needs revisiting. facilitate HTTP response delay... somehow
+
 import os
 import unittest
 
 import mozhttpd
 import requests
 
-from mozdownload import DirectScraper, NotFoundError, NotImplementedError, Scraper, TimeoutError
+from mozdownload import *
+from mozdownload.utils import create_md5
 
 import mozhttpd_template_test as mhttpd
 
@@ -25,47 +28,37 @@ class BaseScraperTest(mhttpd.MozHttpdTest):
 
     def test_platform_regex(self):
         """Test for correct platform_regex output"""
-        scraper = Scraper(directory=self.temp_dir,
-                          version=None,
-                          platform="win32")
-        self.assertEqual(scraper.platform_regex, 'win32')
 
-        scraper1 = Scraper(directory=self.temp_dir,
-                           version=None,
-                           platform="win64")
-        self.assertEqual(scraper1.platform_regex, 'win64-x86_64')
+        # Copy of PLATFORM_FRAGMENTS
+        platform_dict = {'linux': 'linux-i686',
+                         'linux64': 'linux-x86_64',
+                         'mac': 'mac',
+                         'mac64': 'mac64',
+                         'win32': 'win32',
+                         'win64': 'win64-x86_64'}
 
-        scraper2 = Scraper(directory=self.temp_dir,
-                           version=None,
-                           platform="linux")
-        self.assertEqual(scraper2.platform_regex, 'linux-i686')
-
-        scraper3 = Scraper(directory=self.temp_dir,
-                           version=None,
-                           platform="linux64")
-        self.assertEqual(scraper3.platform_regex, 'linux-x86_64')
-
-        scraper4 = Scraper(directory=self.temp_dir,
-                           version=None,
-                           platform="mac")
-        self.assertEqual(scraper4.platform_regex, 'mac')
-
-        scraper5 = Scraper(directory=self.temp_dir,
-                           version=None,
-                           platform="mac64")
-        self.assertEqual(scraper5.platform_regex, 'mac64')
+        for key in platform_dict:
+            scraper = Scraper(directory=self.temp_dir,
+                              version=None,
+                              platform=key)
+            self.assertEqual(scraper.platform_regex, platform_dict[key])
 
     def test_download(self):
         """Test download method"""
 
+        filename = 'download_test.txt'
         # standard download
-        test_url = 'https://mozqa.com/index.html'
+        test_url = urljoin(self.wdir, 'download_test.txt')
         scraper = DirectScraper(url=test_url,
                                 directory=self.temp_dir,
                                 version=None)
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
-                                                    scraper.target)))
+                                                    filename)))
+        # Compare original and downloaded file via md5 hash
+        original = create_md5(os.path.join(mhttpd.HERE, mhttpd.WDIR, filename))
+        down = create_md5(os.path.join(self.temp_dir, filename))
+        self.assertEqual(original, down)
 
         # TimeoutError
         test_url1 = 'http://www.mozilla.org/media/img/firefox/fx/android-phone-tablet.jpg'
@@ -78,13 +71,13 @@ class BaseScraperTest(mhttpd.MozHttpdTest):
         self.assertRaises(TimeoutError, scraper1.download)
 
         # RequestException
-        test_url2 = 'https://mozqa.com/wrong_index.html'
+        test_url2 = urljoin(self.wdir, 'does_not_exist.html')
         scraper2 = DirectScraper(url=test_url2,
                                  directory=self.temp_dir,
                                  version=None)
         self.assertRaises(requests.exceptions.RequestException, scraper2.download)
 
-    def test_exceptions(self):
+    def test_notimplementedexceptions(self):
         scraper = Scraper(directory=self.temp_dir,
                           version=None)
         for attr in ['binary', 'binary_regex', 'path_regex']:

@@ -13,7 +13,7 @@ import mozhttpd
 
 from mozdownload.utils import urljoin
 
-WDIR = 'downloadable_tests'
+WDIR = 'data'
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 

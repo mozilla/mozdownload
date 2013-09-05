@@ -4,6 +4,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# TODO:
+# - Remove all scraper instances and only pass a regex in these instances.
+# - Check not only one entry but all of them
+# - Rest follow discussion
+
 import os
 import unittest
 
@@ -28,26 +33,21 @@ class DirectoryParserTest(mhttpd.MozHttpdTest):
         # Checks if DirectoryParser lists the server entries
         self.assertNotEqual(parser.entries, [], "parser.entries were not listed")
 
-        # DirectoryParser returns correct filename
-        scraper = ReleaseScraper(directory=self.temp_dir,
-                                 version='latest',
-                                 platform='win32',
-                                 base_url=self.wdir)
-        parser1 = DirectoryParser(scraper.path)
-        self.assertEqual(parser1.entries[0], 'firefox-latest.en-US.win32.exe')
+        # path_regex to mozdownload -t release -p win32 -v latest
+        testpath = urljoin(self.wdir, 'directoryparser')
+        parser1 = DirectoryParser(testpath)
+        parser1.entries.sort()
+        testdir = os.listdir('./data/directoryparser/')
+        testdir.sort()
+        self.assertEqual(parser1.entries, testdir)
 
     def test_filter(self):
         """Testing the DirectoryParser filter method"""
-        scraper = TinderboxScraper(directory=self.temp_dir,
-                                   version=None,
-                                   platform='win32',
-                                   base_url=self.wdir)
-        parser = DirectoryParser(urljoin(scraper.base_url,
-                                         scraper.build_list_regex))
+        parser = DirectoryParser(urljoin(self.wdir, 'directoryparser', 'filter'))
 
-        # Get the contents of the folder
-        folder_path = urljoin(mhttpd.HERE, mhttpd.WDIR, 'firefox',
-                              'tinderbox-builds', 'mozilla-central-win32')
+        # Get the contents of the folder - dirs and files
+        folder_path = urljoin(mhttpd.HERE, mhttpd.WDIR, 'directoryparser',
+                              'filter')
         contents = os.listdir(folder_path)
         contents.sort()
         self.assertEqual(parser.entries, contents)
@@ -63,7 +63,6 @@ class DirectoryParserTest(mhttpd.MozHttpdTest):
         # Test filter method with a function
         parser.entries = parser.filter(lambda x: x == dirs[0])
         self.assertEqual(parser.entries, [dirs[0]])
-
 
 if __name__ == '__main__':
     unittest.main()
