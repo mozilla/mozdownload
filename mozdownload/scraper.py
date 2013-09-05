@@ -100,7 +100,7 @@ class Scraper(object):
         self.timeout_download = timeout
         self.timeout_network = 60.
 
-        self.logger = mozlog.getLogger(self.__class__.__name__)
+        self.logger = mozlog.getLogger(" ")
         self.logger.setLevel(getattr(mozlog, log_level.upper()))
 
         # build the base URL
@@ -909,8 +909,8 @@ def cli():
                       action='store',
                       dest='log_level',
                       default='INFO',
-                      metavar='str',
-                      help='threshold for log output (default: %default)')
+                      metavar='LOG_LEVEL',
+                      help='Threshold for log output (default: %default)')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
