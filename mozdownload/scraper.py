@@ -100,7 +100,7 @@ class Scraper(object):
         self.timeout_download = timeout
         self.timeout_network = 60.
 
-        self.logger = mozlog.getLogger(" ")
+        self.logger = mozlog.getLogger(' ')
         self.logger.setLevel(getattr(mozlog, log_level.upper()))
 
         # build the base URL
