@@ -13,17 +13,16 @@ def urljoin(*fragments):
     return '/'.join(fragments)
 
 
-def create_md5(fpath):
+def create_md5(path):
     """Creates the md5 hash of a file using the hashlib library"""
 
     m = hashlib.md5()
     # rb necessary to run correctly in windows.
-    fopen = open(fpath, "rb")
-    while True:
-        data = fopen.read(8192)
-        if not data:
-            break
-        m.update(data)
-    fopen.close()
+    with open(path, "rb") as fopen:
+        while True:
+            data = fopen.read(8192)
+            if not data:
+                break
+            m.update(data)
 
     return m.hexdigest()

@@ -17,7 +17,7 @@ import mozhttpd_template_test as mhttpd
 class ReleaseScraperTest(mhttpd.MozHttpdTest):
     """test mozdownload scraper class"""
 
-    def test_version_latest(self):
+    def test_latest_version(self):
         """Testing the basic functionality of the ReleaseScraper Class"""
         scraper = ReleaseScraper(directory=self.temp_dir,
                                  version='latest',

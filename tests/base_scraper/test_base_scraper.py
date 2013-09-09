@@ -4,13 +4,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# TODO:
-# Tests of base class:
-# - detect_platform
-# - show_matching_builds
-
-# - TimeoutError needs revisiting. facilitate HTTP response delay... somehow
-
 import os
 import unittest
 
@@ -29,19 +22,11 @@ class BaseScraperTest(mhttpd.MozHttpdTest):
     def test_platform_regex(self):
         """Test for correct platform_regex output"""
 
-        # Copy of PLATFORM_FRAGMENTS
-        platform_dict = {'linux': 'linux-i686',
-                         'linux64': 'linux-x86_64',
-                         'mac': 'mac',
-                         'mac64': 'mac64',
-                         'win32': 'win32',
-                         'win64': 'win64-x86_64'}
-
-        for key in platform_dict:
+        for key in PLATFORM_FRAGMENTS:
             scraper = Scraper(directory=self.temp_dir,
                               version=None,
                               platform=key)
-            self.assertEqual(scraper.platform_regex, platform_dict[key])
+            self.assertEqual(scraper.platform_regex, PLATFORM_FRAGMENTS[key])
 
     def test_download(self):
         """Test download method"""
@@ -56,25 +41,24 @@ class BaseScraperTest(mhttpd.MozHttpdTest):
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     filename)))
         # Compare original and downloaded file via md5 hash
-        original = create_md5(os.path.join(mhttpd.HERE, mhttpd.WDIR, filename))
-        down = create_md5(os.path.join(self.temp_dir, filename))
-        self.assertEqual(original, down)
-
-        # TimeoutError
-        test_url1 = 'http://www.mozilla.org/media/img/firefox/fx/android-phone-tablet.jpg'
-        scraper1 = DirectScraper(url=test_url1,
-                                 directory=self.temp_dir,
-                                 version=None,
-                                 timeout=0.1,
-                                 retry_attempts=2,
-                                 retry_delay=0.1)
-        self.assertRaises(TimeoutError, scraper1.download)
+        md5_original = create_md5(os.path.join(mhttpd.HERE, mhttpd.WDIR, filename))
+        md5_downloaded = create_md5(os.path.join(self.temp_dir, filename))
+        self.assertEqual(md5_original, md5_downloaded)
 
         # RequestException
+        test_url1 = urljoin(self.wdir, 'does_not_exist.html')
+        scraper1 = DirectScraper(url=test_url1,
+                                 directory=self.temp_dir,
+                                 version=None)
+        self.assertRaises(requests.exceptions.RequestException, scraper1.download)
+
+        # Covering retry_attempts
         test_url2 = urljoin(self.wdir, 'does_not_exist.html')
         scraper2 = DirectScraper(url=test_url2,
                                  directory=self.temp_dir,
-                                 version=None)
+                                 version=None,
+                                 retry_attempts=3,
+                                 retry_delay=1.0)
         self.assertRaises(requests.exceptions.RequestException, scraper2.download)
 
     def test_notimplementedexceptions(self):

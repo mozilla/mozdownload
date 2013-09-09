@@ -6,6 +6,7 @@
 
 import os
 import tempfile
+import time
 import unittest
 
 import mozfile
@@ -29,8 +30,8 @@ class MozHttpdTest(unittest.TestCase):
         """Starts server that lists all files in the directory"""
         self.httpd = mozhttpd.MozHttpd(port=8080, docroot=HERE,
                                        urlhandlers=[{'method': 'GET',
-                                                    'path': '/api/resources/([^/]+)/?',
-                                                    'function': resource_get}])
+                                                     'path': '/api/resources/([^/]+)/?',
+                                                     'function': resource_get}])
         print "\nServing '%s' at %s:%s" % (self.httpd.docroot,
                                            self.httpd.host, self.httpd.port)
         self.httpd.start(block=False)

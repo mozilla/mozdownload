@@ -4,11 +4,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# TODO:
-# - Remove all scraper instances and only pass a regex in these instances.
-# - Check not only one entry but all of them
-# - Rest follow discussion
-
 import os
 import unittest
 
@@ -37,7 +32,7 @@ class DirectoryParserTest(mhttpd.MozHttpdTest):
         testpath = urljoin(self.wdir, 'directoryparser')
         parser1 = DirectoryParser(testpath)
         parser1.entries.sort()
-        testdir = os.listdir('./data/directoryparser/')
+        testdir = os.listdir(urljoin(mhttpd.HERE, 'data', 'directoryparser'))
         testdir.sort()
         self.assertEqual(parser1.entries, testdir)
 
