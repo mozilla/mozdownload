@@ -16,6 +16,7 @@ import urllib
 from urlparse import urlparse
 
 import mozinfo
+import mozlog
 
 from parser import DirectoryParser
 from timezones import PacificTimezone
@@ -81,7 +82,7 @@ class Scraper(object):
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
-                 is_stub_installer=False, timeout=None):
+                 is_stub_installer=False, timeout=None, log_level='INFO'):
 
         # Private properties for caching
         self._target = None
@@ -99,6 +100,9 @@ class Scraper(object):
         self.timeout_download = timeout
         self.timeout_network = 60.
 
+        self.logger = mozlog.getLogger(' ')
+        self.logger.setLevel(getattr(mozlog, log_level.upper()))
+
         # build the base URL
         self.application = application
         self.base_url = urljoin(BASE_URL, self.application)
@@ -111,11 +115,12 @@ class Scraper(object):
                 break
             except (NotFoundError, requests.exceptions.RequestException), e:
                 if self.retry_attempts > 0:
-                    # Print only if multiple attempts are requested
-                    print "Build not found: '%s'" % e.message
-                    print 'Will retry in %s seconds...' % self.retry_delay
+                    # Log only if multiple attempts are requested
+                    self.logger.warning("Build not found: '%s'" % e.message)
+                    self.logger.info('Will retry in %s seconds...' %
+                                     (self.retry_delay))
                     time.sleep(self.retry_delay)
-                    print "Retrying... (attempt %s)" % attempt
+                    self.logger.info("Retrying... (attempt %s)" % attempt)
 
                 if attempt >= self.retry_attempts:
                     if hasattr(e, 'response') and \
@@ -155,11 +160,12 @@ class Scraper(object):
                                         self.path)
             except (NotFoundError, requests.exceptions.RequestException), e:
                 if self.retry_attempts > 0:
-                    # Print only if multiple attempts are requested
-                    print "Build not found: '%s'" % e.message
-                    print 'Will retry in %s seconds...' % self.retry_delay
+                    # Log only if multiple attempts are requested
+                    self.logger.warning("Build not found: '%s'" % e.message)
+                    self.logger.info('Will retry in %s seconds...' %
+                                     (self.retry_delay))
                     time.sleep(self.retry_delay)
-                    print "Retrying... (attempt %s)" % attempt
+                    self.logger.info("Retrying... (attempt %s)" % attempt)
 
                 if attempt >= self.retry_attempts:
                     if hasattr(e, 'response') and \
@@ -248,10 +254,12 @@ class Scraper(object):
 
         # Don't re-download the file
         if os.path.isfile(os.path.abspath(self.target)):
-            print "File has already been downloaded: %s" % (self.target)
+            self.logger.info("File has already been downloaded: %s" %
+                             (self.target))
             return
 
-        print 'Downloading from: %s' % (urllib.unquote(self.final_url))
+        self.logger.info('Downloading from: %s' %
+                         (urllib.unquote(self.final_url)))
         tmp_file = self.target + ".part"
 
         while True:
@@ -290,11 +298,12 @@ class Scraper(object):
                 if tmp_file and os.path.isfile(tmp_file):
                     os.remove(tmp_file)
                 if self.retry_attempts > 0:
-                    # Print only if multiple attempts are requested
-                    print 'Download failed: "%s"' % e.message
-                    print 'Will retry in %s seconds...' % self.retry_delay
+                    # Log only if multiple attempts are requested
+                    self.logger.warning('Download failed: "%s"' % e.message)
+                    self.logger.info('Will retry in %s seconds...' %
+                                     (self.retry_delay))
                     time.sleep(self.retry_delay)
-                    print "Retrying... (attempt %s)" % attempt
+                    self.logger.info("Retrying... (attempt %s)" % attempt)
                 if attempt >= self.retry_attempts:
                     raise
                 time.sleep(self.retry_delay)
@@ -303,12 +312,12 @@ class Scraper(object):
 
     def show_matching_builds(self, builds):
         """Output the matching builds"""
-        print 'Found %s build%s: %s' % (
+        self.logger.info('Found %s build%s: %s' % (
             len(builds),
             len(builds) > 1 and 's' or '',
             len(builds) > 10 and
             ' ... '.join([', '.join(builds[:5]), ', '.join(builds[-5:])]) or
-            ', '.join(builds))
+            ', '.join(builds)))
 
 
 class DailyScraper(Scraper):
@@ -354,7 +363,7 @@ class DailyScraper(Scraper):
             # retrieve the date of the build via its build id.
             url = '%s/nightly/latest-%s/' % (self.base_url, self.branch)
 
-            print 'Retrieving the build status file from %s' % url
+            self.logger.info('Retrieving the build status file from %s' % url)
             parser = DirectoryParser(url, authentication=self.authentication,
                                      timeout=self.timeout_network)
             parser.entries = parser.filter(r'.*%s\.txt' % self.platform_regex)
@@ -395,7 +404,7 @@ class DailyScraper(Scraper):
     def get_build_info_for_date(self, date, has_time=False, build_index=None):
         url = urljoin(self.base_url, self.monthly_build_list_regex)
 
-        print 'Retrieving list of builds from %s' % url
+        self.logger.info('Retrieving list of builds from %s' % url)
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
         regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s$' % {
@@ -566,7 +575,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
     def get_build_info_for_version(self, version, build_index=None):
         url = urljoin(self.base_url, self.candidate_build_list_regex)
 
-        print 'Retrieving list of candidate builds from %s' % url
+        self.logger.info('Retrieving list of candidate builds from %s' % url)
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
         if not parser.entries:
@@ -622,15 +631,15 @@ class ReleaseCandidateScraper(ReleaseScraper):
             # Try to download the signed candidate build
             Scraper.download(self)
         except NotFoundError, e:
-            print str(e)
+            self.logger.exception(str(e))
 
             # If the signed build cannot be downloaded and unsigned builds are
             # allowed, try to download the unsigned build instead
             if self.no_unsigned:
                 raise
             else:
-                print "Signed build has not been found. Falling back to" \
-                      " unsigned build."
+                self.logger.warning("Signed build has not been found. "
+                                    "Falling back to unsigned build.")
                 self.unsigned = True
                 Scraper.download(self)
 
@@ -752,7 +761,7 @@ class TinderboxScraper(Scraper):
     def get_build_info_for_index(self, build_index=None):
         url = urljoin(self.base_url, self.build_list_regex)
 
-        print 'Retrieving list of builds from %s' % url
+        self.logger.info('Retrieving list of builds from %s' % url)
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
         parser.entries = parser.filter(r'^\d+$')
@@ -896,6 +905,12 @@ def cli():
                       metavar='TIMEOUT',
                       help='Amount of time (in seconds) until a download times'
                            ' out')
+    parser.add_option('--log-level',
+                      action='store',
+                      dest='log_level',
+                      default='INFO',
+                      metavar='LOG_LEVEL',
+                      help='Threshold for log output (default: %default)')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
@@ -964,7 +979,9 @@ def cli():
                         'retry_attempts': options.retry_attempts,
                         'retry_delay': options.retry_delay,
                         'is_stub_installer': options.is_stub_installer,
-                        'timeout': options.timeout}
+                        'timeout': options.timeout,
+                        'log_level': options.log_level}
+
     scraper_options = {
         'candidate': {'build_number': options.build_number,
                       'no_unsigned': options.no_unsigned},
