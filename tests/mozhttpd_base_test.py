@@ -6,11 +6,11 @@
 
 import os
 import tempfile
-import time
 import unittest
 
 import mozfile
 import mozhttpd
+import mozlog
 
 from mozdownload.utils import urljoin
 
@@ -28,12 +28,15 @@ class MozHttpdBaseTest(unittest.TestCase):
 
     def setUp(self):
         """Starts server that lists all files in the directory"""
+        self.logger = mozlog.getLogger(' ')
+        self.logger.setLevel("INFO")
         self.httpd = mozhttpd.MozHttpd(port=8080, docroot=HERE,
                                        urlhandlers=[{'method': 'GET',
                                                      'path': '/api/resources/([^/]+)/?',
                                                      'function': resource_get}])
-        print "\nServing '%s' at %s:%s" % (self.httpd.docroot,
-                                           self.httpd.host, self.httpd.port)
+        self.logger.debug("Serving '%s' at %s:%s" % (self.httpd.docroot,
+                                                     self.httpd.host,
+                                                     self.httpd.port))
         self.httpd.start(block=False)
         self.server_address = "http://%s:%s" % (self.httpd.host,
                                                 self.httpd.port)
