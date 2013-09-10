@@ -7,14 +7,11 @@
 import os
 import unittest
 
-import mozhttpd
-
 from mozdownload import ReleaseScraper
+import mozhttpd_base_test as mhttpd
 
-import mozhttpd_template_test as mhttpd
 
-
-class ReleaseScraperTest(mhttpd.MozHttpdTest):
+class ReleaseScraperTest(mhttpd.MozHttpdBaseTest):
     """test mozdownload scraper class"""
 
     def test_latest_version(self):

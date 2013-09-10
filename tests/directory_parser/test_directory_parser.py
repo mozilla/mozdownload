@@ -7,15 +7,12 @@
 import os
 import unittest
 
-import mozhttpd
-
-from mozdownload import DirectoryParser, ReleaseScraper, TinderboxScraper
+from mozdownload import DirectoryParser
 from mozdownload.utils import urljoin
+import mozhttpd_base_test as mhttpd
 
-import mozhttpd_template_test as mhttpd
 
-
-class DirectoryParserTest(mhttpd.MozHttpdTest):
+class DirectoryParserTest(mhttpd.MozHttpdBaseTest):
     """test mozdownload scraper class"""
 
     def test_init(self):

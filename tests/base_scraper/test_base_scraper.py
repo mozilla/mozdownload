@@ -7,26 +7,25 @@
 import os
 import unittest
 
-import mozhttpd
 import requests
 
-from mozdownload import *
-from mozdownload.utils import create_md5
+import mozdownload
+from mozdownload.utils import create_md5, urljoin
+import mozhttpd_base_test as mhttpd
 
-import mozhttpd_template_test as mhttpd
 
-
-class BaseScraperTest(mhttpd.MozHttpdTest):
+class BaseScraperTest(mhttpd.MozHttpdBaseTest):
     """Testing the basic functionality of the Base Scraper Class"""
 
     def test_platform_regex(self):
         """Test for correct platform_regex output"""
 
-        for key in PLATFORM_FRAGMENTS:
-            scraper = Scraper(directory=self.temp_dir,
-                              version=None,
-                              platform=key)
-            self.assertEqual(scraper.platform_regex, PLATFORM_FRAGMENTS[key])
+        for key in mozdownload.PLATFORM_FRAGMENTS:
+            scraper = mozdownload.Scraper(directory=self.temp_dir,
+                                          version=None,
+                                          platform=key)
+            self.assertEqual(scraper.platform_regex,
+                             mozdownload.PLATFORM_FRAGMENTS[key])
 
     def test_download(self):
         """Test download method"""
@@ -34,9 +33,9 @@ class BaseScraperTest(mhttpd.MozHttpdTest):
         filename = 'download_test.txt'
         # standard download
         test_url = urljoin(self.wdir, 'download_test.txt')
-        scraper = DirectScraper(url=test_url,
-                                directory=self.temp_dir,
-                                version=None)
+        scraper = mozdownload.DirectScraper(url=test_url,
+                                            directory=self.temp_dir,
+                                            version=None)
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     filename)))
@@ -47,26 +46,30 @@ class BaseScraperTest(mhttpd.MozHttpdTest):
 
         # RequestException
         test_url1 = urljoin(self.wdir, 'does_not_exist.html')
-        scraper1 = DirectScraper(url=test_url1,
-                                 directory=self.temp_dir,
-                                 version=None)
-        self.assertRaises(requests.exceptions.RequestException, scraper1.download)
+        scraper1 = mozdownload.DirectScraper(url=test_url1,
+                                             directory=self.temp_dir,
+                                             version=None)
+        self.assertRaises(requests.exceptions.RequestException,
+                          scraper1.download)
 
         # Covering retry_attempts
         test_url2 = urljoin(self.wdir, 'does_not_exist.html')
-        scraper2 = DirectScraper(url=test_url2,
-                                 directory=self.temp_dir,
-                                 version=None,
-                                 retry_attempts=3,
-                                 retry_delay=1.0)
-        self.assertRaises(requests.exceptions.RequestException, scraper2.download)
+        scraper2 = mozdownload.DirectScraper(url=test_url2,
+                                             directory=self.temp_dir,
+                                             version=None,
+                                             retry_attempts=3,
+                                             retry_delay=1.0)
+        self.assertRaises(requests.exceptions.RequestException,
+                          scraper2.download)
 
     def test_notimplementedexceptions(self):
-        scraper = Scraper(directory=self.temp_dir,
-                          version=None)
+        scraper = mozdownload.Scraper(directory=self.temp_dir,
+                                      version=None)
         for attr in ['binary', 'binary_regex', 'path_regex']:
-            self.assertRaises(NotImplementedError, getattr, scraper, attr)
-        self.assertRaises(NotImplementedError, scraper.build_filename, 'invalid binary')
+            self.assertRaises(mozdownload.NotImplementedError, getattr,
+                              scraper, attr)
+        self.assertRaises(mozdownload.NotImplementedError,
+                          scraper.build_filename, 'invalid binary')
 
 if __name__ == '__main__':
     unittest.main()

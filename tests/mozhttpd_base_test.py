@@ -23,7 +23,7 @@ def resource_get(request, objid):
     return (200, {'id': objid, 'query': request.query})
 
 
-class MozHttpdTest(unittest.TestCase):
+class MozHttpdBaseTest(unittest.TestCase):
     """Generic test class that uses a mozhttpd server"""
 
     def setUp(self):
