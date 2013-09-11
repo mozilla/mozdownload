@@ -18,9 +18,9 @@ def create_md5(path):
 
     m = hashlib.md5()
     # rb necessary to run correctly in windows.
-    with open(path, "rb") as fopen:
+    with open(path, "rb") as f:
         while True:
-            data = fopen.read(8192)
+            data = f.read(8192)
             if not data:
                 break
             m.update(data)
