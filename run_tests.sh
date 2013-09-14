@@ -4,8 +4,10 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
  
 VERSION_MANIFEST_DESTINY=0.5.6
-VERSION_MOZTEST=0.1
 VERSION_MOZFILE=0.7
+VERSION_MOZHTTPD=0.6
+VERSION_MOZLOG=1.3
+VERSION_MOZTEST=0.1
 VERSION_VIRTUAL_ENV=1.9.1
  
 VENV_DIR="tests/venv"
@@ -22,7 +24,9 @@ fi
  
 python setup.py develop
 pip install --upgrade ManifestDestiny==$VERSION_MANIFEST_DESTINY
-pip install --upgrade moztest==$VERSION_MOZTEST
 pip install --upgrade mozfile==$VERSION_MOZFILE
+pip install --upgrade mozhttpd==$VERSION_MOZHTTPD
+pip install --upgrade mozlog==$VERSION_MOZLOG
+pip install --upgrade moztest==$VERSION_MOZTEST
  
 python tests/test.py $@
