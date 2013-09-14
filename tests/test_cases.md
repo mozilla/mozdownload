@@ -2,22 +2,6 @@
 
 ## Firefox
 
-### Releases
-```
-mozdownload -p win32 -v latest
-mozdownload -t release -p win32 -v latest
-mozdownload -a firefox -p win32 -v latest
-mozdownload -a firefox -t release -p linux -v latest
-mozdownload -a firefox -t release -p linux64 -v latest
-mozdownload -a firefox -t release -p mac -v latest
-mozdownload -a firefox -t release -p win32 -v latest
-mozdownload -a firefox -t release -p win32 -v latest -d firefox-release-builds
-mozdownload -a firefox -t release -p win32 -v latest -l de
-mozdownload -a firefox -t release -p win32 -v latest --stub
-mozdownload -a firefox -t release -p win32 -v 21.0
-mozdownload -a firefox -t release -p win32 -v 21.0 -l es-ES
-```
-
 ### Candidates
 ```
 mozdownload -t candidate -p win32 -v 21.0
