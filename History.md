@@ -1,3 +1,15 @@
+1.9 / 2013-08-29
+================
+  * Invalid branch or locale should display proper error message (#115)
+  * Fix PEP8 issues and add checking to Travis-CI (#140)
+  * Add support for stub installer on Windows (#29)
+  * On linux64 a 64-bit tinderbox build has to be downloaded (#138)
+  * Removed date_validation_regex from TinderboxScraper (#130)
+  * Add Travis-CI configuration for running the tests (#132)
+  * Added urljoin method for handling URLs (#123)
+  * Added test harness and first test (#10)
+  * Unable to download tinderbox builds by timestamp (#103)
+
 1.8 / 2013-07-25
 ================
   * Multiple matches are shown when specifying a unique build ID (#102)
@@ -29,7 +41,7 @@
   * Added full command line options to README (#44)
   * Added version number to docstring and --help output (#34)
   * Implement automatic retries for locating the binary (#58)
-  * Implemented a download timeout (#50) 
+  * Implemented a download timeout (#50)
 
 1.6 / 2013-02-20
 ==================

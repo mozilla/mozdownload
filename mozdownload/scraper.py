@@ -16,16 +16,18 @@ import urllib
 from urlparse import urlparse
 
 import mozinfo
+import mozlog
 
 from parser import DirectoryParser
 from timezones import PacificTimezone
+from utils import urljoin
 
 import progressbar
 
 version = pkg_resources.require("mozdownload")[0].version
 
 __doc__ = """
-Module to handle downloads for different types of ftp.mozilla.org hosted
+Module to handle downloads for different types of ftp.mozilla.org hosted \
 applications.
 
 mozdownload version: %(version)s
@@ -80,7 +82,7 @@ class Scraper(object):
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale='en-US', extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
-                 timeout=None):
+                 is_stub_installer=False, timeout=None, log_level='INFO'):
 
         # Private properties for caching
         self._target = None
@@ -94,12 +96,16 @@ class Scraper(object):
         self.authentication = authentication
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
+        self.is_stub_installer = is_stub_installer
         self.timeout_download = timeout
         self.timeout_network = 60.
 
+        self.logger = mozlog.getLogger(' ')
+        self.logger.setLevel(getattr(mozlog, log_level.upper()))
+
         # build the base URL
         self.application = application
-        self.base_url = '/'.join([BASE_URL, self.application])
+        self.base_url = urljoin(BASE_URL, self.application)
 
         attempt = 0
         while True:
@@ -109,13 +115,20 @@ class Scraper(object):
                 break
             except (NotFoundError, requests.exceptions.RequestException), e:
                 if self.retry_attempts > 0:
-                    # Print only if multiple attempts are requested
-                    print "Build not found: '%s'" % e.message
-                    print 'Will retry in %s seconds...' % self.retry_delay
+                    # Log only if multiple attempts are requested
+                    self.logger.warning("Build not found: '%s'" % e.message)
+                    self.logger.info('Will retry in %s seconds...' %
+                                     (self.retry_delay))
                     time.sleep(self.retry_delay)
-                    print "Retrying... (attempt %s)" % attempt
+                    self.logger.info("Retrying... (attempt %s)" % attempt)
+
                 if attempt >= self.retry_attempts:
-                    raise
+                    if hasattr(e, 'response') and \
+                            e.response.status_code == 404:
+                        message = "Specified build has not been found"
+                        raise NotFoundError(message, e.response.url)
+                    else:
+                        raise
 
     @property
     def binary(self):
@@ -147,13 +160,20 @@ class Scraper(object):
                                         self.path)
             except (NotFoundError, requests.exceptions.RequestException), e:
                 if self.retry_attempts > 0:
-                    # Print only if multiple attempts are requested
-                    print "Build not found: '%s'" % e.message
-                    print 'Will retry in %s seconds...' % self.retry_delay
+                    # Log only if multiple attempts are requested
+                    self.logger.warning("Build not found: '%s'" % e.message)
+                    self.logger.info('Will retry in %s seconds...' %
+                                     (self.retry_delay))
                     time.sleep(self.retry_delay)
-                    print "Retrying... (attempt %s)" % attempt
+                    self.logger.info("Retrying... (attempt %s)" % attempt)
+
                 if attempt >= self.retry_attempts:
-                    raise
+                    if hasattr(e, 'response') and \
+                            e.response.status_code == 404:
+                        message = "Specified build has not been found"
+                        raise NotFoundError(message, self.path)
+                    else:
+                        raise
 
         return self._binary
 
@@ -167,13 +187,13 @@ class Scraper(object):
     def final_url(self):
         """Return the final URL of the build"""
 
-        return '/'.join([self.path, self.binary])
+        return urljoin(self.path, self.binary)
 
     @property
     def path(self):
         """Return the path to the build"""
 
-        return '/'.join([self.base_url, self.path_regex])
+        return urljoin(self.base_url, self.path_regex)
 
     @property
     def path_regex(self):
@@ -225,7 +245,7 @@ class Scraper(object):
                 return td.total_seconds()
             else:
                 return (td.microseconds +
-                        (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+                        (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10 ** 6
 
         attempt = 0
 
@@ -234,10 +254,12 @@ class Scraper(object):
 
         # Don't re-download the file
         if os.path.isfile(os.path.abspath(self.target)):
-            print "File has already been downloaded: %s" % (self.target)
+            self.logger.info("File has already been downloaded: %s" %
+                             (self.target))
             return
 
-        print 'Downloading from: %s' % (urllib.unquote(self.final_url))
+        self.logger.info('Downloading from: %s' %
+                         (urllib.unquote(self.final_url)))
         tmp_file = self.target + ".part"
 
         while True:
@@ -276,11 +298,12 @@ class Scraper(object):
                 if tmp_file and os.path.isfile(tmp_file):
                     os.remove(tmp_file)
                 if self.retry_attempts > 0:
-                    # Print only if multiple attempts are requested
-                    print 'Download failed: "%s"' % e.message
-                    print 'Will retry in %s seconds...' % self.retry_delay
+                    # Log only if multiple attempts are requested
+                    self.logger.warning('Download failed: "%s"' % e.message)
+                    self.logger.info('Will retry in %s seconds...' %
+                                     (self.retry_delay))
                     time.sleep(self.retry_delay)
-                    print "Retrying... (attempt %s)" % attempt
+                    self.logger.info("Retrying... (attempt %s)" % attempt)
                 if attempt >= self.retry_attempts:
                     raise
                 time.sleep(self.retry_delay)
@@ -289,12 +312,12 @@ class Scraper(object):
 
     def show_matching_builds(self, builds):
         """Output the matching builds"""
-        print 'Found %s build%s: %s' % (
+        self.logger.info('Found %s build%s: %s' % (
             len(builds),
             len(builds) > 1 and 's' or '',
             len(builds) > 10 and
             ' ... '.join([', '.join(builds[:5]), ', '.join(builds[-5:])]) or
-            ', '.join(builds))
+            ', '.join(builds)))
 
 
 class DailyScraper(Scraper):
@@ -340,7 +363,7 @@ class DailyScraper(Scraper):
             # retrieve the date of the build via its build id.
             url = '%s/nightly/latest-%s/' % (self.base_url, self.branch)
 
-            print 'Retrieving the build status file from %s' % url
+            self.logger.info('Retrieving the build status file from %s' % url)
             parser = DirectoryParser(url, authentication=self.authentication,
                                      timeout=self.timeout_network)
             parser.entries = parser.filter(r'.*%s\.txt' % self.platform_regex)
@@ -364,7 +387,7 @@ class DailyScraper(Scraper):
     def is_build_dir(self, dir):
         """Return whether or not the given dir contains a build."""
 
-        url = '/'.join([self.base_url, self.monthly_build_list_regex, dir])
+        url = urljoin(self.base_url, self.monthly_build_list_regex, dir)
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
 
@@ -378,11 +401,10 @@ class DailyScraper(Scraper):
                 continue
         return False
 
-
     def get_build_info_for_date(self, date, has_time=False, build_index=None):
-        url = '/'.join([self.base_url, self.monthly_build_list_regex])
+        url = urljoin(self.base_url, self.monthly_build_list_regex)
 
-        print 'Retrieving list of builds from %s' % url
+        self.logger.info('Retrieving list of builds from %s' % url)
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
         regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s$' % {
@@ -399,8 +421,9 @@ class DailyScraper(Scraper):
             parser.entries = parser.filter(regex)
 
         if not parser.entries:
+            date_format = '%Y-%m-%d-%H-%M-%S' if has_time else '%Y-%m-%d'
             message = 'Folder for builds on %s has not been found' % \
-                self.date.strftime('%Y-%m-%d-%H-%M-%S' if has_time else '%Y-%m-%d')
+                self.date.strftime(date_format)
             raise NotFoundError(message, url)
 
         # If no index has been given, set it to the last build of the day.
@@ -419,14 +442,15 @@ class DailyScraper(Scraper):
                         'linux64': r'\.%(EXT)s$',
                         'mac': r'\.%(EXT)s$',
                         'mac64': r'\.%(EXT)s$',
-                        'win32': r'(\.installer)\.%(EXT)s$',
-                        'win64': r'(\.installer)\.%(EXT)s$'}
+                        'win32': r'(\.installer)%(STUB)s\.%(EXT)s$',
+                        'win64': r'(\.installer)%(STUB)s\.%(EXT)s$'}
         regex = regex_base_name + regex_suffix[self.platform]
 
         return regex % {'APP': self.application,
                         'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
-                        'EXT': self.extension}
+                        'EXT': self.extension,
+                        'STUB': '-stub' if self.is_stub_installer else ''}
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
@@ -449,7 +473,7 @@ class DailyScraper(Scraper):
         """Return the regex for the folder containing builds of a month."""
 
         # Regex for possible builds for the given date
-        return r'nightly/%(YEAR)s/%(MONTH)s/' % {
+        return r'nightly/%(YEAR)s/%(MONTH)s' % {
             'YEAR': self.date.year,
             'MONTH': str(self.date.month).zfill(2)}
 
@@ -458,11 +482,11 @@ class DailyScraper(Scraper):
         """Return the regex for the path"""
 
         try:
-            path = ''.join([self.monthly_build_list_regex,
-                            self.builds[self.build_index]])
+            path = urljoin(self.monthly_build_list_regex,
+                           self.builds[self.build_index])
             return path
         except:
-            folder = ''.join([self.base_url, self.monthly_build_list_regex])
+            folder = urljoin(self.base_url, self.monthly_build_list_regex)
             raise NotFoundError("Specified sub folder cannot be found",
                                 folder)
 
@@ -500,10 +524,12 @@ class ReleaseScraper(Scraper):
                  'linux64': r'^%(APP)s-.*\.%(EXT)s$',
                  'mac': r'^%(APP)s.*\.%(EXT)s$',
                  'mac64': r'^%(APP)s.*\.%(EXT)s$',
-                 'win32': r'^%(APP)s.*\.%(EXT)s$',
-                 'win64': r'^%(APP)s.*\.%(EXT)s$'}
-        return regex[self.platform] % {'APP': self.application,
-                                       'EXT': self.extension}
+                 'win32': r'^%(APP)s.*%(STUB)s.*\.%(EXT)s$',
+                 'win64': r'^%(APP)s.*%(STUB)s.*\.%(EXT)s$'}
+        return regex[self.platform] % {
+            'APP': self.application,
+            'EXT': self.extension,
+            'STUB': 'Stub' if self.is_stub_installer else ''}
 
     @property
     def path_regex(self):
@@ -540,17 +566,16 @@ class ReleaseCandidateScraper(ReleaseScraper):
         "Defines additional build information"
 
         # Internally we access builds via index
+        self.builds, self.build_index = self.get_build_info_for_version(
+            self.version)
         if self.build_number is not None:
             self.builds = ['build%s' % self.build_number]
             self.build_index = 0
-        else:
-            self.builds, self.build_index = self.get_build_info_for_version(
-                self.version)
 
     def get_build_info_for_version(self, version, build_index=None):
-        url = '/'.join([self.base_url, self.candidate_build_list_regex])
+        url = urljoin(self.base_url, self.candidate_build_list_regex)
 
-        print 'Retrieving list of candidate builds from %s' % url
+        self.logger.info('Retrieving list of candidate builds from %s' % url)
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
         if not parser.entries:
@@ -606,15 +631,15 @@ class ReleaseCandidateScraper(ReleaseScraper):
             # Try to download the signed candidate build
             Scraper.download(self)
         except NotFoundError, e:
-            print str(e)
+            self.logger.exception(str(e))
 
             # If the signed build cannot be downloaded and unsigned builds are
             # allowed, try to download the unsigned build instead
             if self.no_unsigned:
                 raise
             else:
-                print "Signed build has not been found. Falling back to" \
-                      " unsigned build."
+                self.logger.warning("Signed build has not been found. "
+                                    "Falling back to unsigned build.")
                 self.unsigned = True
                 Scraper.download(self)
 
@@ -653,13 +678,11 @@ class TinderboxScraper(Scraper):
 
         if self.date is not None:
             try:
-                self.date = datetime.fromtimestamp(float(self.date),
-                                                   self.timezone)
-                self.timestamp = self.date
-            except:
+                # date is provided in the format 2013-07-23
                 self.date = datetime.strptime(self.date, '%Y-%m-%d')
-        else:
-            self.date = None
+            except:
+                # date is provided as a unix timestamp
+                self.timestamp = self.date
 
         self.locale_build = self.locale != 'en-US'
         # For localized builds we do not have to retrieve the list of builds
@@ -668,18 +691,11 @@ class TinderboxScraper(Scraper):
             self.builds, self.build_index = self.get_build_info_for_index(
                 self.build_index)
 
-            try:
-                self.timestamp = self.builds[self.build_index]
-            except:
-                raise NotFoundError("Specified sub folder cannot be found",
-                                    self.base_url +
-                                    self.monthly_build_list_regex)
-
     @property
     def binary_regex(self):
         """Return the regex for the binary"""
 
-        regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.'
+        regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.%(PLATFORM)s'
         regex_suffix = {'linux': r'.*\.%(EXT)s$',
                         'linux64': r'.*\.%(EXT)s$',
                         'mac': r'.*\.%(EXT)s$',
@@ -691,6 +707,7 @@ class TinderboxScraper(Scraper):
 
         return regex % {'APP': self.application,
                         'LOCALE': self.locale,
+                        'PLATFORM': PLATFORM_FRAGMENTS[self.platform],
                         'EXT': self.extension}
 
     def build_filename(self, binary):
@@ -728,12 +745,6 @@ class TinderboxScraper(Scraper):
 
         return False
 
-    @property
-    def date_validation_regex(self):
-        """Return the regex for a valid date argument value"""
-
-        return r'^\d{4}-\d{1,2}-\d{1,2}$|^\d+$'
-
     def detect_platform(self):
         """Detect the current platform"""
 
@@ -748,19 +759,21 @@ class TinderboxScraper(Scraper):
         return platform
 
     def get_build_info_for_index(self, build_index=None):
-        url = '/'.join([self.base_url, self.build_list_regex])
+        url = urljoin(self.base_url, self.build_list_regex)
 
-        print 'Retrieving list of builds from %s' % url
-
-        # If a timestamp is given, retrieve just that build
-        regex = '^' + self.timestamp + '$' if self.timestamp else r'^\d+$'
-
+        self.logger.info('Retrieving list of builds from %s' % url)
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
-        parser.entries = parser.filter(regex)
+        parser.entries = parser.filter(r'^\d+$')
 
-        # If date is given, retrieve the subset of builds on that date
-        if self.date is not None:
+        if self.timestamp:
+            # If a timestamp is given, retrieve the folder with the timestamp
+            # as name
+            parser.entries = self.timestamp in parser.entries and \
+                [self.timestamp]
+
+        elif self.date:
+            # If date is given, retrieve the subset of builds on that date
             parser.entries = filter(self.date_matches, parser.entries)
 
         if not parser.entries:
@@ -782,7 +795,7 @@ class TinderboxScraper(Scraper):
         if self.locale_build:
             return self.build_list_regex
 
-        return '/'.join([self.build_list_regex, self.builds[self.build_index]])
+        return urljoin(self.build_list_regex, self.builds[self.build_index])
 
     @property
     def platform_regex(self):
@@ -837,6 +850,11 @@ def cli():
                       choices=PLATFORM_FRAGMENTS.keys(),
                       metavar='PLATFORM',
                       help='Platform of the application')
+    parser.add_option('--stub',
+                      dest='is_stub_installer',
+                      action='store_true',
+                      help='Stub installer. '
+                           'Only applicable to Windows builds.')
     parser.add_option('--type', '-t',
                       dest='type',
                       choices=BUILD_TYPES.keys(),
@@ -887,6 +905,12 @@ def cli():
                       metavar='TIMEOUT',
                       help='Amount of time (in seconds) until a download times'
                            ' out')
+    parser.add_option('--log-level',
+                      action='store',
+                      dest='log_level',
+                      default='INFO',
+                      metavar='LOG_LEVEL',
+                      help='Threshold for log output (default: %default)')
 
     # Option group for candidate builds
     group = OptionGroup(parser, "Candidate builds",
@@ -928,6 +952,14 @@ def cli():
     # TODO: option group for nightly builds
     (options, args) = parser.parse_args()
 
+    # Gives instructions to user when no arguments were passed
+    if len(sys.argv) == 1:
+        print __doc__
+        parser.print_usage()
+        print "Specify --help for more information on options. " \
+              "Please see the README for examples."
+        return
+
     # Check for required options and arguments
     # Note: Will be optional when ini file support has been landed
     if not options.url \
@@ -946,7 +978,10 @@ def cli():
                         'authentication': (options.username, options.password),
                         'retry_attempts': options.retry_attempts,
                         'retry_delay': options.retry_delay,
-                        'timeout': options.timeout}
+                        'is_stub_installer': options.is_stub_installer,
+                        'timeout': options.timeout,
+                        'log_level': options.log_level}
+
     scraper_options = {
         'candidate': {'build_number': options.build_number,
                       'no_unsigned': options.no_unsigned},
