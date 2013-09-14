@@ -63,19 +63,6 @@ mozdownload -a firefox -t tinderbox -p win32 --branch=mozilla-inbound
 
 ## Thunderbird
 
-### Releases
-```
-mozdownload -a thunderbird -p win32 -v latest
-mozdownload -a thunderbird -t release -p linux -v latest
-mozdownload -a thunderbird -t release -p linux64 -v latest
-mozdownload -a thunderbird -t release -p mac -v latest
-mozdownload -a thunderbird -t release -p win32 -v latest
-mozdownload -a thunderbird -t release -p win32 -v latest -d thunderbird-release-builds
-mozdownload -a thunderbird -t release -p win32 -v latest -l de
-mozdownload -a thunderbird -t release -p win32 -v 16.0
-mozdownload -a thunderbird -t release -p win32 -v 16.0 -l es-ES
-```
-
 ### Candidates
 ```
 mozdownload -a thunderbird -t candidate -p linux -v 10.0.5esr
