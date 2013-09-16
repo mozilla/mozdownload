@@ -445,6 +445,7 @@ class DailyScraper(Scraper):
         self.show_matching_builds(parser.entries)
         if build_index is None:
             build_index = len(parser.entries) - 1
+        self.logger.info('Selected build: %s' % parser.entries[build_index])
 
         return (parser.entries, build_index)
 
@@ -604,6 +605,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
         # version.
         if build_index is None:
             build_index = len(parser.entries) - 1
+        self.logger.info('Selected build: %s' % parser.entries[build_index])
 
         return (parser.entries, build_index)
 
@@ -805,6 +807,7 @@ class TinderboxScraper(Scraper):
         # If no index has been given, set it to the last build of the day.
         if build_index is None:
             build_index = len(parser.entries) - 1
+        self.logger.info('Selected build: %s' % parser.entries[build_index])
 
         return (parser.entries, build_index)
 
