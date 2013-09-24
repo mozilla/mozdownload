@@ -525,13 +525,6 @@ class DailyScraper(Scraper):
                            self.builds[self.build_index])
             if self.application in MULTI_LOCALE_APPLICATIONS \
                     and self.locale != 'multi':
-                path = urljoin(self.monthly_build_list_regex,
-                                self.builds[self.build_index], self.locale)
-            else:
-                path = urljoin(self.monthly_build_list_regex,
-                                self.builds[self.build_index])
-            if self.application in MULTI_LOCALE_APPLICATIONS and \
-                    self.locale != 'multi':
                 path = urljoin(path, self.locale)
             return path
         except:
