@@ -348,42 +348,42 @@ class DailyScraper(Scraper):
             # date and time can be extracted:
             # '20111212042025' -> '2011-12-12 04:20:25'
             self.date = datetime.strptime(self.build_id, '%Y%m%d%H%M%S')
-            self.builds, self.build_index = self.get_build_info_for_date(
-                self.date, has_time=True)
 
         elif self.date:
             # A date (without time) has been specified. Use its value and the
             # build index to find the requested build for that day.
             self.date = datetime.strptime(self.date, '%Y-%m-%d')
-            self.builds, self.build_index = self.get_build_info_for_date(
-                self.date, build_index=self.build_index)
 
         else:
             # If no build id nor date have been specified the lastest available
             # build of the given branch has to be identified. We also have to
             # retrieve the date of the build via its build id.
-            url = '%s/nightly/latest-%s/' % (self.base_url, self.branch)
+            self.date = self.get_latest_build_date()
 
-            self.logger.info('Retrieving the build status file from %s' % url)
-            parser = DirectoryParser(url, authentication=self.authentication,
-                                     timeout=self.timeout_network)
-            parser.entries = parser.filter(r'.*%s\.txt' % self.platform_regex)
-            if not parser.entries:
-                message = 'Status file for %s build cannot be found' % \
-                    self.platform_regex
-                raise NotFoundError(message, url)
+        self.builds, self.build_index = self.get_build_info_for_date(
+                self.date, self.build_index)
 
-            # Read status file for the platform, retrieve build id,
-            # and convert to a date
-            headers = {'Cache-Control': 'max-age=0'}
-            r = requests.get(url + parser.entries[-1],
-                             auth=self.authentication, headers=headers)
-            r.raise_for_status()
+    def get_latest_build_date(self):
+        """ Returns date of latest available nightly build."""
+        url = '%s/nightly/latest-%s/' % (self.base_url, self.branch)
 
-            self.date = datetime.strptime(r.text.split('\n')[0],
-                                          '%Y%m%d%H%M%S')
-            self.builds, self.build_index = self.get_build_info_for_date(
-                self.date, has_time=True)
+        self.logger.info('Retrieving the build status file from %s' % url)
+        parser = DirectoryParser(url, authentication=self.authentication,
+                                 timeout=self.timeout_network)
+        parser.entries = parser.filter(r'.*%s\.txt' % self.platform_regex)
+        if not parser.entries:
+            message = 'Status file for %s build cannot be found' % \
+                self.platform_regex
+            raise NotFoundError(message, url)
+
+        # Read status file for the platform, retrieve build id,
+        # and convert to a date
+        headers = {'Cache-Control': 'max-age=0'}
+        r = requests.get(url + parser.entries[-1],
+                         auth=self.authentication, headers=headers)
+        r.raise_for_status()
+
+        return datetime.strptime(r.text.split('\n')[0], '%Y%m%d%H%M%S')
 
     def is_build_dir(self, dir):
         """Return whether or not the given dir contains a build."""
@@ -402,7 +402,7 @@ class DailyScraper(Scraper):
                 continue
         return False
 
-    def get_build_info_for_date(self, date, has_time=False, build_index=None):
+    def get_build_info_for_date(self, date, build_index=None):
         url = urljoin(self.base_url, self.monthly_build_list_regex)
 
         self.logger.info('Retrieving list of builds from %s' % url)
@@ -415,7 +415,7 @@ class DailyScraper(Scraper):
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
 
-        if has_time:
+        if date.time():
             # If a time is included in the date, use it to determine the
             # build's index
             regex = r'.*%s.*' % date.strftime('%H-%M-%S')
