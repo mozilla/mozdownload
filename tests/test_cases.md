@@ -1,10 +1,17 @@
 # Test Cases
 
+## Correct Choice of Scraper
+```
+mozdownload -t release -p win32 -v latest
+mozdownload -t candidate -p win32 -v 21.0
+mozdownload -t daily -p win32
+mozdownload -t tinderbox -p win32
+```
+
 ## Firefox
 
 ### Candidates
 ```
-mozdownload -t candidate -p win32 -v 21.0
 mozdownload -a firefox -t candidate -p linux -v 21.0
 mozdownload -a firefox -t candidate -p linux64 -v 21.0
 mozdownload -a firefox -t candidate -p mac -v 21.0
@@ -18,7 +25,6 @@ mozdownload -a firefox -t candidate -p win32 -v 21.0 --stub
 
 ### Daily
 ```
-mozdownload -t daily -p win32
 mozdownload -t daily -p win32 --branch=mozilla-central
 mozdownload -a firefox -t daily -p win32
 mozdownload -a firefox -t daily -p linux --branch=mozilla-central
@@ -42,7 +48,6 @@ mozdownload -a firefox -t daily -p win32 --branch=ux
 * unable to download tinderbox builds by timestamp #103
 
 ```
-mozdownload -t tinderbox -p win32
 mozdownload -t tinderbox -p win32 --branch=mozilla-central
 mozdownload -a firefox -t tinderbox -p win32
 mozdownload -a firefox -t tinderbox -p linux --branch=mozilla-central
