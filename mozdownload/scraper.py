@@ -361,7 +361,7 @@ class DailyScraper(Scraper):
             self.date = self.get_latest_build_date()
 
         self.builds, self.build_index = self.get_build_info_for_date(
-                self.date, self.build_index)
+            self.date, self.build_index)
 
     def get_latest_build_date(self):
         """ Returns date of latest available nightly build."""
