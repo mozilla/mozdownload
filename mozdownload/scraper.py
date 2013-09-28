@@ -58,6 +58,13 @@ DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
 MULTI_LOCALE_APPLICATIONS = ('b2g')
 
 
+class NoSupportError(Exception):
+    """Exception for a build not being supported"""
+    def __init__(self, application, build):
+        self.message = "%s build is not yet supported for %s" % (build, application)
+        Exception.__init__(self, self.message)
+
+
 class NotFoundError(Exception):
     """Exception for a resource not being found (e.g. no logs)"""
     def __init__(self, message, location):
@@ -1045,6 +1052,9 @@ def cli():
     kwargs = scraper_keywords.copy()
     kwargs.update(scraper_options.get(options.type, {}))
 
+    if options.application in MULTI_LOCALE_APPLICATIONS and \
+            options.type in ('candidate', 'release'):
+        raise NoSupportError(options.application, options.type)
     if options.url:
         build = DirectScraper(options.url, **kwargs)
     else:
