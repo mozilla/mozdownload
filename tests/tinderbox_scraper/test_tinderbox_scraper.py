@@ -8,7 +8,7 @@ import os
 import unittest
 
 from mozdownload import TinderboxScraper
-from mozdownload.utils import create_md5
+from mozdownload.utils import create_md5, urljoin
 import mozhttpd_base_test as mhttpd
 
 firefox_tests = [
@@ -84,7 +84,7 @@ firefox_tests = [
               'date': '2013-07-23',
               'platform': 'win32'},
      'target': 'mozilla-central-firefox-25.0a1.en-US.win32.installer.exe'},
-    # -a firefox -p win32 --branch=mozilla-central --date=1374141721
+    # -a firefox -p win32 --branch=mozilla-central --date=1374573725
     {'args': {'application': 'firefox',
               'branch': 'mozilla-central',
               'date': '1374573725',
@@ -94,24 +94,85 @@ firefox_tests = [
     {'args': {'application': 'firefox',
               'branch': 'mozilla-inbound',
               'platform': 'win32'},
-     'target': 'mozilla-inbound-firefox-25.0a1.en-US.win32.installer.exe'},
+     'target': 'mozilla-inbound-firefox-25.0a1.en-US.win32.installer.exe'}
 ]
 
 thunderbird_tests = [
     # -a thunderbird -p linux --branch=comm-central
+    {'args': {'application': 'thunderbird',
+              'branch': 'comm-central',
+              'platform': 'linux'},
+     'target': 'comm-central-thunderbird-27.0a1.en-US.linux-i686.tar.bz2'},
     # -a thunderbird -p linux64 --branch=comm-central
+    {'args': {'application': 'thunderbird',
+              'branch': 'comm-central',
+              'platform': 'linux64'},
+     'target': 'comm-central-thunderbird-27.0a1.en-US.linux-x86_64.tar.bz2'},
+    # TODO: uncomment once Issue #144 is solved
+    # TODO: https://github.com/mozilla/mozdownload/issues/144
     # -a thunderbird -p mac64 --branch=comm-central
+    #{'args': {'application': 'thunderbird',
+    #          'branch': 'comm-central',
+    #          'platform': 'mac64'},
+    # 'target': 'comm-central-thunderbird-27.0a1.en-US.mac.dmg'},
     # -a thunderbird -p win32 --branch=comm-central
+    {'args': {'application': 'thunderbird',
+              'branch': 'comm-central',
+              'platform': 'win32'},
+     'target': 'comm-central-thunderbird-27.0a1.en-US.win32.installer.exe'},
     # -a thunderbird -p win64 --branch=comm-central
+    {'args': {'application': 'thunderbird',
+              'branch': 'comm-central',
+              'platform': 'win64'},
+     'target': 'comm-central-thunderbird-27.0a1.en-US.win64-x86_64.installer.exe'},
     # -a thunderbird -p linux --branch=comm-central --extension=txt
+    {'args': {'application': 'thunderbird',
+              'branch': 'comm-central',
+              'extension': 'txt',
+              'platform': 'linux'},
+     'target': 'comm-central-thunderbird-27.0a1.en-US.linux-i686.txt'},
     # -a thunderbird -p win32 --branch=comm-central --debug-build
-    # -a thunderbird -p win32 --branch=comm-central -d thunderbird-tinderbox-builds
-    # -a thunderbird -p win32 --branch=comm-central -l el
+    {'args': {'application': 'thunderbird',
+              'branch': 'comm-central',
+              'debug_build': True,
+              'platform': 'win32'},
+     'target': 'comm-central-debug-thunderbird-27.0a1.en-US.win32.installer.exe'},
+    # -a thunderbird -p win32 --branch=comm-central -l de
+    {'args': {'application': 'thunderbird',
+              'branch': 'comm-central',
+              'locale': 'de',
+              'platform': 'win32'},
+     'target': 'comm-central-thunderbird-27.0a1.de.win32.installer.exe'},
     # -a thunderbird -p win32 --branch=comm-central -l pt-PT
-    # -a thunderbird -p win32 --branch=comm-central --date=2013-07-24
+    {'args': {'application': 'thunderbird',
+              'branch': 'comm-central',
+              'locale': 'pt-PT',
+              'platform': 'win32'},
+     'target': 'comm-central-thunderbird-27.0a1.pt-PT.win32.installer.exe'},
+    # -a thunderbird -p win32 --branch=comm-central --date=2013-09-28
+    {'args': {'application': 'thunderbird',
+              'branch': 'comm-central',
+              'date': '2013-09-28',
+              'platform': 'win32'},
+     'target': 'comm-central-thunderbird-27.0a1.en-US.win32.installer.exe'},
     # -a thunderbird -p win32 --branch=comm-central --date=2013-07-24 --build-number=1
-    # -a thunderbird -p win32 --branch=comm-central --date=1374660125
+    {'args': {'application': 'thunderbird',
+              'branch': 'comm-central',
+              'build_number': '1',
+              'date': '2013-09-28',
+              'platform': 'win32'},
+     'target': 'comm-central-thunderbird-27.0a1.en-US.win32.installer.exe'},
+    # -a thunderbird -p win32 --branch=comm-central --date=1380362527
+    {'args': {'application': 'thunderbird',
+              'branch': 'comm-central',
+              'date': '1380362527',
+              'platform': 'win32'},
+     'target': '1380362527-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe'},
     # -a thunderbird -p win32 --branch=comm-aurora
+    {'args': {'application': 'thunderbird',
+              'branch': 'comm-aurora',
+              'platform': 'win32'},
+     'target': 'comm-aurora-thunderbird-27.0a1.en-US.win32.installer.exe'}
 ]
 
 tests = firefox_tests + thunderbird_tests
@@ -130,13 +191,11 @@ class TinderboxScraperTest(mhttpd.MozHttpdBaseTest):
             self.assertEqual(scraper.target, expected_target)
             # Check if correct build was downloaded
             # Chosen build is larger than the other options
-            if entry['args'].get('build_number') or \
-                    entry['args'].get('date') == '1374568307':
+            if entry['args'].get('build_number'):
                 scraper.download()
-                f_path = os.path.join(mhttpd.HERE, mhttpd.WDIR, 'firefox',
-                                      'tinderbox-builds',
-                                      'mozilla-central-win32', '1374568307',
-                                      'firefox-25.0a1.en-US.win32.installer.exe')
+                # Removes 'http://127.0.0.1:8080/ from scraper.path
+                partial_path = '/'.join(scraper.path.split('/')[3:])
+                f_path = urljoin(mhttpd.HERE, partial_path, scraper.binary)
                 md5_original = create_md5(f_path)
                 md5_downloaded = create_md5(os.path.join(self.temp_dir,
                                                          entry['target']))
