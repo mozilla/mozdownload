@@ -355,7 +355,7 @@ class DailyScraper(Scraper):
             self.date = datetime.strptime(self.date, '%Y-%m-%d')
 
         else:
-            # If no build id nor date have been specified the lastest available
+            # If no build id nor date have been specified the latest available
             # build of the given branch has to be identified. We also have to
             # retrieve the date of the build via its build id.
             self.date = self.get_latest_build_date()
@@ -422,7 +422,7 @@ class DailyScraper(Scraper):
             parser.entries = parser.filter(regex)
 
         if not parser.entries:
-            date_format = '%Y-%m-%d-%H-%M-%S' if has_time else '%Y-%m-%d'
+            date_format = '%Y-%m-%d-%H-%M-%S' if date.time() else '%Y-%m-%d'
             message = 'Folder for builds on %s has not been found' % \
                 self.date.strftime(date_format)
             raise NotFoundError(message, url)
