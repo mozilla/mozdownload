@@ -44,7 +44,7 @@ CHUNK_SIZE = 16 * 1024
 PLATFORM_FRAGMENTS = {'linux': 'linux-i686',
                       'linux64': 'linux-x86_64',
                       'mac': 'mac',
-                      'mac64': 'mac64',
+                      'mac64': r'mac(64)?',
                       'win32': 'win32',
                       'win64': 'win64-x86_64'}
 

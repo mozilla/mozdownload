@@ -8,15 +8,6 @@ mozdownload -t daily -p win32
 mozdownload -t tinderbox -p win32
 ```
 
-## Firefox
-
-### Tinderbox
-
-<!-- Issue #144 -->
-```
-mozdownload -a firefox -p mac64 --branch=mozilla-central
-```
-
 ## Thunderbird
 
 ### Tinderbox
