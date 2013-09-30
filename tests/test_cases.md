@@ -35,8 +35,6 @@ mozdownload -a firefox -t tinderbox -p win32 --branch=mozilla-inbound
 
 ## Thunderbird
 
-```
-
 
 ### Tinderbox
 * unable to download tinderbox builds by timestamp #103
