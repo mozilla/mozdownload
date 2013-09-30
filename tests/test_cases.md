@@ -1,26 +1,17 @@
 # Test Cases
 
-## Firefox
-
-### Releases
+## Correct Choice of Scraper
 ```
-mozdownload -p win32 -v latest
 mozdownload -t release -p win32 -v latest
-mozdownload -a firefox -p win32 -v latest
-mozdownload -a firefox -t release -p linux -v latest
-mozdownload -a firefox -t release -p linux64 -v latest
-mozdownload -a firefox -t release -p mac -v latest
-mozdownload -a firefox -t release -p win32 -v latest
-mozdownload -a firefox -t release -p win32 -v latest -d firefox-release-builds
-mozdownload -a firefox -t release -p win32 -v latest -l de
-mozdownload -a firefox -t release -p win32 -v latest --stub
-mozdownload -a firefox -t release -p win32 -v 21.0
-mozdownload -a firefox -t release -p win32 -v 21.0 -l es-ES
+mozdownload -t candidate -p win32 -v 21.0
+mozdownload -t daily -p win32
+mozdownload -t tinderbox -p win32
 ```
+
+## Firefox
 
 ### Candidates
 ```
-mozdownload -t candidate -p win32 -v 21.0
 mozdownload -a firefox -t candidate -p linux -v 21.0
 mozdownload -a firefox -t candidate -p linux64 -v 21.0
 mozdownload -a firefox -t candidate -p mac -v 21.0
@@ -34,7 +25,6 @@ mozdownload -a firefox -t candidate -p win32 -v 21.0 --stub
 
 ### Daily
 ```
-mozdownload -t daily -p win32
 mozdownload -t daily -p win32 --branch=mozilla-central
 mozdownload -a firefox -t daily -p win32
 mozdownload -a firefox -t daily -p linux --branch=mozilla-central
@@ -58,7 +48,6 @@ mozdownload -a firefox -t daily -p win32 --branch=ux
 * unable to download tinderbox builds by timestamp #103
 
 ```
-mozdownload -t tinderbox -p win32
 mozdownload -t tinderbox -p win32 --branch=mozilla-central
 mozdownload -a firefox -t tinderbox -p win32
 mozdownload -a firefox -t tinderbox -p linux --branch=mozilla-central
@@ -78,19 +67,6 @@ mozdownload -a firefox -t tinderbox -p win32 --branch=mozilla-inbound
 ```
 
 ## Thunderbird
-
-### Releases
-```
-mozdownload -a thunderbird -p win32 -v latest
-mozdownload -a thunderbird -t release -p linux -v latest
-mozdownload -a thunderbird -t release -p linux64 -v latest
-mozdownload -a thunderbird -t release -p mac -v latest
-mozdownload -a thunderbird -t release -p win32 -v latest
-mozdownload -a thunderbird -t release -p win32 -v latest -d thunderbird-release-builds
-mozdownload -a thunderbird -t release -p win32 -v latest -l de
-mozdownload -a thunderbird -t release -p win32 -v 16.0
-mozdownload -a thunderbird -t release -p win32 -v 16.0 -l es-ES
-```
 
 ### Candidates
 ```
