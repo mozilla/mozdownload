@@ -29,19 +29,19 @@ firefox_tests = [
               'platform': 'linux',
               'version': 'latest'},
      'target': 'firefox-latest.en-US.linux.tar.bz2',
-     'target_url': 'firefox/releases/latest/linux-i686/en-US/firefox-23.en-US.linux.tar.bz2'},
+     'target_url': 'firefox/releases/latest/linux-i686/en-US/firefox-23.0.1.en-US.linux.tar.bz2'},
     # -a firefox -p linux64 -v latest
     {'args': {'application': 'firefox',
               'platform': 'linux64',
               'version': 'latest'},
      'target': 'firefox-latest.en-US.linux64.tar.bz2',
-     'target_url': 'firefox/releases/latest/linux-x86_64/en-US/firefox-23.en-US.linux.tar.bz2'},
+     'target_url': 'firefox/releases/latest/linux-x86_64/en-US/firefox-23.0.1.en-US.linux.tar.bz2'},
     # -a firefox -p mac -v latest
     {'args': {'application': 'firefox',
               'platform': 'mac',
               'version': 'latest'},
      'target': 'firefox-latest.en-US.mac.dmg',
-     'target_url': 'firefox/releases/latest/mac/en-US/firefox-23.dmg'},
+     'target_url': 'firefox/releases/latest/mac/en-US/firefox-23.0.1.dmg'},
     # -a firefox -p win32 -v latest -l de
     {'args': {'application': 'firefox',
               'locale': 'de',
