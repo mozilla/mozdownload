@@ -61,7 +61,8 @@ MULTI_LOCALE_APPLICATIONS = ('b2g')
 class NoSupportError(Exception):
     """Exception for a build not being supported"""
     def __init__(self, application, build):
-        self.message = "%s build is not yet supported for %s" % (build, application)
+        self.message = "%s build is not yet supported for %s" % \
+                       (build, application)
         Exception.__init__(self, self.message)
 
 
