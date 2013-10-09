@@ -58,12 +58,10 @@ DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
 MULTI_LOCALE_APPLICATIONS = ('b2g')
 
 
-class NoSupportError(Exception):
+class NotSupportedError(Exception):
     """Exception for a build not being supported"""
-    def __init__(self, application, build):
-        self.message = "%s build is not yet supported for %s" % \
-                       (build, application)
-        Exception.__init__(self, self.message)
+    def __init__(self, message):
+        Exception.__init__(self, message)
 
 
 class NotFoundError(Exception):
@@ -124,15 +122,15 @@ class Scraper(object):
         self.application = application
         self.base_url = urljoin(base_url, self.application)
 
-        if extension is not None:
+        if extension:
             self.extension = extension
         else:
             if self.application in MULTI_LOCALE_APPLICATIONS and \
                     self.platform in ('win32', 'win64'):
-                extension = 'zip'
+                # builds for MULTI_LOCALE_APPLICATIONS only exist in zip
+                self.extension = 'zip'
             else:
-                extension = DEFAULT_FILE_EXTENSIONS[self.platform]
-            self.extension = extension
+                self.extension = DEFAULT_FILE_EXTENSIONS[self.platform]
 
         attempt = 0
         while True:
@@ -457,7 +455,9 @@ class DailyScraper(Scraper):
             'DATE': date.strftime('%Y-%m-%d'),
             'BRANCH': self.branch,
             # ensure to select the correct subfolder for localized builds
-            'L10N': '' if self.locale == 'en-US' else '(-l10n)?'}
+            'L10N': '' if self.locale == 'en-US' or
+                self.application in MULTI_LOCALE_APPLICATIONS
+                else '(-l10n)?'}
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
 
@@ -898,8 +898,8 @@ def cli():
     parser.add_option('--locale', '-l',
                       dest='locale',
                       metavar='LOCALE',
-                      help='Locale of the application, default: "en-US" '
-                           'except b2g: "multi"')
+                      help='Locale of the application, default: "en-US or '
+                           'multi"')
     parser.add_option('--platform', '-p',
                       dest='platform',
                       choices=PLATFORM_FRAGMENTS.keys(),
@@ -1053,9 +1053,10 @@ def cli():
     kwargs = scraper_keywords.copy()
     kwargs.update(scraper_options.get(options.type, {}))
 
-    if options.application in MULTI_LOCALE_APPLICATIONS and \
+    if options.application == 'b2g' and \
             options.type in ('candidate', 'release'):
-        raise NoSupportError(options.application, options.type)
+        error_msg = "%s build is not yet supported for B2G" % options.type
+        raise NotSupportedError(error_msg)
     if options.url:
         build = DirectScraper(options.url, **kwargs)
     else:
