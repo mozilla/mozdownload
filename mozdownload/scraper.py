@@ -587,7 +587,13 @@ class ReleaseCandidateScraper(ReleaseScraper):
         if self.build_number is not None:
             self.builds = ['build%s' % self.build_number]
             self.build_index = 0
-        self.logger.info('Selected build: %s' % self.build_number)
+
+        # If build_number invalid, no output is given
+        if self.build_number is not None and \
+                self.build_number <= len(self.builds):
+            self.logger.info('Selected build: build%s' % self.build_number)
+        elif not self.build_number:
+            self.logger.info('Selected build: build%s' % self.build_index)
 
     def get_build_info_for_version(self, version, build_index=None):
         url = urljoin(self.base_url, self.candidate_build_list_regex)
