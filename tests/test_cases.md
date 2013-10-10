@@ -44,9 +44,9 @@ mozdownload -a b2g -t daily -p mac64 --branch=mozilla-central
 mozdownload -a b2g -t daily -p win32 --branch=mozilla-central
 mozdownload -a b2g -t daily -p win32 --branch=mozilla-central -d b2g-daily-builds
 mozdownload -a b2g -t daily -p win32 --branch=mozilla-central -l en-US
-mozdownload -a b2g -t daily -p win32 --branch=mozilla-central --date=2013-07-02
-mozdownload -a b2g -t daily -p win32 --branch=mozilla-central --date=2013-07-02 --build-number=1
-mozdownload -a b2g -t daily -p win32 --branch=mozilla-central --build-id=20130702031336
+mozdownload -a b2g -t daily -p linux --branch=mozilla-central --date=2013-07-01
+mozdownload -a b2g -t daily -p linux --branch=mozilla-central --date=2013-07-02 --build-number=1
+mozdownload -a b2g -t daily -p linux --branch=mozilla-central --build-id=20130702031336
 ```
 -->
 

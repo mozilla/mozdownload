@@ -455,9 +455,7 @@ class DailyScraper(Scraper):
             'DATE': date.strftime('%Y-%m-%d'),
             'BRANCH': self.branch,
             # ensure to select the correct subfolder for localized builds
-            'L10N': '' if self.locale == 'en-US' or
-                self.application in MULTI_LOCALE_APPLICATIONS
-                else '(-l10n)?'}
+            'L10N': '' if self.locale in ('en-US', 'multi') else '(-l10n)?'}
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
 
