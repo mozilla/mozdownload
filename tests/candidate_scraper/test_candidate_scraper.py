@@ -123,7 +123,7 @@ thunderbird_tests = [
 tests = firefox_tests + thunderbird_tests
 
 
-class ReleaseScraperTest(mhttpd.MozHttpdBaseTest):
+class ReleaseCandidateScraperTest(mhttpd.MozHttpdBaseTest):
     """test mozdownload scraper class"""
 
     def test_scraper(self):
