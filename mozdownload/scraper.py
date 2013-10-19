@@ -365,7 +365,7 @@ class DailyScraper(Scraper):
 
     def get_latest_build_date(self):
         """ Returns date of latest available nightly build."""
-        url = '%s/nightly/latest-%s/' % (self.base_url, self.branch)
+        url = urljoin(self.base_url, 'nightly', 'latest-%s/' % self.branch)
 
         self.logger.info('Retrieving the build status file from %s' % url)
         parser = DirectoryParser(url, authentication=self.authentication,
@@ -404,6 +404,7 @@ class DailyScraper(Scraper):
 
     def get_build_info_for_date(self, date, build_index=None):
         url = urljoin(self.base_url, self.monthly_build_list_regex)
+        has_time = date and date.time()
 
         self.logger.info('Retrieving list of builds from %s' % url)
         parser = DirectoryParser(url, authentication=self.authentication,
@@ -415,14 +416,14 @@ class DailyScraper(Scraper):
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
 
-        if date.time():
+        if has_time:
             # If a time is included in the date, use it to determine the
             # build's index
             regex = r'.*%s.*' % date.strftime('%H-%M-%S')
             parser.entries = parser.filter(regex)
 
         if not parser.entries:
-            date_format = '%Y-%m-%d-%H-%M-%S' if date.time() else '%Y-%m-%d'
+            date_format = '%Y-%m-%d-%H-%M-%S' if has_time else '%Y-%m-%d'
             message = 'Folder for builds on %s has not been found' % \
                 self.date.strftime(date_format)
             raise NotFoundError(message, url)
