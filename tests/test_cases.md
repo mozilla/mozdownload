@@ -23,26 +23,6 @@ mozdownload -a firefox -t candidate -p win32 -v 21.0 --build-number=1
 mozdownload -a firefox -t candidate -p win32 -v 21.0 --stub
 ```
 
-### Daily
-```
-mozdownload -t daily -p win32 --branch=mozilla-central
-mozdownload -a firefox -t daily -p win32
-mozdownload -a firefox -t daily -p linux --branch=mozilla-central
-mozdownload -a firefox -t daily -p linux64 --branch=mozilla-central
-mozdownload -a firefox -t daily -p mac --branch=mozilla-central
-mozdownload -a firefox -t daily -p win32 --branch=mozilla-central
-mozdownload -a firefox -t daily -p win64 --branch=mozilla-central
-mozdownload -a firefox -t daily -p linux --branch=mozilla-central --extension=txt
-mozdownload -a firefox -t daily -p win32 --branch=mozilla-central -d firefox-daily-builds
-mozdownload -a firefox -t daily -p win32 --branch=mozilla-central -l it
-mozdownload -a firefox -t daily -p win32 --branch=mozilla-central -l sv-SE
-mozdownload -a firefox -t daily -p win32 --branch=mozilla-central --build-id=20130706031213
-mozdownload -a firefox -t daily -p win32 --branch=mozilla-central --date=2013-07-02
-mozdownload -a firefox -t daily -p win32 --branch=mozilla-central --date=2013-07-02 --build-number=1
-mozdownload -a firefox -t daily -p win32 --branch=mozilla-central --stub
-mozdownload -a firefox -t daily -p win32 --branch=mozilla-aurora
-mozdownload -a firefox -t daily -p win32 --branch=ux
-```
 
 ### Tinderbox
 * unable to download tinderbox builds by timestamp #103
@@ -80,22 +60,6 @@ mozdownload -a thunderbird -t candidate -p win32 -v 10.0.5esr -l en-GB
 mozdownload -a thunderbird -t candidate -p win32 -v 10.0.5esr --build-number=1
 ```
 
-### Daily
-```
-mozdownload -a thunderbird -t daily -p linux --branch=comm-central
-mozdownload -a thunderbird -t daily -p linux64 --branch=comm-central
-mozdownload -a thunderbird -t daily -p mac --branch=comm-central
-mozdownload -a thunderbird -t daily -p win32 --branch=comm-central
-mozdownload -a thunderbird -t daily -p win64 --branch=comm-central
-mozdownload -a thunderbird -t daily -p linux --branch=comm-central --extension=txt
-mozdownload -a thunderbird -t daily -p win32 --branch=comm-central -d thunderbird-daily-builds
-mozdownload -a thunderbird -t daily -p win32 --branch=comm-central -l it
-mozdownload -a thunderbird -t daily -p win32 --branch=comm-central -l sv-SE
-mozdownload -a thunderbird -t daily -p win32 --branch=comm-central --build-id=20130710110153
-mozdownload -a thunderbird -t daily -p win32 --branch=comm-central --date=2013-07-10
-mozdownload -a thunderbird -t daily -p mac --branch=comm-central --date=2013-07-10 --build-number=1
-mozdownload -a thunderbird -t daily -p win32 --branch=comm-aurora
-```
 
 ### Tinderbox
 * unable to download tinderbox builds by timestamp #103
