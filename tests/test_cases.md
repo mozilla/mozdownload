@@ -18,7 +18,7 @@ mozdownload -a firefox -t candidate -p linux -v 21.0
 mozdownload -a firefox -t candidate -p linux64 -v 21.0
 mozdownload -a firefox -t candidate -p mac -v 21.0
 mozdownload -a firefox -t candidate -p win32 -v 21.0
-mozdownload -a firefox -t candidate -p win32 -v 21.0 --extension=zip
+mozdownload -a firefox -t candidate -p win32 -v 21.0 --extension=txt
 mozdownload -a firefox -t candidate -p win32 -v 21.0 -d firefox-candidate-builds
 mozdownload -a firefox -t candidate -p win32 -v 21.0 -l cs
 mozdownload -a firefox -t candidate -p win32 -v 21.0 -l en-GB
