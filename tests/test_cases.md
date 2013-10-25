@@ -10,19 +10,6 @@ mozdownload -t tinderbox -p win32
 
 ## Firefox
 
-### Candidates
-```
-mozdownload -a firefox -t candidate -p linux -v 21.0
-mozdownload -a firefox -t candidate -p linux64 -v 21.0
-mozdownload -a firefox -t candidate -p mac -v 21.0
-mozdownload -a firefox -t candidate -p win32 -v 21.0
-mozdownload -a firefox -t candidate -p win32 -v 21.0 -d firefox-candidate-builds
-mozdownload -a firefox -t candidate -p win32 -v 21.0 -l cs
-mozdownload -a firefox -t candidate -p win32 -v 21.0 -l en-GB
-mozdownload -a firefox -t candidate -p win32 -v 21.0 --build-number=1
-mozdownload -a firefox -t candidate -p win32 -v 21.0 --stub
-```
-
 
 ### Tinderbox
 * unable to download tinderbox builds by timestamp #103
@@ -47,18 +34,6 @@ mozdownload -a firefox -t tinderbox -p win32 --branch=mozilla-inbound
 ```
 
 ## Thunderbird
-
-### Candidates
-```
-mozdownload -a thunderbird -t candidate -p linux -v 10.0.5esr
-mozdownload -a thunderbird -t candidate -p linux64 -v 10.0.5esr
-mozdownload -a thunderbird -t candidate -p mac -v 10.0.5esr
-mozdownload -a thunderbird -t candidate -p win32 -v 10.0.5esr
-mozdownload -a thunderbird -t candidate -p win32 -v 10.0.5esr -d thunderbird-candidate-builds
-mozdownload -a thunderbird -t candidate -p win32 -v 10.0.5esr -l cs
-mozdownload -a thunderbird -t candidate -p win32 -v 10.0.5esr -l en-GB
-mozdownload -a thunderbird -t candidate -p win32 -v 10.0.5esr --build-number=1
-```
 
 
 ### Tinderbox
