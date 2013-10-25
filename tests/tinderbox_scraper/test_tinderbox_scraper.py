@@ -62,14 +62,6 @@ firefox_tests = [
      'target': 'mozilla-central-firefox-25.0a1.en-US.win64-x86_64.installer.exe',
      'target_url': 'firefox/tinderbox-builds/mozilla-central-win64/'
                    '1374583608/firefox-25.0a1.en-US.win64-x86_64.installer.exe'},
-    # -a firefox -p linux --branch=mozilla-central --extension=txt
-    {'args': {'application': 'firefox',
-              'branch': 'mozilla-central',
-              'extension': 'txt',
-              'platform': 'linux'},
-     'target': 'mozilla-central-firefox-25.0a1.en-US.linux-i686.txt',
-     'target_url': 'firefox/tinderbox-builds/mozilla-central-linux/'
-                   '1374583608/firefox-25.0a1.en-US.linux-i686.txt'},
     # -a firefox -p win32 --branch=mozilla-central --debug-build
     {'args': {'application': 'firefox',
               'branch': 'mozilla-central',
@@ -164,14 +156,6 @@ thunderbird_tests = [
      'target': 'comm-central-thunderbird-27.0a1.en-US.win64-x86_64.installer.exe',
      'target_url': 'thunderbird/tinderbox-builds/comm-central-win64/'
                    '1380362686/thunderbird-27.0a1.en-US.win64-x86_64.installer.exe'},
-    # -a thunderbird -p linux --branch=comm-central --extension=txt
-    {'args': {'application': 'thunderbird',
-              'branch': 'comm-central',
-              'extension': 'txt',
-              'platform': 'linux'},
-     'target': 'comm-central-thunderbird-27.0a1.en-US.linux-i686.txt',
-     'target_url': 'thunderbird/tinderbox-builds/comm-central-linux/'
-                   '1380362686/thunderbird-27.0a1.en-US.linux-i686.txt'},
     # -a thunderbird -p win32 --branch=comm-central --debug-build
     {'args': {'application': 'thunderbird',
               'branch': 'comm-central',
