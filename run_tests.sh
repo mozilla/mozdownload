@@ -22,11 +22,11 @@ curl https://raw.github.com/pypa/virtualenv/${VERSION_VIRTUAL_ENV}/virtualenv.py
 fi
 . $VENV_DIR/bin/activate
  
-python setup.py develop
 pip install --upgrade ManifestDestiny==$VERSION_MANIFEST_DESTINY
 pip install --upgrade mozfile==$VERSION_MOZFILE
 pip install --upgrade mozhttpd==$VERSION_MOZHTTPD
 pip install --upgrade mozlog==$VERSION_MOZLOG
 pip install --upgrade moztest==$VERSION_MOZTEST
+python setup.py develop
  
 python tests/test.py $@
