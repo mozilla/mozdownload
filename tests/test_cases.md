@@ -10,9 +10,19 @@ mozdownload -t tinderbox -p win32
 
 ## Firefox
 
+### Tinderbox
+
+```
+mozdownload -a firefox -t tinderbox -p linux --branch=mozilla-central --extension=txt
+```
 
 ## Thunderbird
 
+### Tinderbox
+
+```
+mozdownload -a thunderbird -t tinderbox -p linux --branch=mozilla-central --extension=txt
+```
 
 ## B2G
 
