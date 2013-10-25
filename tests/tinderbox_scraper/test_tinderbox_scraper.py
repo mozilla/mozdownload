@@ -9,7 +9,7 @@ import unittest
 import urllib
 
 from mozdownload import TinderboxScraper
-from mozdownload.utils import create_md5, urljoin
+from mozdownload.utils import urljoin
 import mozhttpd_base_test as mhttpd
 
 firefox_tests = [
@@ -246,17 +246,6 @@ class TinderboxScraperTest(mhttpd.MozHttpdBaseTest):
             self.assertEqual(scraper.target, expected_target)
             self.assertEqual(urllib.unquote(scraper.final_url),
                              urljoin(self.wdir, entry['target_url']))
-            # Check if correct build was downloaded
-            # Chosen build is larger than the other options
-            if entry['args'].get('build_number'):
-                scraper.download()
-                # Removes 'http://127.0.0.1:8080/ from scraper.path
-                partial_path = '/'.join(scraper.path.split('/')[3:])
-                f_path = urljoin(mhttpd.HERE, partial_path, scraper.binary)
-                md5_original = create_md5(f_path)
-                md5_downloaded = create_md5(os.path.join(self.temp_dir,
-                                                         entry['target']))
-                self.assertEqual(md5_original, md5_downloaded)
 
 if __name__ == '__main__':
     unittest.main()
