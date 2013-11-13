@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this file,
+# You can obtain one at http://mozilla.org/MPL/2.0/.
+
+import os
+import pip
+from subprocess import call
+ 
+VERSION_MANIFEST_DESTINY = '0.5.6'
+VERSION_MOZFILE = '0.7'
+VERSION_MOZHTTPD = '0.6'
+VERSION_MOZLOG = '1.3'
+VERSION_MOZTEST = '0.1'
+VERSION_VIRTUAL_ENV = '1.9.1'
+
+# see http://stackoverflow.com/questions/12332975/installing-python-module-within-code
+def install(package, version=None):
+	package_arg = "%s==%s" % (package, version)
+	pip.main(['install', '--upgrade', package_arg])
+
+try:
+    # for more info see:
+    # http://www.virtualenv.org/en/latest/#using-virtualenv-without-bin-python
+    venv_dir = os.path.join('tests', 'venv')
+    activate_this_file = os.path.join('tests', 'venv', 'Scripts', 'activate_this.py')
+
+    if not os.path.isfile(activate_this_file):
+    	# download and create venv
+    	install('virtualenv', VERSION_VIRTUAL_ENV)
+    	call(['virtualenv', '--no-site-packages', venv_dir])
+
+    execfile(activate_this_file, dict(__file__=activate_this_file))
+    print "Virtual environment activated successfully."
+
+    # Installs
+    install('ManifestDestiny', VERSION_MANIFEST_DESTINY)
+    install('mozfile', VERSION_MOZFILE)
+    install('mozhttpd', VERSION_MOZHTTPD)
+    install('mozlog', VERSION_MOZLOG)
+    install('moztest', VERSION_MOZTEST)
+
+    # Install mozdownload
+    call(['python', 'setup.py', 'develop'])
+    # run the tests
+    tests_path = os.path.join('tests', 'test.py')
+    call(['python', tests_path])
+
+except IOError:
+    print "Could not activate virtual environment."
+    print "Exiting."
+    raise
