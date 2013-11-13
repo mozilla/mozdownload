@@ -42,12 +42,6 @@ firefox_tests = [
      'target': 'mozilla-central-firefox-25.0a1.en-US.linux-x86_64.tar.bz2',
      'target_url': 'firefox/tinderbox-builds/mozilla-central-linux64/'
                    '1374583608/firefox-25.0a1.en-US.linux-x86_64.tar.bz2'},
-    # TODO: uncomment once Issue #144 is solved
-    # TODO: https://github.com/mozilla/mozdownload/issues/144
-    # -a firefox -p mac64 --branch=mozilla-central
-    #{'args': {'platform': 'mac64',
-    #          'branch': 'mozilla-central'},
-    # 'target': 'mozilla-central-firefox-25.0a1.en-US.mac.dmg'},
     # -a firefox -p win32 --branch=mozilla-central
     {'args': {'application': 'firefox',
               'branch': 'mozilla-central',
@@ -55,16 +49,6 @@ firefox_tests = [
      'target': 'mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'target_url': 'firefox/tinderbox-builds/mozilla-central-win32/'
                    '1374583608/firefox-25.0a1.en-US.win32.installer.exe'},
-    # TODO: uncomment once Issue #180 is solved
-    # TODO: https://github.com/mozilla/mozdownload/issues/180
-    # -a firefox -p win32 --branch=mozilla-central --stub
-    #{'args': {'application': 'firefox',
-    #          'branch': 'mozilla-central',
-    #          'is_stub_installer': True,
-    #          'platform': 'win32'},
-    # 'target': 'mozilla-central-firefox-25.0a1.en-US.win32.installer-stub.exe',
-    # 'target_url': 'firefox/tinderbox-builds/mozilla-central-win32/'
-    #               '1374583608/firefox-25.0a1.en-US.win32.installer-stub.exe'},
     # -a firefox -p win64 --branch=mozilla-central
     {'args': {'application': 'firefox',
               'branch': 'mozilla-central',
