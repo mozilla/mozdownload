@@ -10,28 +10,11 @@ mozdownload -t tinderbox -p win32
 
 ## Firefox
 
-<<<<<<< HEAD
-=======
-### Candidates
-```
-mozdownload -a firefox -t candidate -p linux -v 21.0
-mozdownload -a firefox -t candidate -p linux64 -v 21.0
-mozdownload -a firefox -t candidate -p mac -v 21.0
-mozdownload -a firefox -t candidate -p win32 -v 21.0
-mozdownload -a firefox -t candidate -p win32 -v 21.0 --extension=txt
-mozdownload -a firefox -t candidate -p win32 -v 21.0 -d firefox-candidate-builds
-mozdownload -a firefox -t candidate -p win32 -v 21.0 -l cs
-mozdownload -a firefox -t candidate -p win32 -v 21.0 -l en-GB
-mozdownload -a firefox -t candidate -p win32 -v 21.0 --build-number=1
-mozdownload -a firefox -t candidate -p win32 -v 21.0 --stub
-```
-
-
->>>>>>> Revert regex change, add manual test for win32 zip
 ### Tinderbox
 
 ```
 mozdownload -a firefox -t tinderbox -p linux --branch=mozilla-central --extension=txt
+mozdownload -a firefox -t tinderbox -p linux --branch=mozilla-central --extension=json
 ```
 <!-- Issue #180 -->
 ```
