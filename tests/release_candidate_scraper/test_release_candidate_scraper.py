@@ -132,6 +132,7 @@ class ReleaseCandidateScraperTest(mhttpd.MozHttpdBaseTest):
         for entry in tests:
             scraper = ReleaseCandidateScraper(directory=self.temp_dir,
                                               base_url=self.wdir,
+                                              log_level='ERROR',
                                               **entry['args'])
             expected_target = os.path.join(self.temp_dir, entry['target'])
             self.assertEqual(scraper.target, expected_target)

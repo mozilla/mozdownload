@@ -35,7 +35,8 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
         test_url = urljoin(self.wdir, 'download_test.txt')
         scraper = mozdownload.DirectScraper(url=test_url,
                                             directory=self.temp_dir,
-                                            version=None)
+                                            version=None,
+                                            log_level='ERROR')
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     filename)))
@@ -48,7 +49,8 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
         test_url1 = urljoin(self.wdir, 'does_not_exist.html')
         scraper1 = mozdownload.DirectScraper(url=test_url1,
                                              directory=self.temp_dir,
-                                             version=None)
+                                             version=None,
+                                             log_level='ERROR')
         self.assertRaises(requests.exceptions.RequestException,
                           scraper1.download)
 
@@ -58,13 +60,14 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
                                              directory=self.temp_dir,
                                              version=None,
                                              retry_attempts=3,
-                                             retry_delay=1.0)
+                                             retry_delay=1.0,
+                                             log_level='ERROR')
         self.assertRaises(requests.exceptions.RequestException,
                           scraper2.download)
 
     def test_notimplementedexceptions(self):
         scraper = mozdownload.Scraper(directory=self.temp_dir,
-                                      version=None)
+                                      version=None, log_level='ERROR')
         for attr in ['binary', 'binary_regex', 'path_regex']:
             self.assertRaises(mozdownload.NotImplementedError, getattr,
                               scraper, attr)

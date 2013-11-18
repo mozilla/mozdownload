@@ -242,7 +242,8 @@ class DailyScraperTest(mhttpd.MozHttpdBaseTest):
 
         for entry in tests:
             scraper = DailyScraper(directory=self.temp_dir, base_url=self.wdir,
-                                   version=None, **entry['args'])
+                                   version=None, log_level='ERROR',
+                                   **entry['args'])
             expected_target = os.path.join(self.temp_dir, entry['target'])
             self.assertEqual(scraper.target, expected_target)
             self.assertEqual(urllib.unquote(scraper.final_url),
