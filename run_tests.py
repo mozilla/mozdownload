@@ -6,7 +6,8 @@
 import os
 import pip
 from subprocess import call
- 
+import sys
+
 VERSION_MANIFEST_DESTINY = '0.5.6'
 VERSION_MOZFILE = '0.7'
 VERSION_MOZHTTPD = '0.6'
@@ -14,21 +15,27 @@ VERSION_MOZLOG = '1.3'
 VERSION_MOZTEST = '0.1'
 VERSION_VIRTUAL_ENV = '1.9.1'
 
+
 # see http://stackoverflow.com/questions/12332975/installing-python-module-within-code
-def install(package, version=None):
-	package_arg = "%s==%s" % (package, version)
-	pip.main(['install', '--upgrade', package_arg])
+def install(package, version):
+    package_arg = "%s==%s" % (package, version)
+    pip.main(['install', '--upgrade', package_arg])
 
 try:
     # for more info see:
     # http://www.virtualenv.org/en/latest/#using-virtualenv-without-bin-python
     venv_dir = os.path.join('tests', 'venv')
-    activate_this_file = os.path.join('tests', 'venv', 'Scripts', 'activate_this.py')
+    if sys.platform == 'win32':
+        activate_this_file = os.path.join('tests', 'venv', 'Scripts',
+                                          'activate_this.py')
+    else:
+        activate_this_file = os.path.join('tests', 'venv', 'bin',
+                                          'activate_this.py')
 
     if not os.path.isfile(activate_this_file):
-    	# download and create venv
-    	install('virtualenv', VERSION_VIRTUAL_ENV)
-    	call(['virtualenv', '--no-site-packages', venv_dir])
+        # download and create venv
+        install('virtualenv', VERSION_VIRTUAL_ENV)
+        call(['virtualenv', '--no-site-packages', venv_dir])
 
     execfile(activate_this_file, dict(__file__=activate_this_file))
     print "Virtual environment activated successfully."
@@ -49,4 +56,3 @@ try:
 except IOError:
     print "Could not activate virtual environment."
     print "Exiting."
-    raise
