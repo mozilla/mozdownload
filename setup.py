@@ -14,9 +14,9 @@ try:
 except (OSError, IOError):
     description = None
 
-version = '1.9'
+version = '1.10'
 
-deps = ['mozinfo==0.6',
+deps = ['mozinfo==0.7',
         'progressbar==2.2',
         'requests==1.2.2',
         'mozlog==1.3'
