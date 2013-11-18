@@ -126,7 +126,15 @@ firefox_tests = [
               'platform': 'linux'},
      'target': 'mozilla-central-firefox-25.0a1.en-US.linux-i686.json',
      'target_url': 'firefox/tinderbox-builds/mozilla-central-linux/'
-                   '1374583608/firefox-25.0a1.en-US.linux-i686.json'}
+                   '1374583608/firefox-25.0a1.en-US.linux-i686.json'},
+    # -a firefox -t tinderbox -p linux --branch=mozilla-central --extension=txt
+    {'args': {'application': 'firefox',
+              'branch': 'mozilla-central',
+              'extension': 'txt',
+              'platform': 'linux'},
+     'target': 'mozilla-central-firefox-25.0a1.en-US.linux-i686.txt',
+     'target_url': 'firefox/tinderbox-builds/mozilla-central-linux/'
+                   '1374583608/firefox-25.0a1.en-US.linux-i686.txt'},
 ]
 
 thunderbird_tests = [
