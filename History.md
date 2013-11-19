@@ -6,7 +6,7 @@
   * Add tests for TinderboxScraper class (#161)
   * Add tests for ReleaseCandidateScraper class (#160)
   * Update run_tests.sh to force package version to our dependencies (#177)
-  * Add method to get the lastest daily build (#163)
+  * Add method to get the latest daily build (#163)
   * Add tests for DailyScraper class (#159)
   * Add target_url to ReleaseScraper tests (#171)
   * Add tests for ReleaseScraper class (#156)
