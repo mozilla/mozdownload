@@ -118,7 +118,15 @@ firefox_tests = [
               'platform': 'win32'},
      'target': 'mozilla-inbound-firefox-25.0a1.en-US.win32.installer.exe',
      'target_url': 'firefox/tinderbox-builds/mozilla-inbound-win32/'
-                   '1374583608/firefox-25.0a1.en-US.win32.installer.exe'}
+                   '1374583608/firefox-25.0a1.en-US.win32.installer.exe'},
+    # -a firefox -t tinderbox -p linux --branch=mozilla-central --extension=txt
+    {'args': {'application': 'firefox',
+              'branch': 'mozilla-central',
+              'extension': 'txt',
+              'platform': 'linux'},
+     'target': 'mozilla-central-firefox-25.0a1.en-US.linux-i686.txt',
+     'target_url': 'firefox/tinderbox-builds/mozilla-central-linux/'
+                   '1374583608/firefox-25.0a1.en-US.linux-i686.txt'},
 ]
 
 thunderbird_tests = [

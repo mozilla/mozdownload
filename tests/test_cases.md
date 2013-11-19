@@ -12,13 +12,6 @@ mozdownload -t tinderbox -p win32
 
 ### Tinderbox
 
-```
-mozdownload -a firefox -t tinderbox -p linux --branch=mozilla-central --extension=txt
-```
-<!-- Issue #180 -->
-```
-mozdownload -a firefox -p win32 --branch=mozilla-central --stub
-```
 <!-- Issue #144 -->
 ```
 mozdownload -a firefox -p mac64 --branch=mozilla-central
