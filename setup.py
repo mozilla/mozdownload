@@ -6,7 +6,7 @@
 
 
 import os
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Command
 
 try:
     here = os.path.dirname(os.path.abspath(__file__))
@@ -20,7 +20,24 @@ deps = ['mozinfo==0.7',
         'progressbar==2.2',
         'requests==1.2.2',
         'mozlog==1.3'
-       ]
+        ]
+
+
+class PyTest(Command):
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        import sys
+        import subprocess
+        errno = subprocess.call([sys.executable, 'runtests.py'])
+        raise SystemExit(errno)
+
 
 setup(name='mozdownload',
       version=version,
@@ -42,4 +59,5 @@ setup(name='mozdownload',
       [console_scripts]
       mozdownload = mozdownload:cli
       """,
+      cmdclass={'test': PyTest}
       )
