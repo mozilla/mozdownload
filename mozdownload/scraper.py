@@ -281,9 +281,9 @@ class Scraper(object):
                 # Get the log level: 20 == INFO; 10== DEBUG
                 log_level = self.logger.getEffectiveLevel()
                 if log_level <= 20:
-                    widgets = [progressbar.Percentage(), ' ', progressbar.Bar(),
-                               ' ', progressbar.ETA(), ' ',
-                               progressbar.FileTransferSpeed()]
+                    widgets = [progressbar.Percentage(), ' ',
+                               progressbar.Bar(), ' ', progressbar.ETA(),
+                               ' ', progressbar.FileTransferSpeed()]
                     pbar = progressbar.ProgressBar(widgets=widgets,
                                                    maxval=max_value).start()
 
