@@ -138,6 +138,10 @@ class ReleaseCandidateScraperTest(mhttpd.MozHttpdBaseTest):
             self.assertEqual(scraper.target, expected_target)
             self.assertEqual(urllib.unquote(scraper.final_url),
                              urljoin(self.wdir, entry['target_url']))
+            if entry['args'].get('build_number'):
+                # Assumption: build_number == 1
+                self.assertEqual(scraper.build_index, 0)
+
 
 if __name__ == '__main__':
     unittest.main()
