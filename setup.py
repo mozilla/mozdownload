@@ -7,6 +7,8 @@
 
 import os
 from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
+import sys
 
 try:
     here = os.path.dirname(os.path.abspath(__file__))
@@ -20,7 +22,20 @@ deps = ['mozinfo==0.7',
         'progressbar==2.2',
         'requests==1.2.2',
         'mozlog==1.3'
-       ]
+        ]
+
+
+class PyTest(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        #import here, cause outside the eggs aren't loaded
+        import pytest
+        errno = pytest.main(self.test_args)
+        sys.exit(errno)
 
 setup(name='mozdownload',
       version=version,
@@ -42,4 +57,6 @@ setup(name='mozdownload',
       [console_scripts]
       mozdownload = mozdownload:cli
       """,
+      tests_require=['pytest', 'mozhttpd'],
+      cmdclass={'test': PyTest}
       )
