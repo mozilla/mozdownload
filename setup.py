@@ -6,7 +6,9 @@
 
 
 import os
-from setuptools import setup, find_packages, Command
+from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
+import sys
 
 try:
     here = os.path.dirname(os.path.abspath(__file__))
@@ -23,21 +25,17 @@ deps = ['mozinfo==0.7',
         ]
 
 
-class PyTest(Command):
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
+class PyTest(TestCommand):
     def finalize_options(self):
-        pass
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
 
-    def run(self):
-        import sys
-        import subprocess
-        errno = subprocess.call([sys.executable, 'runtests.py'])
-        raise SystemExit(errno)
-
+    def run_tests(self):
+        #import here, cause outside the eggs aren't loaded
+        import pytest
+        errno = pytest.main(self.test_args)
+        sys.exit(errno)
 
 setup(name='mozdownload',
       version=version,
@@ -59,5 +57,6 @@ setup(name='mozdownload',
       [console_scripts]
       mozdownload = mozdownload:cli
       """,
+      tests_require=['pytest', 'mozhttpd'],
       cmdclass={'test': PyTest}
       )
