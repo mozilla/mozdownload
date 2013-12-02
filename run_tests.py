@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -20,6 +20,10 @@ VERSION_VIRTUAL_ENV = '1.9.1'
 def install(package, version):
     package_arg = "%s==%s" % (package, version)
     pip.main(['install', '--upgrade', package_arg])
+
+
+def python(*args):
+    call(['python'] + list(args))
 
 try:
     # for more info see:
@@ -48,10 +52,10 @@ try:
     install('moztest', VERSION_MOZTEST)
 
     # Install mozdownload
-    call(['python', 'setup.py', 'develop'])
+    python('setup.py', 'develop')
     # run the tests
     tests_path = os.path.join('tests', 'test.py')
-    call(['python', tests_path])
+    python(tests_path)
 
 except IOError:
     print "Could not activate virtual environment."
