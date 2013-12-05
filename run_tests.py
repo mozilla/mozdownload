@@ -23,7 +23,7 @@ def install(package, version):
 
 
 def python(*args):
-    call(['python'] + list(args))
+    call(['tests/venv/bin/python'] + list(args))
 
 try:
     # for more info see:
