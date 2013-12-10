@@ -12,7 +12,6 @@ VERSION_MOZFILE = '0.7'
 VERSION_MOZHTTPD = '0.6'
 VERSION_MOZLOG = '1.3'
 VERSION_MOZTEST = '0.1'
-VERSION_VIRTUAL_ENV = '1.9.1'
 
 
 # see http://stackoverflow.com/questions/12332975/installing-python-module-within-code
@@ -38,7 +37,6 @@ try:
 
     if not os.path.isfile(activate_this_file):
         # download and create venv
-        install('virtualenv', VERSION_VIRTUAL_ENV)
         call(['virtualenv', '--no-site-packages', venv_dir])
 
     execfile(activate_this_file, dict(__file__=activate_this_file))
