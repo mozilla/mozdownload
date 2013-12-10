@@ -90,4 +90,4 @@ Run `mozdownload --help` for detailed information on the command line options.
 
 ## Running the tests
 
-To run the tests, run `./run_tests.sh`.
+To run the tests, run `python run_tests.py`.
