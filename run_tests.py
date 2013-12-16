@@ -13,6 +13,8 @@ VERSION_MOZHTTPD = '0.6'
 VERSION_MOZLOG = '1.3'
 VERSION_MOZTEST = '0.1'
 
+VENV_DIR = os.path.join('tests', 'venv')
+
 
 # see http://stackoverflow.com/questions/12332975/installing-python-module-within-code
 def install(package, version):
@@ -21,23 +23,22 @@ def install(package, version):
 
 
 def python(*args):
-    pypath = [os.path.join(os.getcwd(), 'tests', 'venv', 'bin', 'python')]
+    pypath = [os.path.join(VENV_DIR, 'bin', 'python')]
     call(pypath + list(args))
 
 try:
     # for more info see:
     # http://www.virtualenv.org/en/latest/#using-virtualenv-without-bin-python
-    venv_dir = os.path.join('tests', 'venv')
     if sys.platform == 'win32':
-        activate_this_file = os.path.join('tests', 'venv', 'Scripts',
+        activate_this_file = os.path.join(VENV_DIR, 'Scripts',
                                           'activate_this.py')
     else:
-        activate_this_file = os.path.join('tests', 'venv', 'bin',
+        activate_this_file = os.path.join(VENV_DIR, 'bin',
                                           'activate_this.py')
 
     if not os.path.isfile(activate_this_file):
         # download and create venv
-        call(['virtualenv', '--no-site-packages', venv_dir])
+        call(['virtualenv', '--no-site-packages', VENV_DIR])
 
     execfile(activate_this_file, dict(__file__=activate_this_file))
     print "Virtual environment activated successfully."
