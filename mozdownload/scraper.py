@@ -280,7 +280,7 @@ class Scraper(object):
 
                 # Get the log level: 20 == INFO; 10 == DEBUG
                 log_level = self.logger.getEffectiveLevel()
-                if log_level <= 20:
+                if log_level <= mozlog.INFO:
                     widgets = [progressbar.Percentage(), ' ',
                                progressbar.Bar(), ' ', progressbar.ETA(),
                                ' ', progressbar.FileTransferSpeed()]
@@ -292,7 +292,7 @@ class Scraper(object):
                         f.write(chunk)
                         bytes_downloaded += CHUNK_SIZE
 
-                        if log_level <= 20:
+                        if log_level <= mozlog.INFO:
                             pbar.update(bytes_downloaded)
 
                         t1 = total_seconds(datetime.now() - start_time)
@@ -300,7 +300,7 @@ class Scraper(object):
                                 t1 >= self.timeout_download:
                             raise TimeoutError
 
-                if log_level <= 20:
+                if log_level <= mozlog.INFO:
                     pbar.finish()
                 break
             except (requests.exceptions.RequestException, TimeoutError), e:
