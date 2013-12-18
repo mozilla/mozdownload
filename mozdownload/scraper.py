@@ -278,7 +278,6 @@ class Scraper(object):
                 max_value = ((total_size / CHUNK_SIZE) + 1) * CHUNK_SIZE
                 bytes_downloaded = 0
 
-                # Get the log level: 20 == INFO; 10 == DEBUG
                 log_level = self.logger.getEffectiveLevel()
                 if log_level <= mozlog.INFO:
                     widgets = [progressbar.Percentage(), ' ',
