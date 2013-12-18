@@ -10,12 +10,6 @@ import sys
 import urllib2
 import zipfile
 
-VERSION_MANIFEST_DESTINY = '0.5.6'
-VERSION_MOZFILE = '0.7'
-VERSION_MOZHTTPD = '0.6'
-VERSION_MOZLOG = '1.3'
-VERSION_MOZTEST = '0.1'
-
 # Link to the folder which contains the zip archives of virtualenv
 URL_VIRTUALENV = 'https://codeload.github.com/pypa/virtualenv/zip/'
 VERSION_VIRTUALENV = '1.9.1'
@@ -23,6 +17,8 @@ VERSION_VIRTUALENV = '1.9.1'
 dir_base = os.path.abspath(os.path.dirname(__file__))
 dir_env = os.path.join(dir_base, 'tmp', 'venv')
 dir_tmp = os.path.join(dir_base, 'tmp')
+
+req_txt = os.path.join('tests', 'requirements.txt')
 
 
 def download(url, target):
@@ -85,11 +81,7 @@ except CalledProcessError:
     print "Exiting."
 
 # Install dependent packages
-install('ManifestDestiny', VERSION_MANIFEST_DESTINY)
-install('mozfile', VERSION_MOZFILE)
-install('mozhttpd', VERSION_MOZHTTPD)
-install('mozlog', VERSION_MOZLOG)
-install('moztest', VERSION_MOZTEST)
+call(['pip', 'install', '--upgrade', '-r', req_txt])
 
 # Install mozdownload
 python('setup.py', 'develop')
