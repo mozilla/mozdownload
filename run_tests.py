@@ -76,7 +76,7 @@ try:
     execfile(activate_this_file, dict(__file__=activate_this_file))
     print "Virtual environment activated successfully."
 
-except CalledProcessError:
+except (CalledProcessError, IOError):
     print "Could not activate virtual environment."
     print "Exiting."
 
