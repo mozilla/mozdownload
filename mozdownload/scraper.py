@@ -245,7 +245,7 @@ class Scraper(object):
             if hasattr(td, 'total_seconds'):
                 return td.total_seconds()
             else:
-                return (td.microseconds +
+                return (float(td.microseconds) +
                         (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10 ** 6
 
         attempt = 0
