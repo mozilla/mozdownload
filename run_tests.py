@@ -4,7 +4,7 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-from subprocess import call, check_call, CalledProcessError
+from subprocess import check_call, CalledProcessError
 import shutil
 import sys
 import urllib2
@@ -14,11 +14,11 @@ import zipfile
 URL_VIRTUALENV = 'https://codeload.github.com/pypa/virtualenv/zip/'
 VERSION_VIRTUALENV = '1.9.1'
 
-dir_base = os.path.abspath(os.path.dirname(__file__))
-dir_env = os.path.join(dir_base, 'tmp', 'venv')
-dir_tmp = os.path.join(dir_base, 'tmp')
+DIR_BASE = os.path.abspath(os.path.dirname(__file__))
+DIR_ENV = os.path.join(DIR_BASE, 'tmp', 'venv')
+DIR_TMP = os.path.join(DIR_BASE, 'tmp')
 
-req_txt = os.path.join('tests', 'requirements.txt')
+REQ_TXT = os.path.join('tests', 'requirements.txt')
 
 
 def download(url, target):
@@ -32,46 +32,46 @@ def download(url, target):
 # see http://stackoverflow.com/questions/12332975/installing-python-module-within-code
 def install(package, version):
     package_arg = "%s==%s" % (package, version)
-    call(['pip', 'install', '--upgrade', package_arg])
+    check_call(['pip', 'install', '--upgrade', package_arg])
 
 
 def python(*args):
-    pypath = [os.path.join(dir_env, 'bin', 'python')]
-    call(pypath + list(args))
+    pypath = [os.path.join(DIR_ENV, 'bin', 'python')]
+    check_call(pypath + list(args))
 
 
 try:
     # Remove potentially pre-existing tmp_dir
-    shutil.rmtree(dir_tmp, True)
+    shutil.rmtree(DIR_TMP, True)
     # Start out clean
-    os.makedirs(dir_tmp)
+    os.makedirs(DIR_TMP)
 
     print 'Downloading virtualenv %s' % VERSION_VIRTUALENV
     virtualenv_file = download(URL_VIRTUALENV + VERSION_VIRTUALENV,
-                               os.path.join(dir_tmp, 'virtualenv.zip'))
+                               os.path.join(DIR_TMP, 'virtualenv.zip'))
     virtualenv_zip = zipfile.ZipFile(virtualenv_file)
-    virtualenv_zip.extractall(dir_tmp)
+    virtualenv_zip.extractall(DIR_TMP)
     virtualenv_zip.close()
 
     print 'Creating new virtual environment'
-    virtualenv_script = os.path.join(dir_tmp,
+    virtualenv_script = os.path.join(DIR_TMP,
                                      'virtualenv-%s' % VERSION_VIRTUALENV,
                                      'virtualenv.py')
-    check_call(['python', virtualenv_script, dir_env])
+    check_call(['python', virtualenv_script, DIR_ENV])
 
     print 'Activating virtual environment'
     # for more info see:
     # http://www.virtualenv.org/en/latest/#using-virtualenv-without-bin-python
     if sys.platform == 'win32':
-        activate_this_file = os.path.join(dir_env, 'Scripts',
+        activate_this_file = os.path.join(DIR_ENV, 'Scripts',
                                           'activate_this.py')
     else:
-        activate_this_file = os.path.join(dir_env, 'bin',
+        activate_this_file = os.path.join(DIR_ENV, 'bin',
                                           'activate_this.py')
 
     if not os.path.isfile(activate_this_file):
-        # download and create venv
-        check_call(['virtualenv', '--no-site-packages', dir_env])
+        # create venv
+        check_call(['virtualenv', '--no-site-packages', DIR_ENV])
 
     execfile(activate_this_file, dict(__file__=activate_this_file))
     print "Virtual environment activated successfully."
@@ -81,7 +81,7 @@ except (CalledProcessError, IOError):
     print "Exiting."
 
 # Install dependent packages
-call(['pip', 'install', '--upgrade', '-r', req_txt])
+check_call(['pip', 'install', '--upgrade', '-r', REQ_TXT])
 
 # Install mozdownload
 python('setup.py', 'develop')
@@ -90,4 +90,4 @@ python('setup.py', 'develop')
 python(os.path.join('tests', 'test.py'))
 
 # Clean up
-shutil.rmtree(dir_tmp)
+shutil.rmtree(DIR_TMP)
