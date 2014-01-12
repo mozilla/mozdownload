@@ -277,23 +277,30 @@ class Scraper(object):
                 total_size = int(r.headers.get('Content-length').strip())
                 max_value = ((total_size / CHUNK_SIZE) + 1) * CHUNK_SIZE
                 bytes_downloaded = 0
-                widgets = [progressbar.Percentage(), ' ', progressbar.Bar(),
-                           ' ', progressbar.ETA(), ' ',
-                           progressbar.FileTransferSpeed()]
-                pbar = progressbar.ProgressBar(widgets=widgets,
-                                               maxval=max_value).start()
+
+                log_level = self.logger.getEffectiveLevel()
+                if log_level <= mozlog.INFO:
+                    widgets = [progressbar.Percentage(), ' ',
+                               progressbar.Bar(), ' ', progressbar.ETA(),
+                               ' ', progressbar.FileTransferSpeed()]
+                    pbar = progressbar.ProgressBar(widgets=widgets,
+                                                   maxval=max_value).start()
 
                 with open(tmp_file, 'wb') as f:
                     for chunk in iter(lambda: r.raw.read(CHUNK_SIZE), ''):
                         f.write(chunk)
                         bytes_downloaded += CHUNK_SIZE
-                        pbar.update(bytes_downloaded)
+
+                        if log_level <= mozlog.INFO:
+                            pbar.update(bytes_downloaded)
 
                         t1 = total_seconds(datetime.now() - start_time)
                         if self.timeout_download and \
                                 t1 >= self.timeout_download:
                             raise TimeoutError
-                pbar.finish()
+
+                if log_level <= mozlog.INFO:
+                    pbar.finish()
                 break
             except (requests.exceptions.RequestException, TimeoutError), e:
                 if tmp_file and os.path.isfile(tmp_file):

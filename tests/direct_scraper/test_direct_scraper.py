@@ -26,7 +26,8 @@ class TestDirectScraper(unittest.TestCase):
         test_url = 'https://mozqa.com/index.html'
         scraper = DirectScraper(url=test_url,
                                 directory=self.temp_dir,
-                                version=None)
+                                version=None,
+                                log_level='ERROR')
         self.assertEqual(scraper.url, test_url)
         self.assertEqual(scraper.final_url, test_url)
         self.assertEqual(scraper.target,
