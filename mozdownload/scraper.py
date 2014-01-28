@@ -22,7 +22,7 @@ from parser import DirectoryParser
 from timezones import PacificTimezone
 from utils import urljoin
 
-import progressbar
+import progressbar as pb
 
 version = pkg_resources.require("mozdownload")[0].version
 
@@ -275,25 +275,27 @@ class Scraper(object):
                                  auth=self.authentication)
                 r.raise_for_status()
 
+                content_length = r.headers.get('Content-length')
                 # ValueError: Value out of range if only total_size given
-                total_size = int(r.headers.get('Content-length').strip())
-                max_value = ((total_size / CHUNK_SIZE) + 1) * CHUNK_SIZE
+                if content_length:
+                    total_size = int(content_length.strip())
+                    max_value = ((total_size / CHUNK_SIZE) + 1) * CHUNK_SIZE
+
                 bytes_downloaded = 0
 
                 log_level = self.logger.getEffectiveLevel()
-                if log_level <= mozlog.INFO:
-                    widgets = [progressbar.Percentage(), ' ',
-                               progressbar.Bar(), ' ', progressbar.ETA(),
-                               ' ', progressbar.FileTransferSpeed()]
-                    pbar = progressbar.ProgressBar(widgets=widgets,
-                                                   maxval=max_value).start()
+                if log_level <= mozlog.INFO and content_length:
+                    widgets = [pb.Percentage(), ' ', pb.Bar(), ' ', pb.ETA(),
+                               ' ', pb.FileTransferSpeed()]
+                    pbar = pb.ProgressBar(widgets=widgets,
+                                          maxval=max_value).start()
 
                 with open(tmp_file, 'wb') as f:
                     for chunk in iter(lambda: r.raw.read(CHUNK_SIZE), ''):
                         f.write(chunk)
                         bytes_downloaded += CHUNK_SIZE
 
-                        if log_level <= mozlog.INFO:
+                        if log_level <= mozlog.INFO and content_length:
                             pbar.update(bytes_downloaded)
 
                         t1 = total_seconds(datetime.now() - start_time)
@@ -301,7 +303,7 @@ class Scraper(object):
                                 t1 >= self.timeout_download:
                             raise TimeoutError
 
-                if log_level <= mozlog.INFO:
+                if log_level <= mozlog.INFO and content_length:
                     pbar.finish()
                 break
             except (requests.exceptions.RequestException, TimeoutError), e:
