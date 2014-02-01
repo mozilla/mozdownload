@@ -261,6 +261,8 @@ class Scraper(object):
 
         self.logger.info('Downloading from: %s' %
                          (urllib.unquote(self.final_url)))
+        self.logger.info('Saving as: %s' % self.target)
+
         tmp_file = self.target + ".part"
 
         while True:
