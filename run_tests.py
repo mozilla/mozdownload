@@ -5,10 +5,11 @@
 
 import os
 from subprocess import check_call, CalledProcessError
-import shutil
 import sys
 import urllib2
 import zipfile
+
+import mozfile
 
 # Link to the folder which contains the zip archives of virtualenv
 URL_VIRTUALENV = 'https://codeload.github.com/pypa/virtualenv/zip/'
@@ -42,7 +43,7 @@ def python(*args):
 
 try:
     # Remove potentially pre-existing tmp_dir
-    shutil.rmtree(DIR_TMP, True)
+    mozfile.remove(DIR_TMP)
     # Start out clean
     os.makedirs(DIR_TMP)
 
@@ -76,9 +77,10 @@ try:
     execfile(activate_this_file, dict(__file__=activate_this_file))
     print "Virtual environment activated successfully."
 
-except (CalledProcessError, IOError):
+except (CalledProcessError, IOError) as err:
     print "Could not activate virtual environment."
     print "Exiting."
+    sys.exit(err)
 
 # Install dependent packages
 check_call(['pip', 'install', '--upgrade', '-r', REQ_TXT])
@@ -90,4 +92,4 @@ python('setup.py', 'develop')
 python(os.path.join('tests', 'test.py'))
 
 # Clean up
-shutil.rmtree(DIR_TMP)
+mozfile.remove(DIR_TMP)
