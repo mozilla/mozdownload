@@ -14,7 +14,7 @@ try:
 except (OSError, IOError):
     description = None
 
-version = '1.10'
+version = '1.11'
 
 # Load dependencies
 with open('requirements.txt') as f:
