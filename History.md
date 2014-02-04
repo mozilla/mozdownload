@@ -1,3 +1,8 @@
+1.11.1 / 2014-02-04
+===================
+
+  * Revert "Adjust mozbase package dependencies to be more flexible (#206)"
+
 1.11 / 2014-02-03
 =================
 
