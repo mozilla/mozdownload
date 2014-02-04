@@ -1,4 +1,0 @@
-mozinfo>=0.7
-progressbar==2.2
-requests==1.2.2
-mozlog>=1.3

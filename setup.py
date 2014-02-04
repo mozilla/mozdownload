@@ -16,9 +16,11 @@ except (OSError, IOError):
 
 version = '1.11'
 
-# Load dependencies
-with open('requirements.txt') as f:
-    install_deps = f.read().splitlines()
+deps = ['mozinfo==0.7',
+        'progressbar==2.2',
+        'requests==1.2.2',
+        'mozlog==1.3'
+       ]
 
 setup(name='mozdownload',
       version=version,
@@ -34,7 +36,7 @@ setup(name='mozdownload',
       license='Mozilla Public License 2.0 (MPL 2.0)',
       packages=['mozdownload'],
       zip_safe=False,
-      install_requires=install_deps,
+      install_requires=deps,
       entry_points="""
       # -*- Entry points: -*-
       [console_scripts]
