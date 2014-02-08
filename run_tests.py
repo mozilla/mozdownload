@@ -80,7 +80,11 @@ try:
 except (CalledProcessError, IOError) as err:
     print "Could not activate virtual environment."
     print "Exiting."
-    sys.exit(err)
+    if err == CalledProcessError:
+        sys.exit(err.returncode)
+    else:
+        sys.exit(err.errno)
+
 
 # Install dependent packages
 check_call(['pip', 'install', '--upgrade', '-r', REQ_TXT])
