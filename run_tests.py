@@ -77,13 +77,10 @@ try:
     execfile(activate_this_file, dict(__file__=activate_this_file))
     print "Virtual environment activated successfully."
 
-except (CalledProcessError, IOError) as err:
+except:
     print "Could not activate virtual environment."
     print "Exiting."
-    if err == CalledProcessError:
-        sys.exit(err.returncode)
-    else:
-        sys.exit(err.errno)
+    sys.exit(1)
 
 
 # Install dependent packages
