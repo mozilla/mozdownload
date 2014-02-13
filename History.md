@@ -1,3 +1,16 @@
+1.11.1 / 2014-02-04
+===================
+
+  * Revert "Adjust mozbase package dependencies to be more flexible (#206)"
+
+1.11 / 2014-02-03
+=================
+
+  * Adjust mozbase package dependencies to be more flexible (#201)
+  * Log the name of the output file for discovery (#199)
+  * Changed logger info level in tests to ERROR (#175)
+  * PEP8 fixes in test_daily_scraper (#188)
+
 1.10 / 2013-11-19
 =================
 
