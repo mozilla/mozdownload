@@ -361,8 +361,10 @@ class DailyScraper(Scraper):
         elif self.date:
             # A date (without time) has been specified. Use its value and the
             # build index to find the requested build for that day.
-            self.date = datetime.strptime(self.date, '%Y-%m-%d')
-
+            try:
+                self.date = datetime.strptime(self.date, '%Y-%m-%d')
+            except:
+                raise ValueError('%s is not a valid date' % self.date)
         else:
             # If no build id nor date have been specified the latest available
             # build of the given branch has to be identified. We also have to
@@ -692,8 +694,12 @@ class TinderboxScraper(Scraper):
                 # date is provided in the format 2013-07-23
                 self.date = datetime.strptime(self.date, '%Y-%m-%d')
             except:
-                # date is provided as a unix timestamp
-                self.timestamp = self.date
+                try:
+                    # date is provided as a unix timestamp
+                    datetime.fromtimestamp(float(self.date))
+                    self.timestamp = self.date
+                except:
+                    raise ValueError('%s is not a valid date' % self.date)
 
         self.locale_build = self.locale != 'en-US'
         # For localized builds we do not have to retrieve the list of builds
@@ -975,7 +981,7 @@ def cli():
     # Check for required options and arguments
     # Note: Will be optional when ini file support has been landed
     if not options.url \
-       and not options.type in ['daily', 'tinderbox'] \
+       and options.type not in ['daily', 'tinderbox'] \
        and not options.version:
         parser.error('The version of the application to download has not'
                      ' been specified.')
