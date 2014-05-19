@@ -4,6 +4,7 @@ python:
   - "2.7"
 install:
   - pip install pep8
+  - python --version
 before_script:
   - "pep8 mozdownload"
 script: ./run_tests.py
