@@ -311,7 +311,7 @@ class Scraper(object):
                     os.remove(tmp_file)
                 if self.retry_attempts > 0:
                     # Log only if multiple attempts are requested
-                    self.logger.warning('Download failed: "%s"' % e.message)
+                    self.logger.warning('Download failed: "%s"' % str(e))
                     self.logger.info('Will retry in %s seconds...' %
                                      (self.retry_delay))
                     time.sleep(self.retry_delay)

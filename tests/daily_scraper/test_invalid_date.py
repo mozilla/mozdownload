@@ -52,10 +52,12 @@ class TestDailyScraper_invalidParameters(mhttpd.MozHttpdBaseTest):
         """Testing download scenarios with invalid parameters for DailyScraper"""
 
         for entry in tests:
-            with self.assertRaises(ValueError):
-                DailyScraper(directory=self.temp_dir, version=None,
-                             base_url=self.wdir, log_level='ERROR',
-                             **entry['args'])
+            self.assertRaises(ValueError, DailyScraper,
+                              directory=self.temp_dir,
+                              version=None,
+                              base_url=self.wdir,
+                              log_level='ERROR',
+                              **entry['args'])
 
 
 if __name__ == '__main__':
