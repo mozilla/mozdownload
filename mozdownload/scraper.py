@@ -588,8 +588,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
             self.builds = ['build%s' % self.build_number]
             self.build_index = 0
 
-        # If build_number invalid, no output is given
-        if self.build_number is not None and \
+        # If build_number is invalid, no output is given
+        if self.build_number and \
                 self.build_number <= len(self.builds):
             self.logger.info('Selected build: build%s' % self.build_number)
         elif not self.build_number:
