@@ -584,15 +584,12 @@ class ReleaseCandidateScraper(ReleaseScraper):
         # Internally we access builds via index
         self.builds, self.build_index = self.get_build_info_for_version(
             self.version)
-        if self.build_number is not None:
+        if self.build_number and \
+                ('build%s' % self.build_number) in self.builds:
             self.builds = ['build%s' % self.build_number]
             self.build_index = 0
-
-        # If build_number is invalid, no output is given
-        if self.build_number and \
-                self.build_number <= len(self.builds):
             self.logger.info('Selected build: build%s' % self.build_number)
-        elif not self.build_number:
+        else:
             self.logger.info('Selected build: build%s' % self.build_index)
 
     def get_build_info_for_version(self, version, build_index=None):
