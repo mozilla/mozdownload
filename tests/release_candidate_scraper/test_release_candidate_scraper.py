@@ -139,48 +139,6 @@ class ReleaseCandidateScraperTest(mhttpd.MozHttpdBaseTest):
             self.assertEqual(urllib.unquote(scraper.final_url),
                              urljoin(self.wdir, entry['target_url']))
 
-    def test_build_indices(self):
-        """Testing indices in choosing builds for ReleaseCandidateScraper"""
-        # -a firefox -p win32 -v 21.0 --build-number=1
-        test = {'args': {'build_number': '1',
-                         'platform': 'win32',
-                         'version': '21.0'}
-                }
-        scraper = ReleaseCandidateScraper(directory=self.temp_dir,
-                                          base_url=self.wdir,
-                                          log_level='ERROR',
-                                          **test['args'])
-        self.assertEqual(scraper.build_index, 0)
-        self.assertEqual(scraper.build_number, '1')
-        self.assertEqual(scraper.builds, ["build1"])
-
-        # -a firefox -p mac -v 21.0 --build-number=3
-        test1 = {'args': {'build_number': '3',
-                          'platform': 'mac',
-                          'version': '21.0'}
-                 }
-        scraper1 = ReleaseCandidateScraper(directory=self.temp_dir,
-                                           base_url=self.wdir,
-                                           log_level='ERROR',
-                                           **test1['args'])
-        self.assertEqual(scraper1.build_index, 0)
-        self.assertEqual(scraper1.build_number, '3')
-        self.assertEqual(scraper1.builds, ["build3"])
-
-        # -a firefox -p linux -v 21.0 --build-number=2
-        # Invalid build-number
-        test2 = {'args': {'build_number': '2',
-                          'platform': 'linux',
-                          'version': '21.0'}
-                 }
-        scraper2 = ReleaseCandidateScraper(directory=self.temp_dir,
-                                           base_url=self.wdir,
-                                           log_level='ERROR',
-                                           **test2['args'])
-        # build_index = len(parser.entries) - 1
-        self.assertEqual(scraper2.build_index, 1)
-        self.assertEqual(scraper2.build_number, '2')
-        self.assertEqual(scraper2.builds, ["build1", "build3"])
 
 if __name__ == '__main__':
     unittest.main()
