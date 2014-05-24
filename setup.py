@@ -18,7 +18,7 @@ version = '1.11.1'
 
 deps = ['mozinfo>=0.7',
         'mozlog>=1.3',
-        'progressbar==2.2',
+        'progress==1.2',
         'requests==1.2.2'
         ]
 

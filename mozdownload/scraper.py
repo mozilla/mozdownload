@@ -22,7 +22,8 @@ from parser import DirectoryParser
 from timezones import PacificTimezone
 from utils import urljoin
 
-import progressbar as pb
+from progress.bar import Bar
+from progress.spinner import Spinner
 
 version = pkg_resources.require("mozdownload")[0].version
 
@@ -276,35 +277,42 @@ class Scraper(object):
                 r.raise_for_status()
 
                 content_length = r.headers.get('Content-length')
-                # ValueError: Value out of range if only total_size given
                 if content_length:
                     total_size = int(content_length.strip())
-                    max_value = ((total_size / CHUNK_SIZE) + 1) * CHUNK_SIZE
+                    # For progressbar
+                    max_value = ((total_size / CHUNK_SIZE) + 1)
 
                 bytes_downloaded = 0
 
                 log_level = self.logger.getEffectiveLevel()
-                if log_level <= mozlog.INFO and content_length:
-                    widgets = [pb.Percentage(), ' ', pb.Bar(), ' ', pb.ETA(),
-                               ' ', pb.FileTransferSpeed()]
-                    pbar = pb.ProgressBar(widgets=widgets,
-                                          maxval=max_value).start()
+                if log_level <= mozlog.INFO:
+                    if content_length:
+                        bar = Bar('Downloading', max=max_value,
+                                  suffix='%(percent)d%% ETA: %(eta)ds')
+                    else:
+                        spinner = Spinner('Downloading')
 
                 with open(tmp_file, 'wb') as f:
-                    for chunk in iter(lambda: r.raw.read(CHUNK_SIZE), ''):
+                    for chunk in r.iter_content(CHUNK_SIZE):
                         f.write(chunk)
                         bytes_downloaded += CHUNK_SIZE
 
-                        if log_level <= mozlog.INFO and content_length:
-                            pbar.update(bytes_downloaded)
+                        if log_level <= mozlog.INFO:
+                            if content_length:
+                                bar.next()
+                            else:
+                                spinner.next()
 
                         t1 = total_seconds(datetime.now() - start_time)
                         if self.timeout_download and \
                                 t1 >= self.timeout_download:
                             raise TimeoutError
 
-                if log_level <= mozlog.INFO and content_length:
-                    pbar.finish()
+                if log_level <= mozlog.INFO:
+                    if content_length:
+                        bar.finish()
+                    else:
+                        spinner.finish()
                 break
             except (requests.exceptions.RequestException, TimeoutError), e:
                 if tmp_file and os.path.isfile(tmp_file):
