@@ -613,7 +613,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
            a candidate build."""
 
         # Regex for possible builds for the given date
-        return r'nightly/%(VERSION)s-candidates/' % {
+        return r'candidates/%(VERSION)s-candidates/' % {
             'VERSION': self.version}
 
     @property
