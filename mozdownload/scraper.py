@@ -969,6 +969,15 @@ def cli():
                      help="Download a debug build")
     parser.add_option_group(group)
 
+    # Provide the list of command line options if asked.  This code shall be
+    # called after all the options are added to the option parser.
+    if '_MOZDOWNLOADARGCOMPLETE' in os.environ:
+        completions = []
+        completions += parser._short_opt.keys()
+        completions += parser._long_opt.keys()
+        print ' '.join(completions)
+        return
+
     # TODO: option group for nightly builds
     (options, args) = parser.parse_args()
 
