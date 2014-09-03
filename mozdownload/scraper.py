@@ -98,13 +98,11 @@ class Scraper(object):
         self._binary = None
 
         self.directory = directory
-        if not locale:
-            if application in MULTI_LOCALE_APPLICATIONS:
-                self.locale = 'multi'
-            else:
-                self.locale = 'en-US'
+
+        if application in MULTI_LOCALE_APPLICATIONS:
+            self.locale = 'multi' if locale != 'en-US' else 'en-US'
         else:
-            self.locale = locale
+            self.locale = locale or 'en-US'
 
         self.platform = platform or self.detect_platform()
         self.version = version
