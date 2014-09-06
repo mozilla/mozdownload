@@ -139,5 +139,6 @@ class ReleaseCandidateScraperTest(mhttpd.MozHttpdBaseTest):
             self.assertEqual(urllib.unquote(scraper.final_url),
                              urljoin(self.wdir, entry['target_url']))
 
+
 if __name__ == '__main__':
     unittest.main()
