@@ -1,3 +1,16 @@
+1.12 / 2014-09-10
+=================
+
+ * Display selected build when downloading (#149)
+ * Add support for downloading B2G desktop builds (#104)
+ * Download candidate builds from candidates/ and not nightly/ (#218)
+ * Add Travis CI build status and PyPI version badges to README (#220)
+ * Add Python 2.6 to test matrix (#210)
+ * Fix broken download of mac64 tinderbox builds (#144)
+ * Allow download even if content-length header is missing (#194)
+ * Convert run_tests script to Python (#168)
+ * Ensure that --date option is a valid date (#196)
+
 1.11.1 / 2014-02-04
 ===================
 
