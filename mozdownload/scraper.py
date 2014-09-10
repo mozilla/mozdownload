@@ -402,6 +402,7 @@ class DailyScraper(Scraper):
 
     def get_latest_build_date(self):
         """ Returns date of latest available nightly build."""
+
         url = urljoin(self.base_url, 'nightly', 'latest-%s/' % self.branch)
 
         self.logger.info('Retrieving the build status file from %s' % url)
@@ -648,7 +649,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
     @property
     def candidate_build_list_regex(self):
         """Return the regex for the folder which contains the builds of
-           a candidate build."""
+        a candidate build.
+        """
 
         # Regex for possible builds for the given date
         return r'candidates/%(VERSION)s-candidates/' % {
@@ -721,7 +723,7 @@ class TinderboxScraper(Scraper):
         Scraper.__init__(self, *args, **kwargs)
 
     def get_build_info(self):
-        "Defines additional build information"
+        """Defines additional build information"""
 
         # Internally we access builds via index
         if self.build_number is not None:
