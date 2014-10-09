@@ -108,7 +108,10 @@ class Scraper(object):
 
         self.platform = platform or self.detect_platform()
         self.version = version
-        self.authentication = authentication
+        if authentication == (None, None):
+            self.authentication = None
+        else:
+            self.authentication = authentication
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
         self.is_stub_installer = is_stub_installer
