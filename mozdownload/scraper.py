@@ -1066,7 +1066,10 @@ def cli():
     else:
         build = BUILD_TYPES[options.type](**kwargs)
 
-    build.download()
+    try:
+        build.download()
+    except KeyboardInterrupt:
+        print "\n", "Download interrupted by the user"
 
 if __name__ == "__main__":
     cli()
