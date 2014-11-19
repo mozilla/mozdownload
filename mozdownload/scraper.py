@@ -1069,7 +1069,7 @@ def cli():
     try:
         build.download()
     except KeyboardInterrupt:
-        print "Download interrupted by the user"
+        print "\n", "Download interrupted by the user"
 
 if __name__ == "__main__":
     cli()
