@@ -89,7 +89,7 @@ class Scraper(object):
 
     def __init__(self, directory, version, platform=None,
                  application='firefox', locale=None, extension=None,
-                 authentication=None, retry_attempts=0, retry_delay=10.,
+                 username=None, password=None, retry_attempts=0, retry_delay=10.,
                  is_stub_installer=False, timeout=None, log_level='INFO',
                  base_url=BASE_URL):
 
@@ -108,10 +108,10 @@ class Scraper(object):
 
         self.platform = platform or self.detect_platform()
         self.version = version
-        if authentication == (None, None):
+        if (username, password) == (None, None):
             self.authentication = None
         else:
-            self.authentication = authentication
+            self.authentication = (username, password)
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
         self.is_stub_installer = is_stub_installer
@@ -1037,7 +1037,8 @@ def cli():
                         'version': options.version,
                         'directory': options.directory,
                         'extension': options.extension,
-                        'authentication': (options.username, options.password),
+                        'username': options.username,
+                        'password': options.password,
                         'retry_attempts': options.retry_attempts,
                         'retry_delay': options.retry_delay,
                         'is_stub_installer': options.is_stub_installer,
