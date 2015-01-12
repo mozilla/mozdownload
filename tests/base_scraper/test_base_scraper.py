@@ -75,7 +75,7 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
                           scraper.build_filename, 'invalid binary')
 
     def test_authentication(self):
-        # testing authentication
+        """testing authentication"""
         username = 'mozilla'
         password = 'mozilla'
         basic_auth_url = 'http://mozqa.com/data/mozqa.com/http_auth/basic/'
@@ -84,27 +84,27 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
         # test with invalid authentication
         # check if exception is thrown
         scraper = mozdownload.DirectScraper(directory=self.temp_dir,
-                                      url = basic_auth_url,
-                                      version=None,
-                                      log_level='ERROR')
+                                            url = basic_auth_url,
+                                            version=None,
+                                            log_level='ERROR')
         self.assertRaises(requests.exceptions.HTTPError,scraper.download)
 
         # testing with valid authentication
         scraper = mozdownload.DirectScraper(directory=self.temp_dir,
-                                      url = basic_auth_url,
-                                      version=None,
-                                      log_level='ERROR',
-                                      username=username,
-                                      password=password)
+                                            url = basic_auth_url,
+                                            version=None,
+                                            log_level='ERROR',
+                                            username=username,
+                                            password=password)
         print self.temp_dir
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     'mozqa.com')))
         # test with a site that requires no authentication
         scraper = mozdownload.DirectScraper(directory=self.temp_dir,
-                                      url = no_auth_url,
-                                      version=None,
-                                      log_level='ERROR')
+                                            url = no_auth_url,
+                                            version=None,
+                                            log_level='ERROR')
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     'ci.mozilla.org')))
