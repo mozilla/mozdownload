@@ -96,7 +96,6 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
                                             log_level='ERROR',
                                             username=username,
                                             password=password)
-        print self.temp_dir
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     'mozqa.com')))
