@@ -14,7 +14,7 @@ try:
 except (OSError, IOError):
     description = None
 
-version = '1.11.1'
+version = '1.12'
 
 deps = ['mozinfo>=0.7',
         'mozlog>=1.3',

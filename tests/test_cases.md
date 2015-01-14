@@ -8,15 +8,6 @@ mozdownload -t daily -p win32
 mozdownload -t tinderbox -p win32
 ```
 
-## Firefox
-
-### Tinderbox
-
-<!-- Issue #144 -->
-```
-mozdownload -a firefox -p mac64 --branch=mozilla-central
-```
-
 ## Thunderbird
 
 ### Tinderbox
@@ -32,23 +23,6 @@ Not currently supported
 
 ### Candidates
 Not currently supported
-
-### Daily
-Not currently supported due to #104
-
-<!--
-```
-mozdownload -a b2g -t daily -p linux --branch=mozilla-central
-mozdownload -a b2g -t daily -p linux64 --branch=mozilla-central
-mozdownload -a b2g -t daily -p mac64 --branch=mozilla-central
-mozdownload -a b2g -t daily -p win32 --branch=mozilla-central
-mozdownload -a b2g -t daily -p win32 --branch=mozilla-central -d b2g-daily-builds
-mozdownload -a b2g -t daily -p win32 --branch=mozilla-central -l en-US
-mozdownload -a b2g -t daily -p win32 --branch=mozilla-central --date=2013-07-02
-mozdownload -a b2g -t daily -p win32 --branch=mozilla-central --date=2013-07-02 --build-number=1
-mozdownload -a b2g -t daily -p win32 --branch=mozilla-central --build-id=20130702031336
-```
--->
 
 ### Tinderbox
 Not currently supported

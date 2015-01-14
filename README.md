@@ -1,5 +1,8 @@
 # mozdownload
 
+[![Latest Version](https://pypip.in/version/mozdownload/badge.png)](https://pypi.python.org/pypi/mozdownload/)
+[![Build Status](https://travis-ci.org/mozilla/mozdownload.svg?branch=master)](https://travis-ci.org/mozilla/mozdownload)
+
 [mozdownload](https://github.com/mozilla/mozdownload)
 is a [python package](http://pypi.python.org/pypi/mozdownload)
 which handles downloading of Mozilla applications.
@@ -19,19 +22,19 @@ Download the latest Firefox Aurora build for Windows (32bit):
 
     mozdownload --type=daily --branch=mozilla-aurora --platform=win32
 
-Download the latest official Thunderbird release for your platform: 
+Download the latest official Thunderbird release for your platform:
 
     mozdownload --application=thunderbird --version=latest
 
-Download the latest Earlybird build for Linux (64bit): 
+Download the latest Earlybird build for Linux (64bit):
 
     mozdownload --application=thunderbird --type=daily --branch=comm-aurora --platform=linux64
 
-Download this README file: 
+Download this README file:
 
     mozdownload --url=https://raw.github.com/mozilla/mozdownload/master/README.md
 
-Download a file from a URL protected with basic authentication: 
+Download a file from a URL protected with basic authentication:
 
     mozdownload --url=http://example.com/secrets.txt --username=admin --password=password
 

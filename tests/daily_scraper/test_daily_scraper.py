@@ -231,7 +231,71 @@ thunderbird_tests = [
     },
 ]
 
-tests = firefox_tests + thunderbird_tests
+b2g_tests = [
+    # -p linux --branch=mozilla-central
+    {'args': {'application': 'b2g',
+              'platform': 'linux',
+              'branch': 'mozilla-central'},
+    'target': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.multi.linux-i686.tar.bz2',
+    'target_url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/b2g-29.0a1.multi.linux-i686.tar.bz2'
+     },
+    # -p linux64 --branch=mozilla-central
+    {'args': {'application': 'b2g',
+              'platform': 'linux64',
+              'branch': 'mozilla-central'},
+    'target': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.multi.linux-x86_64.tar.bz2',
+    'target_url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/b2g-29.0a1.multi.linux-x86_64.tar.bz2'
+     },
+    # -p mac64 --branch=mozilla-central
+    {'args': {'application': 'b2g',
+              'platform': 'mac64',
+              'branch': 'mozilla-central'},
+    'target': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.multi.mac64.dmg',
+    'target_url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/b2g-29.0a1.multi.mac64.dmg'
+     },
+    # -p mac64 --branch=mozilla-central
+    {'args': {'application': 'b2g',
+              'platform': 'win32',
+              'branch': 'mozilla-central'},
+    'target': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.multi.win32.zip',
+    'target_url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/b2g-29.0a1.multi.win32.zip'
+     },
+    # -p win32 --branch=mozilla-central -l en-US
+    {'args': {'application': 'b2g',
+              'platform': 'win32',
+              'branch': 'mozilla-central',
+              'locale': 'en-US'},
+    'target': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.en-US.win32.zip',
+    'target_url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/en-US/b2g-29.0a1.en-US.win32.zip'
+     },
+    # -p win32 --branch=mozilla-central --date=2013-07-01
+    {'args': {'application': 'b2g',
+              'platform': 'win32',
+              'branch': 'mozilla-central',
+              'date': '2013-07-01'},
+    'target': '2013-07-01-04-02-02-mozilla-central-b2g-29.0a1.multi.win32.zip',
+    'target_url': 'b2g/nightly/2013/07/2013-07-01-04-02-02-mozilla-central/b2g-29.0a1.multi.win32.zip'
+     },
+    # -p win32 --branch=mozilla-central --date=2013-07-01 --build-number=1
+    {'args': {'application': 'b2g',
+              'platform': 'win32',
+              'branch': 'mozilla-central',
+              'date': '2013-07-01',
+              'build_number': 1},
+    'target': '2013-07-01-04-01-01-mozilla-central-b2g-29.0a1.multi.win32.zip',
+    'target_url': 'b2g/nightly/2013/07/2013-07-01-04-01-01-mozilla-central/b2g-29.0a1.multi.win32.zip'
+     },
+    # -p linux --branch=mozilla-central --build-id=20130702031336
+    {'args': {'application': 'b2g',
+              'platform': 'linux',
+              'branch': 'mozilla-central',
+              'build_id': '20130702031336'},
+    'target': '2013-07-02-03-13-36-mozilla-central-b2g-29.0a1.multi.linux-i686.tar.bz2',
+    'target_url': 'b2g/nightly/2013/07/2013-07-02-03-13-36-mozilla-central/b2g-29.0a1.multi.linux-i686.tar.bz2'
+     }
+]
+
+tests = firefox_tests + thunderbird_tests + b2g_tests
 
 
 class DailyScraperTest(mhttpd.MozHttpdBaseTest):
