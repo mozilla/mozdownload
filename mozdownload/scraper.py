@@ -41,12 +41,12 @@ BASE_URL = 'https://ftp.mozilla.org/pub/mozilla.org'
 # Chunk size when downloading a file
 CHUNK_SIZE = 16 * 1024
 
-PLATFORM_FRAGMENTS = {'linux': 'linux-i686',
-                      'linux64': 'linux-x86_64',
-                      'mac': 'mac',
+PLATFORM_FRAGMENTS = {'linux': r'linux-i686',
+                      'linux64': r'linux-x86_64',
+                      'mac': r'mac',
                       'mac64': r'mac(64)?',
-                      'win32': 'win32',
-                      'win64': 'win64-x86_64'}
+                      'win32': r'win32',
+                      'win64': r'win64-x86_64'}
 
 DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
                            'linux64': 'tar.bz2',
