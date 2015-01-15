@@ -25,7 +25,7 @@ class TestDirectScraper(unittest.TestCase):
     def test_url_download(self):
         test_url = 'https://mozqa.com/index.html'
         scraper = DirectScraper(url=test_url,
-                                directory=self.temp_dir,
+                                destination=self.temp_dir,
                                 version=None,
                                 log_level='ERROR')
         self.assertEqual(scraper.url, test_url)
@@ -39,6 +39,17 @@ class TestDirectScraper(unittest.TestCase):
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     scraper.target)))
+
+        scraper2 = DirectScraper(url=test_url,
+                                destination=os.path.join(self.temp_dir, 'file.html'),
+                                version=None,
+                                log_level='ERROR')
+        self.assertEqual(scraper2.target,
+                         os.path.join(self.temp_dir, 'file.html'))
+
+        scraper2.download()
+        self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
+                                                    scraper2.target)))
 
 
 if __name__ == '__main__':

@@ -87,7 +87,7 @@ class TimeoutError(Exception):
 class Scraper(object):
     """Generic class to download an application from the Mozilla server"""
 
-    def __init__(self, directory, version, platform=None,
+    def __init__(self, destination, version, platform=None,
                  application='firefox', locale=None, extension=None,
                  authentication=None, retry_attempts=0, retry_delay=10.,
                  is_stub_installer=False, timeout=None, log_level='INFO',
@@ -97,7 +97,7 @@ class Scraper(object):
         self._target = None
         self._binary = None
 
-        self.directory = directory
+        self.destination = destination
         if not locale:
             if application in MULTI_LOCALE_APPLICATIONS:
                 self.locale = 'multi'
@@ -237,8 +237,13 @@ class Scraper(object):
         """Return the target file name of the build"""
 
         if self._target is None:
-            self._target = os.path.join(self.directory,
-                                        self.build_filename(self.binary))
+
+            # if destination contains filename
+            if self.destination.endswith('.' + self.extension):
+                self._target = self.destination
+            else:
+                self._target = os.path.join(self.destination,
+                                            self.build_filename(self.binary))
         return self._target
 
     def get_build_info(self):
@@ -274,8 +279,14 @@ class Scraper(object):
 
         attempt = 0
 
-        if not os.path.isdir(self.directory):
-            os.makedirs(self.directory)
+        directory_part = self.destination
+
+        # if file name is present in destination
+        if(self.target == self.destination):
+            directory_part = self.destination.rpartition('/')[0]
+
+        if directory_part and not os.path.isdir(directory_part):
+            os.makedirs(directory_part)
 
         # Don't re-download the file
         if os.path.isfile(os.path.abspath(self.target)):
@@ -551,8 +562,14 @@ class DirectScraper(Scraper):
     @property
     def target(self):
         target = urlparse(self.final_url)
-        filename = target.path.rpartition('/')[-1] or target.hostname
-        return os.path.join(self.directory, filename)
+        source_filename = target.path.rpartition('/')[-1] or target.hostname
+        target_file = os.path.join(self.destination, source_filename)
+
+        # if destination is path to file
+        source_file_ext = source_filename.rpartition('.')[-1]
+        if self.destination.endswith('.' + source_file_ext):
+            target_file = self.destination
+        return target_file
 
     @property
     def final_url(self):
@@ -887,11 +904,11 @@ def cli():
                       metavar='APPLICATION',
                       help='The name of the application to download, '
                            'default: "%default"')
-    parser.add_option('--directory', '-d',
-                      dest='directory',
+    parser.add_option('--dest', '-d',
+                      dest='destination',
                       default=os.getcwd(),
-                      metavar='DIRECTORY',
-                      help='Target directory for the download, default: '
+                      metavar='DESTINATION',
+                      help='Target destination for the download, default: '
                            'current working directory')
     parser.add_option('--build-number',
                       dest='build_number',
@@ -1032,7 +1049,7 @@ def cli():
                         'locale': options.locale,
                         'platform': options.platform,
                         'version': options.version,
-                        'directory': options.directory,
+                        'destination': options.destination,
                         'extension': options.extension,
                         'authentication': (options.username, options.password),
                         'retry_attempts': options.retry_attempts,

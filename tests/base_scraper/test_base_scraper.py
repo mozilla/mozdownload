@@ -21,7 +21,7 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
         """Test for correct platform_regex output"""
 
         for key in mozdownload.PLATFORM_FRAGMENTS:
-            scraper = mozdownload.Scraper(directory=self.temp_dir,
+            scraper = mozdownload.Scraper(destination=self.temp_dir,
                                           version=None,
                                           platform=key)
             self.assertEqual(scraper.platform_regex,
@@ -34,7 +34,7 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
         # standard download
         test_url = urljoin(self.wdir, 'download_test.txt')
         scraper = mozdownload.DirectScraper(url=test_url,
-                                            directory=self.temp_dir,
+                                            destination=self.temp_dir,
                                             version=None,
                                             log_level='ERROR')
         scraper.download()
@@ -48,7 +48,7 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
         # RequestException
         test_url1 = urljoin(self.wdir, 'does_not_exist.html')
         scraper1 = mozdownload.DirectScraper(url=test_url1,
-                                             directory=self.temp_dir,
+                                             destination=self.temp_dir,
                                              version=None,
                                              log_level='ERROR')
         self.assertRaises(requests.exceptions.RequestException,
@@ -57,7 +57,7 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
         # Covering retry_attempts
         test_url2 = urljoin(self.wdir, 'does_not_exist.html')
         scraper2 = mozdownload.DirectScraper(url=test_url2,
-                                             directory=self.temp_dir,
+                                             destination=self.temp_dir,
                                              version=None,
                                              retry_attempts=3,
                                              retry_delay=1.0,
@@ -66,7 +66,7 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
                           scraper2.download)
 
     def test_notimplementedexceptions(self):
-        scraper = mozdownload.Scraper(directory=self.temp_dir,
+        scraper = mozdownload.Scraper(destination=self.temp_dir,
                                       version=None, log_level='ERROR')
         for attr in ['binary', 'binary_regex', 'path_regex']:
             self.assertRaises(mozdownload.NotImplementedError, getattr,
