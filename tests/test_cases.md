@@ -38,9 +38,6 @@ mozdownload --url=https://mozqa.com/index.html --username=username --password=pa
 
 ## Errors
 ```
-mozdownload -a firefox -t daily -p win32 --branch=invalid
-mozdownload -a firefox -t daily -p win32 --branch=invalid --retry-attempts=2
-mozdownload -a firefox -t daily -p win32 --branch=invalid --retry-attempts=2 --retry-delay=0
 mozdownload -a firefox -t release -p win32 -v invalid
 mozdownload -a firefox -t release -p win32 -v invalid --retry-attempts=2
 mozdownload -a firefox -t release -p win32 -v invalid --retry-attempts=2 --retry-delay=0
