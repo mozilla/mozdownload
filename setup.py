@@ -36,6 +36,8 @@ setup(name='mozdownload',
       license='Mozilla Public License 2.0 (MPL 2.0)',
       packages=['mozdownload'],
       zip_safe=False,
+      package_data={'mozdownload': ['completion.d/*']},
+      include_package_data=True,
       install_requires=deps,
       entry_points="""
       # -*- Entry points: -*-

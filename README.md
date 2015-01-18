@@ -94,3 +94,11 @@ Run `mozdownload --help` for detailed information on the command line options.
 ## Running the tests
 
 To run the tests, run `./run_tests.py`.
+
+## Auto Completion
+
+For bash and zsh auto completion, see scripts under completion.d directory. For
+bash, copy bash auto completion script to /etc/bash_completion.d and source
+/etc/bash_completion in your environment. For zsh, copy zsh auto completion
+script to the fpath and call compinit.
+
