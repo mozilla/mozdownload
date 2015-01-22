@@ -36,6 +36,12 @@ mozdownload --url=https://mozqa.com/index.html -d url-downloads
 mozdownload --url=https://mozqa.com/index.html --username=username --password=password
 ```
 
+## Retries
+```
+mozdownload -a firefox -t daily -p win32 --retry-attempts=2
+mozdownload -a firefox -t daily -p win32 --retry-attempts=2 --retry-delay=0
+```
+
 ## Errors
 ```
 mozdownload -a firefox -t release -p win32 -v invalid

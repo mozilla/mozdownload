@@ -21,19 +21,6 @@ tests_with_invalid_branch = [
     {'args': {'application': 'firefox',
               'branch': 'invalid',
               'platform': 'win32'}
-     },
-    # -a firefox -t daily -p win32 --branch=invalid --retry-attempts=2
-    {'args': {'application': 'firefox',
-              'branch': 'invalid',
-              'platform': 'win32',
-              'retry_attempts': 2}
-     },
-    # -a firefox -t daily -p win32 --branch=invalid --retry-attempts=2 --retry-delay=0
-    {'args': {'application': 'firefox',
-              'branch': 'invalid',
-              'platform': 'win32',
-              'retry_attempts': 2,
-              'retry_delay': 0.}
      }
 ]
 
