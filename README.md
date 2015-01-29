@@ -90,6 +90,10 @@ Run `mozdownload --help` for detailed information on the command line options.
 
       --debug-build           Download a debug build
 
+      Try builds:
+
+      --changeset=CHANGESET
+                            Changeset of the try build to download
 
 ## Running the tests
 

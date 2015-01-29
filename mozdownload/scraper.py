@@ -893,13 +893,119 @@ class TinderboxScraper(Scraper):
         return PLATFORM_FRAGMENTS[self.platform]
 
 
+class TryScraper(Scraper):
+    "Class to download a try build from the Mozilla server."
+
+    def __init__(self, changeset=None, debug_build=False, *args, **kwargs):
+
+        self.debug_build = debug_build
+        self.changeset = changeset
+
+        Scraper.__init__(self, *args, **kwargs)
+
+    def get_build_info(self):
+        "Defines additional build information"
+
+        self.builds, self.build_index = self.get_build_info_for_index()
+
+    @property
+    def binary_regex(self):
+        """Return the regex for the binary"""
+
+        regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.%(PLATFORM)s'
+        regex_suffix = {'linux': r'.*\.%(EXT)s$',
+                        'linux64': r'.*\.%(EXT)s$',
+                        'mac': r'.*\.%(EXT)s$',
+                        'mac64': r'.*\.%(EXT)s$',
+                        'win32': r'.*(\.installer%(STUB)s)\.%(EXT)s$',
+                        'win64': r'.*(\.installer%(STUB)s)\.%(EXT)s$'}
+
+        regex = regex_base_name + regex_suffix[self.platform]
+
+        return regex % {'APP': self.application,
+                        'LOCALE': self.locale,
+                        'PLATFORM': PLATFORM_FRAGMENTS[self.platform],
+                        'STUB': '-stub' if self.is_stub_installer else '',
+                        'EXT': self.extension}
+
+    def build_filename(self, binary):
+        """Return the proposed filename with extension for the binary"""
+
+        return '%(CHANGESET)s%(DEBUG)s-%(NAME)s' % {
+            'CHANGESET': self.changeset,
+            'DEBUG': '-debug' if self.debug_build else '',
+            'NAME': binary}
+
+    @property
+    def build_list_regex(self):
+        """Return the regex for the folder which contains the list of builds"""
+
+        return 'try-builds'
+
+    def detect_platform(self):
+        """Detect the current platform"""
+
+        platform = Scraper.detect_platform(self)
+
+        # On OS X we have to special case the platform detection code and
+        # fallback to 64 bit builds for the en-US locale
+        if mozinfo.os == 'mac' and self.locale == 'en-US' and \
+                mozinfo.bits == 64:
+            platform = "%s%d" % (mozinfo.os, mozinfo.bits)
+
+        return platform
+
+    def get_build_info_for_index(self, build_index=None):
+        url = urljoin(self.base_url, self.build_list_regex)
+
+        self.logger.info('Retrieving list of builds from %s' % url)
+        parser = DirectoryParser(url, authentication=self.authentication,
+                                 timeout=self.timeout_network)
+        parser.entries = parser.filter('.*-%s$' % self.changeset)
+
+        if not parser.entries:
+            raise NotFoundError('No builds have been found', url)
+
+        self.show_matching_builds(parser.entries)
+
+        self.logger.info('Selected build: %s' % parser.entries[0])
+
+        return (parser.entries, 0)
+
+    @property
+    def path_regex(self):
+        """Return the regex for the path"""
+
+        build_dir = 'try-%(PLATFORM)s%(DEBUG)s' % {
+            'PLATFORM': self.platform_regex,
+            'DEBUG': '-debug' if self.debug_build else ''}
+        return urljoin(self.build_list_regex,
+                       self.builds[self.build_index],
+                       build_dir)
+
+    @property
+    def platform_regex(self):
+        """Return the platform fragment of the URL"""
+
+        PLATFORM_FRAGMENTS = {'linux': 'linux',
+                              'linux64': 'linux64',
+                              'mac': 'macosx64',
+                              'mac64': 'macosx64',
+                              'win32': 'win32',
+                              'win64': 'win64'}
+
+        return PLATFORM_FRAGMENTS[self.platform]
+
+
 def cli():
     """Main function for the downloader"""
 
     BUILD_TYPES = {'release': ReleaseScraper,
                    'candidate': ReleaseCandidateScraper,
                    'daily': DailyScraper,
-                   'tinderbox': TinderboxScraper}
+                   'tinderbox': TinderboxScraper,
+                   'try': TryScraper,
+                   }
 
     usage = 'usage: %prog [options]'
     parser = OptionParser(usage=usage, description=__doc__)
@@ -1031,6 +1137,14 @@ def cli():
                      help="Download a debug build")
     parser.add_option_group(group)
 
+    # Option group for try builds
+    group = OptionGroup(parser, 'Try builds',
+                        'Extra options for try builds.')
+    group.add_option('--changeset',
+                     dest='changeset',
+                     help='Changeset of the try build to download')
+    parser.add_option_group(group)
+
     # TODO: option group for nightly builds
     (options, args) = parser.parse_args()
 
@@ -1045,7 +1159,7 @@ def cli():
     # Check for required options and arguments
     # Note: Will be optional when ini file support has been landed
     if not options.url \
-       and options.type not in ['daily', 'tinderbox'] \
+       and options.type not in ['daily', 'tinderbox', 'try'] \
        and not options.version:
         parser.error('The version of the application to download has not'
                      ' been specified.')
@@ -1075,7 +1189,9 @@ def cli():
         'tinderbox': {'branch': options.branch,
                       'build_number': options.build_number,
                       'date': options.date,
-                      'debug_build': options.debug_build}
+                      'debug_build': options.debug_build},
+        'try': {'changeset': options.changeset,
+                'debug_build': options.debug_build},
     }
 
     kwargs = scraper_keywords.copy()
