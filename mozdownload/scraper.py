@@ -425,6 +425,8 @@ class DailyScraper(Scraper):
     def is_build_dir(self, dir):
         """Return whether or not the given dir contains a build."""
 
+        # Cannot move up to base scraper due to parser.entries call in
+        # get_build_info_for_date (see below)
         url = urljoin(self.base_url, self.monthly_build_list_regex, dir)
 
         if self.application in MULTI_LOCALE_APPLICATIONS \
@@ -816,6 +818,30 @@ class TinderboxScraper(Scraper):
 
         return platform
 
+    def is_build_dir(self, dir):
+        """Return whether or not the given dir contains a build."""
+
+        # Cannot move up to base scraper due to parser.entries call in
+        # get_build_info_for_index (see below)
+        url = urljoin(self.base_url, self.build_list_regex, dir)
+
+        if self.application in MULTI_LOCALE_APPLICATIONS \
+                and self.locale != 'multi':
+            url = urljoin(url, self.locale)
+
+        parser = DirectoryParser(url, authentication=self.authentication,
+                                 timeout=self.timeout_network)
+
+        pattern = re.compile(self.binary_regex, re.IGNORECASE)
+        for entry in parser.entries:
+            try:
+                pattern.match(entry).group()
+                return True
+            except:
+                # No match, continue with next entry
+                continue
+        return False
+
     def get_build_info_for_index(self, build_index=None):
         url = urljoin(self.base_url, self.build_list_regex)
 
@@ -823,6 +849,7 @@ class TinderboxScraper(Scraper):
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
         parser.entries = parser.filter(r'^\d+$')
+        parser.entries = parser.filter(self.is_build_dir)
 
         if self.timestamp:
             # If a timestamp is given, retrieve the folder with the timestamp
