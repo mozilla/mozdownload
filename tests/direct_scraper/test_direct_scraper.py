@@ -10,7 +10,9 @@ import unittest
 
 import mozfile
 
+
 from mozdownload import DirectScraper, NotImplementedError
+from mozdownload.utils import urljoin
 
 
 class TestDirectScraper(unittest.TestCase):
@@ -23,7 +25,8 @@ class TestDirectScraper(unittest.TestCase):
         mozfile.rmtree(self.temp_dir)
 
     def test_url_download(self):
-        test_url = 'https://mozqa.com/index.html'
+        # test_url = 'https://mozqa.com/index.html'
+        test_url = urljoin(self.wdir, 'download_test.txt')
         scraper = DirectScraper(url=test_url,
                                 directory=self.temp_dir,
                                 version=None,
