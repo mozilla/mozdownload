@@ -319,19 +319,32 @@ class DailyScraperTest(mhttpd.MozHttpdBaseTest):
             scraper = DailyScraper(destination=self.temp_dir, base_url=self.wdir,
                                    version=None, log_level='ERROR',
                                    **entry['args'])
+            self.assertEqual(urllib.unquote(scraper.final_url),
+                urljoin(self.wdir, entry['target_url']))
+
+    def test_destination(self):
+        """Testing various destination scenarios for DailyScraper"""
+        for entry in tests:
+
+            #destination is directory
+            scraper = DailyScraper(destination=self.temp_dir, base_url=self.wdir,
+                                       version=None, log_level='ERROR',
+                                       **entry['args'])
             expected_target = os.path.join(self.temp_dir, entry['target'])
             self.assertEqual(scraper.target, expected_target)
-            destination_ext = DEFAULT_FILE_EXTENSIONS[entry['args']['platform']]
+
+            #destination is file
             if 'extension' in entry['args']:
                 destination_ext = entry['args']['extension']
+            else:
+                destination_ext = DEFAULT_FILE_EXTENSIONS[entry['args']['platform']]
+
             destination = os.path.join(self.temp_dir,"file." + destination_ext)
-            scraper2 = DailyScraper(destination=destination, base_url=self.wdir,
+            scraper = DailyScraper(destination=destination, base_url=self.wdir,
                                    version=None, log_level='ERROR',
                                    **entry['args'])
             expected_target = destination
-            self.assertEqual(scraper2.target, expected_target)
-            self.assertEqual(urllib.unquote(scraper.final_url),
-                urljoin(self.wdir, entry['target_url']))
+            self.assertEqual(scraper.target, expected_target)
 
 
 if __name__ == '__main__':

@@ -66,6 +66,14 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
                           scraper2.download)
 
     def test_notimplementedexceptions(self):
+        filename = 'download_test.txt'
+        # standard download
+        test_url = urljoin(self.wdir, 'download_test.txt')
+        scraper = mozdownload.DirectScraper(url=test_url,
+                                            destination=self.temp_dir,
+                                            version=None,
+                                            log_level='ERROR')
+        scraper.download()
         scraper = mozdownload.Scraper(destination=self.temp_dir,
                                       version=None, log_level='ERROR')
         for attr in ['binary', 'binary_regex', 'path_regex']:
@@ -73,6 +81,29 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
                               scraper, attr)
         self.assertRaises(mozdownload.NotImplementedError,
                           scraper.build_filename, 'invalid binary')
+
+    def test_destination(self):
+        """Test for various destination scenarios"""
+
+        filename = 'download_test.txt'
+        test_url = urljoin(self.wdir, 'download_test.txt')
+
+        #destination is directory
+        scraper = mozdownload.DirectScraper(url=test_url,
+                                            destination=self.temp_dir,
+                                            version=None,
+                                            log_level='ERROR')
+        expected_target = os.path.join(self.temp_dir, filename)
+        self.assertEqual(scraper.target, expected_target)
+
+        #destination is file
+        destination = os.path.join(self.temp_dir, filename)
+        scraper = mozdownload.DirectScraper(url=test_url,
+                                            destination=destination,
+                                            version=None,
+                                            log_level='ERROR')
+        expected_target = destination
+        self.assertEqual(scraper.target, expected_target)
 
 if __name__ == '__main__':
     unittest.main()

@@ -40,17 +40,6 @@ class TestDirectScraper(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     scraper.target)))
 
-        scraper2 = DirectScraper(url=test_url,
-                                destination=os.path.join(self.temp_dir, 'file.html'),
-                                version=None,
-                                log_level='ERROR')
-        self.assertEqual(scraper2.target,
-                         os.path.join(self.temp_dir, 'file.html'))
-
-        scraper2.download()
-        self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
-                                                    scraper2.target)))
-
 
 if __name__ == '__main__':
     unittest.main()

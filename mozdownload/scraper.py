@@ -239,7 +239,7 @@ class Scraper(object):
         if self._target is None:
 
             # if destination contains filename
-            if self.destination.endswith('.' + self.extension):
+            if os.path.splitext(self.destination)[1]:
                 self._target = self.destination
             else:
                 self._target = os.path.join(self.destination,
@@ -279,20 +279,15 @@ class Scraper(object):
 
         attempt = 0
 
-        directory_part = self.destination
-
-        # if file name is present in destination
-        if(self.target == self.destination):
-            directory_part = self.destination.rpartition('/')[0]
-
-        if directory_part and not os.path.isdir(directory_part):
-            os.makedirs(directory_part)
-
         # Don't re-download the file
         if os.path.isfile(os.path.abspath(self.target)):
             self.logger.info("File has already been downloaded: %s" %
                              (self.target))
             return
+
+        directory = os.path.dirname(self.target)
+        if directory and not os.path.isdir(directory):
+            os.makedirs(directory)
 
         self.logger.info('Downloading from: %s' %
                          (urllib.unquote(self.final_url)))
@@ -562,13 +557,14 @@ class DirectScraper(Scraper):
     @property
     def target(self):
         target = urlparse(self.final_url)
-        source_filename = target.path.rpartition('/')[-1] or target.hostname
-        target_file = os.path.join(self.destination, source_filename)
 
         # if destination is path to file
-        source_file_ext = source_filename.rpartition('.')[-1]
-        if self.destination.endswith('.' + source_file_ext):
+        if os.path.splitext(self.destination)[1]:
             target_file = self.destination
+        else:
+            source_filename = (target.path.rpartition('/')[-1]
+                               or target.hostname)
+            target_file = os.path.join(self.destination, source_filename)
         return target_file
 
     @property
@@ -904,7 +900,7 @@ def cli():
                       metavar='APPLICATION',
                       help='The name of the application to download, '
                            'default: "%default"')
-    parser.add_option('--dest', '-d',
+    parser.add_option('--destination', '-d',
                       dest='destination',
                       default=os.getcwd(),
                       metavar='DESTINATION',

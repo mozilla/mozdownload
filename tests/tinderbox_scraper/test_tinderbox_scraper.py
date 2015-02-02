@@ -252,17 +252,9 @@ class TinderboxScraperTest(mhttpd.MozHttpdBaseTest):
                                        **entry['args'])
             expected_target = os.path.join(self.temp_dir, entry['target'])
             self.assertEqual(scraper.target, expected_target)
-            destination_ext = DEFAULT_FILE_EXTENSIONS[entry['args']['platform']]
-            if 'extension' in entry['args']:
-                destination_ext = entry['args']['extension']
-            destination = os.path.join(self.temp_dir, "file." + destination_ext)
-            scraper2 = TinderboxScraper(destination=destination, version=None,
-                                       base_url=self.wdir, log_level='ERROR',
-                                       **entry['args'])
-            expected_target = destination
-            self.assertEqual(scraper2.target, expected_target)
             self.assertEqual(urllib.unquote(scraper.final_url),
                              urljoin(self.wdir, entry['target_url']))
+
 
 if __name__ == '__main__':
     unittest.main()
