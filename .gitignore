@@ -3,3 +3,6 @@
 build
 dist
 tests/venv
+
+.idea
+tmp

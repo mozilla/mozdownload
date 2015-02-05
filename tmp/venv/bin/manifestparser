@@ -1,9 +1,0 @@
-#!/Users/jasonwist/Projects/mozilla/mozdownload/tmp/venv/bin/python2.7
-# EASY-INSTALL-ENTRY-SCRIPT: 'ManifestDestiny==0.5.6','console_scripts','manifestparser'
-__requires__ = 'ManifestDestiny==0.5.6'
-import sys
-from pkg_resources import load_entry_point
-
-sys.exit(
-   load_entry_point('ManifestDestiny==0.5.6', 'console_scripts', 'manifestparser')()
-)

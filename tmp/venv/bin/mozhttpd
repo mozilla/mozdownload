@@ -1,9 +1,0 @@
-#!/Users/jasonwist/Projects/mozilla/mozdownload/tmp/venv/bin/python2.7
-# EASY-INSTALL-ENTRY-SCRIPT: 'mozhttpd==0.6','console_scripts','mozhttpd'
-__requires__ = 'mozhttpd==0.6'
-import sys
-from pkg_resources import load_entry_point
-
-sys.exit(
-   load_entry_point('mozhttpd==0.6', 'console_scripts', 'mozhttpd')()
-)
