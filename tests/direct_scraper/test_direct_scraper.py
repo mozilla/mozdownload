@@ -10,7 +10,8 @@ import unittest
 
 import mozfile
 
-from mozdownload import DirectScraper, NotImplementedError, urljoin
+from mozdownload import DirectScraper, NotImplementedError
+from mozdownload.utils import urljoin
 import mozhttpd_base_test as mhttpd
 
 
