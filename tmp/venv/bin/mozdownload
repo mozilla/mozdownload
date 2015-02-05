@@ -1,0 +1,9 @@
+#!/Users/jasonwist/Projects/mozilla/mozdownload/tmp/venv/bin/python
+# EASY-INSTALL-ENTRY-SCRIPT: 'mozdownload==1.12','console_scripts','mozdownload'
+__requires__ = 'mozdownload==1.12'
+import sys
+from pkg_resources import load_entry_point
+
+sys.exit(
+   load_entry_point('mozdownload==1.12', 'console_scripts', 'mozdownload')()
+)

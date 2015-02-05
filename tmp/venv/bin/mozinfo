@@ -1,0 +1,9 @@
+#!/Users/jasonwist/Projects/mozilla/mozdownload/tmp/venv/bin/python
+# EASY-INSTALL-ENTRY-SCRIPT: 'mozinfo==0.7','console_scripts','mozinfo'
+__requires__ = 'mozinfo==0.7'
+import sys
+from pkg_resources import load_entry_point
+
+sys.exit(
+   load_entry_point('mozinfo==0.7', 'console_scripts', 'mozinfo')()
+)
