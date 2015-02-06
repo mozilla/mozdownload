@@ -75,35 +75,35 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
                           scraper.build_filename, 'invalid binary')
 
     def test_authentication(self):
-        """testing authentication"""
+        """testing with basic authentication"""
         username = 'mozilla'
         password = 'mozilla'
         basic_auth_url = 'http://mozqa.com/data/mozqa.com/http_auth/basic/'
-        no_auth_url = 'https://ci.mozilla.org/' #does not need auth
 
         # test with invalid authentication
-        # check if exception is thrown
         scraper = mozdownload.DirectScraper(directory=self.temp_dir,
                                             url = basic_auth_url,
-                                            version=None,
-                                            log_level='ERROR')
+                                            version=None)
         self.assertRaises(requests.exceptions.HTTPError,scraper.download)
 
         # testing with valid authentication
         scraper = mozdownload.DirectScraper(directory=self.temp_dir,
                                             url = basic_auth_url,
                                             version=None,
-                                            log_level='ERROR',
                                             username=username,
                                             password=password)
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     'mozqa.com')))
-        # test with a site that requires no authentication
+
+    def test_optional_authenticaiton(self):
+        """testing with optional basic authentication"""
+        optional_auth_url = 'https://ci.mozilla.org/'
+
+        # requires optional authentication with no data specified
         scraper = mozdownload.DirectScraper(directory=self.temp_dir,
-                                            url = no_auth_url,
-                                            version=None,
-                                            log_level='ERROR')
+                                            url = optional_auth_url,
+                                            version=None)
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     'ci.mozilla.org')))
