@@ -85,13 +85,15 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
         # test with invalid authentication
         scraper = mozdownload.DirectScraper(directory=self.temp_dir,
                                             url=basic_auth_url,
-                                            version=None)
+                                            version=None,
+                                            log_level='ERROR')
         self.assertRaises(requests.exceptions.HTTPError, scraper.download)
 
         # testing with valid authentication
         scraper = mozdownload.DirectScraper(directory=self.temp_dir,
                                             url=basic_auth_url,
                                             version=None,
+                                            log_level='ERROR',
                                             username=username,
                                             password=password)
         scraper.download()
@@ -105,7 +107,8 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
         # requires optional authentication with no data specified
         scraper = mozdownload.DirectScraper(directory=self.temp_dir,
                                             url=optional_auth_url,
-                                            version=None)
+                                            version=None,
+                                            log_level='ERROR')
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     'ci.mozilla.org')))
