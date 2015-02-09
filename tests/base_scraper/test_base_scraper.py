@@ -41,7 +41,9 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     filename)))
         # Compare original and downloaded file via md5 hash
-        md5_original = create_md5(os.path.join(mhttpd.HERE, mhttpd.WDIR, filename))
+        md5_original = create_md5(os.path.join(mhttpd.HERE,
+                                               mhttpd.WDIR,
+                                               filename))
         md5_downloaded = create_md5(os.path.join(self.temp_dir, filename))
         self.assertEqual(md5_original, md5_downloaded)
 
@@ -82,13 +84,13 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
 
         # test with invalid authentication
         scraper = mozdownload.DirectScraper(directory=self.temp_dir,
-                                            url = basic_auth_url,
+                                            url=basic_auth_url,
                                             version=None)
-        self.assertRaises(requests.exceptions.HTTPError,scraper.download)
+        self.assertRaises(requests.exceptions.HTTPError, scraper.download)
 
         # testing with valid authentication
         scraper = mozdownload.DirectScraper(directory=self.temp_dir,
-                                            url = basic_auth_url,
+                                            url=basic_auth_url,
                                             version=None,
                                             username=username,
                                             password=password)
@@ -102,7 +104,7 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
 
         # requires optional authentication with no data specified
         scraper = mozdownload.DirectScraper(directory=self.temp_dir,
-                                            url = optional_auth_url,
+                                            url=optional_auth_url,
                                             version=None)
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
