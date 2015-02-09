@@ -98,7 +98,7 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     'mozqa.com')))
 
-    def test_optional_authenticaiton(self):
+    def test_optional_authentication(self):
         """testing with optional basic authentication"""
         optional_auth_url = 'https://ci.mozilla.org/'
 
