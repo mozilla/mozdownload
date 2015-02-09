@@ -29,8 +29,8 @@ firefox_tests = [
     # -p win64 --branch=mozilla-central
     {'args': {'platform': 'win64',
               'branch': 'mozilla-central'},
-    'target': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win64-x86_64.installer.exe',
-    'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64-x86_64.installer.exe'
+    'target': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win64.installer.exe',
+    'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64.installer.exe'
    },
 
     # -p linux --branch=mozilla-central
@@ -163,8 +163,8 @@ thunderbird_tests = [
     {'args': {'application': 'thunderbird',
               'platform': 'win64',
               'branch': 'comm-central'},
-    'target': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.win64-x86_64.installer.exe',
-    'target_url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.win64-x86_64.installer.exe'
+    'target': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.win64.installer.exe',
+    'target_url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.win64.installer.exe'
     },
 
     # -p linux --branch=comm-central --extension=txt

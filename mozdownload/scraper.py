@@ -46,7 +46,7 @@ PLATFORM_FRAGMENTS = {'linux': r'linux-i686',
                       'mac': r'mac',
                       'mac64': r'mac(64)?',
                       'win32': r'win32',
-                      'win64': r'win64-x86_64'}
+                      'win64': r'win64'}
 
 DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
                            'linux64': 'tar.bz2',
