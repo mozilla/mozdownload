@@ -10,7 +10,9 @@ import urllib
 
 from mozdownload import DailyScraper
 from mozdownload.utils import urljoin
+
 import mozhttpd_base_test as mhttpd
+
 
 firefox_tests = [
     # -p win32
@@ -29,6 +31,14 @@ firefox_tests = [
     # -p win64 --branch=mozilla-central
     {'args': {'platform': 'win64',
               'branch': 'mozilla-central'},
+    'target': '2015-02-05-03-02-05-mozilla-central-firefox-38.0a1.en-US.win64.installer.exe',
+    'target_url': 'firefox/nightly/2015/02/2015-02-05-03-02-05-mozilla-central/firefox-38.0a1.en-US.win64.installer.exe'
+   },
+
+    # -p win64 --branch=mozilla-central --date 2013-10-01 (old filename format)
+    {'args': {'platform': 'win64',
+              'branch': 'mozilla-central',
+              'date': '2013-10-01'},
     'target': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win64-x86_64.installer.exe',
     'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64-x86_64.installer.exe'
    },
@@ -308,10 +318,11 @@ class DailyScraperTest(mhttpd.MozHttpdBaseTest):
             scraper = DailyScraper(directory=self.temp_dir, base_url=self.wdir,
                                    version=None, log_level='ERROR',
                                    **entry['args'])
+
             expected_target = os.path.join(self.temp_dir, entry['target'])
             self.assertEqual(scraper.target, expected_target)
             self.assertEqual(urllib.unquote(scraper.final_url),
-                urljoin(self.wdir, entry['target_url']))
+                             urljoin(self.wdir, entry['target_url']))
 
 
 if __name__ == '__main__':

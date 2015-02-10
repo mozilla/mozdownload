@@ -60,6 +60,14 @@ firefox_tests = [
     {'args': {'application': 'firefox',
               'branch': 'mozilla-central',
               'platform': 'win64'},
+     'target': 'mozilla-central-firefox-38.0a1.en-US.win64.installer.exe',
+     'target_url': 'firefox/tinderbox-builds/mozilla-central-win64/'
+                   '1423517445/firefox-38.0a1.en-US.win64.installer.exe'},
+    # -a firefox -p win64 --branch=mozilla-central --date=2013-07-23 (old filename format)
+    {'args': {'application': 'firefox',
+              'branch': 'mozilla-central',
+              'platform': 'win64',
+              'date': '2013-07-23'},
      'target': 'mozilla-central-firefox-25.0a1.en-US.win64-x86_64.installer.exe',
      'target_url': 'firefox/tinderbox-builds/mozilla-central-win64/'
                    '1374583608/firefox-25.0a1.en-US.win64-x86_64.installer.exe'},
