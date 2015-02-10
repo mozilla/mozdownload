@@ -4,11 +4,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import os
 import mozlog
-import sys
 import unittest
-import urllib
 
 from mozdownload import DailyScraper, NotFoundError
 from mozdownload.utils import urljoin
@@ -27,7 +24,7 @@ tests_with_invalid_branch = [
 tests = tests_with_invalid_branch
 
 
-class TestDailyScraper_invalidBranchParameter(mhttpd.MozHttpdBaseTest):
+class TestDailyScraper(mhttpd.MozHttpdBaseTest):
     """test mozdownload DailyScraper class with invalid branch parameters"""
 
     def test_scraper(self):
