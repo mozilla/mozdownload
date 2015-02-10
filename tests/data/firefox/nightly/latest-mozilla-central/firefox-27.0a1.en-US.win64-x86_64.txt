@@ -1,2 +1,0 @@
-20131001030204
-http://hg.mozilla.org/mozilla-central/rev/6b92cb377496

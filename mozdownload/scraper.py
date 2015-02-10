@@ -46,7 +46,7 @@ PLATFORM_FRAGMENTS = {'linux': r'linux-i686',
                       'mac': r'mac',
                       'mac64': r'mac(64)?',
                       'win32': r'win32',
-                      'win64': r'win64-x86_64'}
+                      'win64': r'win64(-x86_64)?'}
 
 DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
                            'linux64': 'tar.bz2',
@@ -594,6 +594,15 @@ class ReleaseScraper(Scraper):
                         'PLATFORM': self.platform_regex,
                         'VERSION': self.version}
 
+    @property
+    def platform_regex(self):
+        """Return the platform fragment of the URL"""
+
+        if self.platform == 'win64':
+            return self.platform
+
+        return PLATFORM_FRAGMENTS[self.platform]
+
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
@@ -669,6 +678,15 @@ class ReleaseCandidateScraper(ReleaseScraper):
                         'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
                         'UNSIGNED': "unsigned/" if self.unsigned else ""}
+
+    @property
+    def platform_regex(self):
+        """Return the platform fragment of the URL"""
+
+        if self.platform == 'win64':
+            return self.platform
+
+        return PLATFORM_FRAGMENTS[self.platform]
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
