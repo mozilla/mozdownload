@@ -6,7 +6,7 @@
 
 
 import os
-from setuptools import setup, find_packages
+from setuptools import setup
 
 try:
     here = os.path.dirname(os.path.abspath(__file__))
@@ -14,7 +14,7 @@ try:
 except (OSError, IOError):
     description = None
 
-version = '1.12'
+version = '1.13'
 
 deps = ['mozinfo>=0.7',
         'mozlog>=1.3',

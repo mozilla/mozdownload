@@ -24,6 +24,12 @@ firefox_tests = [
               'version': 'latest'},
      'target': 'firefox-latest.en-US.win32.exe',
      'target_url': 'firefox/releases/latest/win32/en-US/Firefox Setup 23.0.1.exe'},
+    # -a firefox -p win64 -v latest
+    {'args': {'application': 'firefox',
+              'platform': 'win64',
+              'version': 'latest'},
+     'target': 'firefox-latest.en-US.win64.exe',
+     'target_url': 'firefox/releases/latest/win64/en-US/Firefox Setup 37.0.exe'},
     # -a firefox -p linux -v latest
     {'args': {'application': 'firefox',
               'platform': 'linux',
