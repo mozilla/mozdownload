@@ -47,9 +47,9 @@ firefox_tests = [
     # -a firefox -p win64 --changeset=8fcac92cfcad
     {'args': {'platform': 'win64',
               'changeset': '8fcac92cfcad'},
-     'target': '8fcac92cfcad-firefox-38.0a1.en-US.win64-x86_64.installer.exe',
+     'target': '8fcac92cfcad-firefox-38.0a1.en-US.win64.installer.exe',
      'target_url': 'firefox/try-builds/test-user@mozilla.com-8fcac92cfcad/'
-                   'try-win64/firefox-38.0a1.en-US.win64-x86_64.installer.exe'},
+                   'try-win64/firefox-38.0a1.en-US.win64.installer.exe'},
 ]
 
 tests = firefox_tests

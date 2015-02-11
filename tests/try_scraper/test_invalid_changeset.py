@@ -11,7 +11,7 @@ import mozhttpd_base_test as mhttpd
 
 
 tests_with_invalid_changeset = [
-    # -a firefox -p win32 --changeset 97322d2d2d6c
+    # -a firefox -p win32 --changeset abcd
     {'args': {'application': 'firefox',
               'changeset': 'abcd',
               'platform': 'win32'}
