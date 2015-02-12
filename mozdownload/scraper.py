@@ -756,6 +756,7 @@ class TinderboxScraper(Scraper):
         regex_suffix = {'linux': r'.*\.%(EXT)s$',
                         'linux64': r'.*\.%(EXT)s$',
                         'mac': r'.*\.%(EXT)s$',
+                        'mac64': r'.*\.%(EXT)s$',
                         'win32': r'.*(\.installer%(STUB)s)\.%(EXT)s$',
                         'win64': r'.*(\.installer%(STUB)s)\.%(EXT)s$'}
 
@@ -861,7 +862,8 @@ class TinderboxScraper(Scraper):
 
         PLATFORM_FRAGMENTS = {'linux': 'linux',
                               'linux64': 'linux64',
-                              'mac': 'macosx',
+                              'mac': r'macosx(64)?',
+                              'mac64': r'macosx(64)?',
                               'win32': 'win32',
                               'win64': 'win64'}
 
