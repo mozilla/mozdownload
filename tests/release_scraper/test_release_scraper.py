@@ -120,12 +120,6 @@ thunderbird_tests = [
 
 tests = firefox_tests + thunderbird_tests
 
-DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
-                           'linux64': 'tar.bz2',
-                           'mac': 'dmg',
-                           'mac64': 'dmg',
-                           'win32': 'exe',
-                           'win64': 'exe'}
 
 class ReleaseScraperTest(mhttpd.MozHttpdBaseTest):
     """test mozdownload scraper class"""

@@ -256,7 +256,6 @@ b2g_tests = [
     # -p mac64 --branch=mozilla-central
     {'args': {'application': 'b2g',
               'platform': 'win32',
-              'extension': 'zip',
               'branch': 'mozilla-central'},
     'target': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.multi.win32.zip',
     'target_url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/b2g-29.0a1.multi.win32.zip'
@@ -264,7 +263,6 @@ b2g_tests = [
     # -p win32 --branch=mozilla-central -l en-US
     {'args': {'application': 'b2g',
               'platform': 'win32',
-              'extension': 'zip',
               'branch': 'mozilla-central',
               'locale': 'en-US'},
     'target': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.en-US.win32.zip',
@@ -273,7 +271,6 @@ b2g_tests = [
     # -p win32 --branch=mozilla-central --date=2013-07-01
     {'args': {'application': 'b2g',
               'platform': 'win32',
-              'extension': 'zip',
               'branch': 'mozilla-central',
               'date': '2013-07-01'},
     'target': '2013-07-01-04-02-02-mozilla-central-b2g-29.0a1.multi.win32.zip',
@@ -282,7 +279,6 @@ b2g_tests = [
     # -p win32 --branch=mozilla-central --date=2013-07-01 --build-number=1
     {'args': {'application': 'b2g',
               'platform': 'win32',
-              'extension': 'zip',
               'branch': 'mozilla-central',
               'date': '2013-07-01',
               'build_number': 1},
@@ -301,13 +297,6 @@ b2g_tests = [
 
 tests = firefox_tests + thunderbird_tests + b2g_tests
 
-DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
-                           'linux64': 'tar.bz2',
-                           'mac': 'dmg',
-                           'mac64': 'dmg',
-                           'win32': 'exe',
-                           'win64': 'exe'}
-
 
 class DailyScraperTest(mhttpd.MozHttpdBaseTest):
     """Test mozdownload daily scraper class"""
@@ -319,32 +308,11 @@ class DailyScraperTest(mhttpd.MozHttpdBaseTest):
             scraper = DailyScraper(destination=self.temp_dir, base_url=self.wdir,
                                    version=None, log_level='ERROR',
                                    **entry['args'])
-            self.assertEqual(urllib.unquote(scraper.final_url),
-                urljoin(self.wdir, entry['target_url']))
 
-    def test_destination(self):
-        """Testing various destination scenarios for DailyScraper"""
-        for entry in tests:
-
-            #destination is directory
-            scraper = DailyScraper(destination=self.temp_dir, base_url=self.wdir,
-                                       version=None, log_level='ERROR',
-                                       **entry['args'])
             expected_target = os.path.join(self.temp_dir, entry['target'])
             self.assertEqual(scraper.target, expected_target)
-
-            #destination is file
-            if 'extension' in entry['args']:
-                destination_ext = entry['args']['extension']
-            else:
-                destination_ext = DEFAULT_FILE_EXTENSIONS[entry['args']['platform']]
-
-            destination = os.path.join(self.temp_dir,"file." + destination_ext)
-            scraper = DailyScraper(destination=destination, base_url=self.wdir,
-                                   version=None, log_level='ERROR',
-                                   **entry['args'])
-            expected_target = destination
-            self.assertEqual(scraper.target, expected_target)
+            self.assertEqual(urllib.unquote(scraper.final_url),
+                urljoin(self.wdir, entry['target_url']))
 
 
 if __name__ == '__main__':

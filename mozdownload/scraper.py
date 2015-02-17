@@ -286,7 +286,7 @@ class Scraper(object):
             return
 
         directory = os.path.dirname(self.target)
-        if directory and not os.path.isdir(directory):
+        if not os.path.isdir(directory):
             os.makedirs(directory)
 
         self.logger.info('Downloading from: %s' %
@@ -904,7 +904,7 @@ def cli():
                       dest='destination',
                       default=os.getcwd(),
                       metavar='DESTINATION',
-                      help='Target destination for the download, default: '
+                      help='Directory or file name to download the file to, default: '
                            'current working directory')
     parser.add_option('--build-number',
                       dest='build_number',
