@@ -1,3 +1,13 @@
+1.13 / 2015-02-11
+=================
+
+ * Add support for Firefox try server builds (#239)
+ * If latest tinderbox folder is empty, get the next folder with a build (#143)
+ * Add official support for win64 builds (#243)
+ * Support downloading from sites with optional authentication (#195)
+ * Update all PLATFORM_FRAGMENTS values to regex (#154)
+ * Catch KeyboardInterrupt exception for user abort (#226)
+
 1.12 / 2014-09-10
 =================
 

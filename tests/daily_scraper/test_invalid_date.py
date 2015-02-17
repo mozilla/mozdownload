@@ -24,12 +24,6 @@ tests_with_invalid_date = [
               'locale': 'pt-PT',
               'platform': 'win32'}
     },
-    # -p win32 --branch=mozilla-central  --date=1960-07-23
-     {'args': {'branch': 'mozilla-central',
-              'date': '1960-07-23',
-              'locale': 'pt-PT',
-              'platform': 'win32'}
-     },
     # -p win64 --branch=mozilla-central --date=2013/07/02
      {'args': {'branch': 'mozilla-central',
               'date': '2013/07/02',

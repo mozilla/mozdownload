@@ -41,7 +41,9 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     filename)))
         # Compare original and downloaded file via md5 hash
-        md5_original = create_md5(os.path.join(mhttpd.HERE, mhttpd.WDIR, filename))
+        md5_original = create_md5(os.path.join(mhttpd.HERE,
+                                               mhttpd.WDIR,
+                                               filename))
         md5_downloaded = create_md5(os.path.join(self.temp_dir, filename))
         self.assertEqual(md5_original, md5_downloaded)
 
@@ -74,6 +76,43 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
         self.assertRaises(mozdownload.NotImplementedError,
                           scraper.build_filename, 'invalid binary')
 
+    def test_authentication(self):
+        """testing with basic authentication"""
+        username = 'mozilla'
+        password = 'mozilla'
+        basic_auth_url = 'http://mozqa.com/data/mozqa.com/http_auth/basic/'
+
+        # test with invalid authentication
+        scraper = mozdownload.DirectScraper(destination=self.temp_dir,
+                                            url=basic_auth_url,
+                                            version=None,
+                                            log_level='ERROR')
+        self.assertRaises(requests.exceptions.HTTPError, scraper.download)
+
+        # testing with valid authentication
+        scraper = mozdownload.DirectScraper(destination=self.temp_dir,
+                                            url=basic_auth_url,
+                                            version=None,
+                                            log_level='ERROR',
+                                            username=username,
+                                            password=password)
+        scraper.download()
+        self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
+                                                    'mozqa.com')))
+
+    def test_optional_authentication(self):
+        """testing with optional basic authentication"""
+        optional_auth_url = 'https://ci.mozilla.org/'
+
+        # requires optional authentication with no data specified
+        scraper = mozdownload.DirectScraper(destination=self.temp_dir,
+                                            url=optional_auth_url,
+                                            version=None,
+                                            log_level='ERROR')
+        scraper.download()
+        self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
+                                                    'ci.mozilla.org')))
+
     def test_destination(self):
         """Test for various destination scenarios"""
 
@@ -102,6 +141,7 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
                                             version=None,
                                             log_level='ERROR')
         self.assertEqual(scraper.destination, destination)
+
 
 if __name__ == '__main__':
     unittest.main()

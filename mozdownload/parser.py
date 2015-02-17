@@ -44,7 +44,7 @@ class DirectoryParser(HTMLParser):
 
         for attr in attrs:
             if attr[0] == 'href':
-                self.active_url = attr[1].strip('/')
+                self.active_url = attr[1]
                 return
 
     def handle_endtag(self, tag):
@@ -56,6 +56,5 @@ class DirectoryParser(HTMLParser):
         if not self.active_url:
             return
 
-        name = urllib.quote(data.strip('/'))
-        if self.active_url == name:
-            self.entries.append(self.active_url)
+        if self.active_url in (data, urllib.quote(data)):
+            self.entries.append(self.active_url.strip('/'))
