@@ -63,6 +63,13 @@ firefox_tests = [
      'target': 'mozilla-central-firefox-25.0a1.en-US.win64-x86_64.installer.exe',
      'target_url': 'firefox/tinderbox-builds/mozilla-central-win64/'
                    '1374583608/firefox-25.0a1.en-US.win64-x86_64.installer.exe'},
+    # -a firefox -p mac64 --branch=mozilla-central
+    {'args': {'application': 'firefox',
+              'branch': 'mozilla-central',
+              'platform': 'mac64'},
+     'target': 'mozilla-central-firefox-25.0a1.en-US.mac.dmg',
+     'target_url': 'firefox/tinderbox-builds/mozilla-central-macosx64/'
+                   '1374583608/firefox-25.0a1.en-US.mac.dmg'},
     # -a firefox -p win32 --branch=mozilla-central --debug-build
     {'args': {'application': 'firefox',
               'branch': 'mozilla-central',
@@ -144,6 +151,13 @@ thunderbird_tests = [
      'target': 'comm-central-thunderbird-27.0a1.en-US.linux-x86_64.tar.bz2',
      'target_url': 'thunderbird/tinderbox-builds/comm-central-linux64/'
                    '1380362686/thunderbird-27.0a1.en-US.linux-x86_64.tar.bz2'},
+    # -a thunderbird -p mac64 --branch=comm-central
+    {'args': {'application': 'thunderbird',
+              'branch': 'comm-central',
+              'platform': 'mac64'},
+     'target': 'comm-central-thunderbird-27.0a1.en-US.mac.dmg',
+     'target_url': 'thunderbird/tinderbox-builds/comm-central-macosx64/'
+                   '1380362686/thunderbird-27.0a1.en-US.mac.dmg'},
     # -a thunderbird -p win32 --branch=comm-central
     {'args': {'application': 'thunderbird',
               'branch': 'comm-central',
