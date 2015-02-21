@@ -782,8 +782,8 @@ class TinderboxScraper(Scraper):
                         'linux64': r'.*\.%(EXT)s$',
                         'mac': r'.*\.%(EXT)s$',
                         'mac64': r'.*\.%(EXT)s$',
-                        'win32': r'.*(\.installer%(STUB)s)\.%(EXT)s$',
-                        'win64': r'.*(\.installer%(STUB)s)\.%(EXT)s$'}
+                        'win32': r'(\.installer%(STUB)s)?\.%(EXT)s$',
+                        'win64': r'(\.installer%(STUB)s)?\.%(EXT)s$'}
 
         regex = regex_base_name + regex_suffix[self.platform]
 
