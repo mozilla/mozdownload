@@ -28,13 +28,6 @@ Not currently supported
 Not currently supported
 
 ## URL
-* need test case for password protected URL resource [bug 895835](https://bugzilla.mozilla.org/show_bug.cgi?id=895835)
-
-```
-mozdownload --url=https://mozqa.com/index.html
-mozdownload --url=https://mozqa.com/index.html -d url-downloads
-mozdownload --url=https://mozqa.com/index.html --username=username --password=password
-```
 
 ## Retries
 ```
