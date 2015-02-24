@@ -36,7 +36,10 @@ mozdownload version: %(version)s
 APPLICATIONS = ('b2g', 'firefox', 'thunderbird')
 
 # Base URL for the path to all builds
-BASE_URL = 'https://ftp.mozilla.org/pub/mozilla.org'
+BASE_URL = 'http://download.cdn.mozilla.net/pub'
+
+# In case CDN fails
+BACKUP_URL = 'https://ftp.mozilla.org/pub/mozilla.org'
 
 # Chunk size when downloading a file
 CHUNK_SIZE = 16 * 1024
@@ -1235,6 +1238,19 @@ def cli():
 
     try:
         build.download()
+
+    except requests.exceptions.ConnectionError as e:
+        if options.url:
+            raise e
+
+        # Fall back to ftp
+        build = BUILD_TYPES[options.type](base_url=BACKUP_URL, **kwargs)
+
+        try:
+            build.download()
+        except KeyboardInterrupt:
+            print "\nDownload interrupted by the user"
+
     except KeyboardInterrupt:
         print "\nDownload interrupted by the user"
 
