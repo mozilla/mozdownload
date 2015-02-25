@@ -464,7 +464,6 @@ class DailyScraper(Scraper):
             # ensure to select the correct subfolder for localized builds
             'L10N': '' if self.locale in ('en-US', 'multi') else '(-l10n)?'}
         parser.entries = parser.filter(regex)
-        parser.entries = parser.filter(self.is_build_dir)
 
         if has_time:
             # If a time is included in the date, use it to determine the
@@ -478,11 +477,21 @@ class DailyScraper(Scraper):
                 self.date.strftime(date_format)
             raise NotFoundError(message, url)
 
-        # If no index has been given, set it to the last build of the day.
+        # If no index has been given, set it to the last directory of the day that has a build.
         self.show_matching_builds(parser.entries)
         if build_index is None:
-            build_index = len(parser.entries) - 1
-        self.logger.info('Selected build: %s' % parser.entries[build_index])
+            for index in reversed(range(len(parser.entries))):
+                if self.is_build_dir(parser.entries[index]):
+                    build_index = index
+                    self.logger.info('Selected build: %s' % parser.entries[build_index])
+                    break
+
+        if build_index is None:
+            date_format = '%Y-%m-%d-%H-%M-%S' if has_time else '%Y-%m-%d'
+            message = 'Folder for builds on %s has not been found' % \
+                self.date.strftime(date_format)
+            raise NotFoundError(message, url)
+
 
         return (parser.entries, build_index)
 
@@ -872,7 +881,6 @@ class TinderboxScraper(Scraper):
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
         parser.entries = parser.filter(r'^\d+$')
-        parser.entries = parser.filter(self.is_build_dir)
 
         if self.timestamp:
             # If a timestamp is given, retrieve the folder with the timestamp
@@ -890,10 +898,20 @@ class TinderboxScraper(Scraper):
 
         self.show_matching_builds(parser.entries)
 
-        # If no index has been given, set it to the last build of the day.
+        # If no index has been given, set it to the last directory of the day that has a build.
         if build_index is None:
-            build_index = len(parser.entries) - 1
-        self.logger.info('Selected build: %s' % parser.entries[build_index])
+            for index in reversed(range(len(parser.entries))):
+                if self.is_build_dir(parser.entries[index]):
+                    build_index = index
+                    self.logger.info('Selected build: %s' % parser.entries[build_index])
+                    break
+            if build_index is None:
+                message = 'Not builds have been found'
+                raise NotFoundError(message, url)
+        else:
+            if not self.is_build_dir(parser.entries[build_index]):
+                message = 'No builds have been found'
+                raise NotFoundError(message, url)
 
         return (parser.entries, build_index)
 
