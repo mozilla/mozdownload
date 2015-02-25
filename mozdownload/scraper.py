@@ -906,7 +906,7 @@ class TinderboxScraper(Scraper):
                     self.logger.info('Selected build: %s' % parser.entries[build_index])
                     break
             if build_index is None:
-                message = 'Not builds have been found'
+                message = 'No builds have been found'
                 raise NotFoundError(message, url)
         else:
             if not self.is_build_dir(parser.entries[build_index]):
