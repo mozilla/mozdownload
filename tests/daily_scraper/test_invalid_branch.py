@@ -27,7 +27,7 @@ tests = tests_with_invalid_branch
 class TestDailyScraper(mhttpd.MozHttpdBaseTest):
     """test mozdownload DailyScraper class with invalid branch parameters"""
 
-    def test_scraper(self):
+    def test_invalid_branch(self):
         """Testing download scenarios with invalid branch parameters for DailyScraper"""
 
         for entry in tests:
