@@ -917,7 +917,7 @@ class TinderboxScraper(Scraper):
 
         PLATFORM_FRAGMENTS = {'linux': 'linux',
                               'linux64': 'linux64',
-                              'mac': 'macosx',
+                              'mac': 'macosx64',
                               'mac64': 'macosx64',
                               'win32': 'win32',
                               'win64': 'win64'}
