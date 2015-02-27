@@ -1235,7 +1235,6 @@ def cli():
 
     try:
         build.download()
-
     except KeyboardInterrupt:
         print "\nDownload interrupted by the user"
 
