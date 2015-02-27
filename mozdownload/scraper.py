@@ -639,9 +639,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
             self.build_index = 0
             self.logger.info('Selected build: build%s' % self.build_number)
         else:
-            # Otherwise displays incorrect build number
-            display_index = str(int(self.build_index) + 1)
-            self.logger.info('Selected build: build%s' % display_index)
+            self.logger.info('Selected build: build%d' % (self.build_index + 1))
 
     def get_build_info_for_version(self, version, build_index=None):
         url = urljoin(self.base_url, self.candidate_build_list_regex)
