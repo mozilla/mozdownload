@@ -142,6 +142,22 @@ firefox_tests = [
      'target': 'mozilla-central-firefox-25.0a1.en-US.linux-i686.txt',
      'target_url': 'firefox/tinderbox-builds/mozilla-central-linux/'
                    '1374583608/firefox-25.0a1.en-US.linux-i686.txt'},
+    # -a firefox -t tinderbox -p win32 --branch=mozilla-beta --extension=txt
+    {'args': {'application': 'firefox',
+              'branch': 'mozilla-beta',
+              'extension': 'txt',
+              'platform': 'win32'},
+     'target': 'mozilla-beta-firefox-37.0.en-US.win32.txt',
+     'target_url': 'firefox/tinderbox-builds/mozilla-beta-win32/'
+                   '1424726083/firefox-37.0.en-US.win32.txt'},
+    # -a firefox -t tinderbox -p mac --branch=mozilla-beta --extension=txt
+    {'args': {'application': 'firefox',
+              'branch': 'mozilla-beta',
+              'extension': 'txt',
+              'platform': 'mac'},
+     'target': 'mozilla-beta-firefox-37.0.en-US.mac.txt',
+     'target_url': 'firefox/tinderbox-builds/mozilla-beta-macosx64/'
+                   '1424896038/firefox-37.0.en-US.mac.txt'},
 ]
 
 thunderbird_tests = [

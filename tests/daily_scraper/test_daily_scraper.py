@@ -43,6 +43,16 @@ firefox_tests = [
     'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64-x86_64.installer.exe'
    },
 
+    # -p win32 --branch=mozilla-central --date 2013-10-01 --extension=txt
+    {'args': {'platform': 'win32',
+              'branch': 'mozilla-central',
+              'date': '2013-10-01',
+              'extension': 'txt'},
+    'target': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.txt',
+    'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.txt'
+    },
+
+
     # -p linux --branch=mozilla-central
     {'args': {'platform': 'linux',
                'branch': 'mozilla-central'},
