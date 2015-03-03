@@ -248,13 +248,14 @@ class TinderboxScraperTest(mhttpd.MozHttpdBaseTest):
         """Testing various download scenarios for TinderboxScraper"""
 
         for entry in tests:
-            scraper = TinderboxScraper(directory=self.temp_dir, version=None,
+            scraper = TinderboxScraper(destination=self.temp_dir, version=None,
                                        base_url=self.wdir, log_level='ERROR',
                                        **entry['args'])
             expected_target = os.path.join(self.temp_dir, entry['target'])
             self.assertEqual(scraper.target, expected_target)
             self.assertEqual(urllib.unquote(scraper.final_url),
                              urljoin(self.wdir, entry['target_url']))
+
 
 if __name__ == '__main__':
     unittest.main()

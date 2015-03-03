@@ -315,7 +315,7 @@ class DailyScraperTest(mhttpd.MozHttpdBaseTest):
         """Testing various download scenarios for DailyScraper"""
 
         for entry in tests:
-            scraper = DailyScraper(directory=self.temp_dir, base_url=self.wdir,
+            scraper = DailyScraper(destination=self.temp_dir, base_url=self.wdir,
                                    version=None, log_level='ERROR',
                                    **entry['args'])
 
