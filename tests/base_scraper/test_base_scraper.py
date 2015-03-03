@@ -142,6 +142,14 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
                                             log_level='ERROR')
         self.assertEqual(scraper.destination, destination)
 
+        # ensure that multiple non existing directories are created
+        destination = os.path.join(self.temp_dir, 'tmp1', 'tmp2', filename)
+        scraper = mozdownload.DirectScraper(url=test_url,
+                                            destination=destination,
+                                            version=None,
+                                            log_level='ERROR')
+        self.assertEqual(scraper.destination, destination)
+
 
 if __name__ == '__main__':
     unittest.main()
