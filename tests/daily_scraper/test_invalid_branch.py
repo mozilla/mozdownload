@@ -32,7 +32,7 @@ class TestDailyScraper(mhttpd.MozHttpdBaseTest):
 
         for entry in tests:
             self.assertRaises(NotFoundError, DailyScraper,
-                              directory=self.temp_dir,
+                              destination=self.temp_dir,
                               version=None,
                               base_url=self.wdir,
                               log_level='ERROR',
