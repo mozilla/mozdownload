@@ -28,19 +28,15 @@ Not currently supported
 Not currently supported
 
 ## URL
-* need test case for password protected URL resource [bug 895835](https://bugzilla.mozilla.org/show_bug.cgi?id=895835)
 
+## Retries
 ```
-mozdownload --url=https://mozqa.com/index.html
-mozdownload --url=https://mozqa.com/index.html -d url-downloads
-mozdownload --url=https://mozqa.com/index.html --username=username --password=password
+mozdownload -a firefox -t daily -p win32 --retry-attempts=2
+mozdownload -a firefox -t daily -p win32 --retry-attempts=2 --retry-delay=0
 ```
 
 ## Errors
 ```
-mozdownload -a firefox -t daily -p win32 --branch=invalid
-mozdownload -a firefox -t daily -p win32 --branch=invalid --retry-attempts=2
-mozdownload -a firefox -t daily -p win32 --branch=invalid --retry-attempts=2 --retry-delay=0
 mozdownload -a firefox -t release -p win32 -v invalid
 mozdownload -a firefox -t release -p win32 -v invalid --retry-attempts=2
 mozdownload -a firefox -t release -p win32 -v invalid --retry-attempts=2 --retry-delay=0

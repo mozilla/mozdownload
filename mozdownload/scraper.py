@@ -652,7 +652,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
             self.build_index = 0
             self.logger.info('Selected build: build%s' % self.build_number)
         else:
-            self.logger.info('Selected build: build%s' % self.build_index)
+            self.logger.info('Selected build: build%d' %
+                             (self.build_index + 1))
 
     def get_build_info_for_version(self, version, build_index=None):
         url = urljoin(self.base_url, self.candidate_build_list_regex)
@@ -885,7 +886,6 @@ class TinderboxScraper(Scraper):
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
         parser.entries = parser.filter(r'^\d+$')
-        parser.entries = parser.filter(self.is_build_dir)
 
         if self.timestamp:
             # If a timestamp is given, retrieve the folder with the timestamp
@@ -905,7 +905,13 @@ class TinderboxScraper(Scraper):
 
         # If no index has been given, set it to the last build of the day.
         if build_index is None:
-            build_index = len(parser.entries) - 1
+            # Find the most recent non-empty entry.
+            build_index = len(parser.entries)
+            for build in reversed(parser.entries):
+                build_index -= 1
+                if not build_index or self.is_build_dir(build):
+                    break
+
         self.logger.info('Selected build: %s' % parser.entries[build_index])
 
         return (parser.entries, build_index)
@@ -925,7 +931,7 @@ class TinderboxScraper(Scraper):
 
         PLATFORM_FRAGMENTS = {'linux': 'linux',
                               'linux64': 'linux64',
-                              'mac': 'macosx',
+                              'mac': 'macosx64',
                               'mac64': 'macosx64',
                               'win32': 'win32',
                               'win64': 'win64'}
