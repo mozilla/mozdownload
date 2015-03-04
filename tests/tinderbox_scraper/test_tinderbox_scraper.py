@@ -148,7 +148,7 @@ firefox_tests = [
               'platform': 'win32'},
      'target': 'mozilla-central-firefox-25.0a1.en-US.win32.txt',
      'target_url': 'firefox/tinderbox-builds/mozilla-central-win32/'
-                   '1425327271/firefox-25.0a1.en-US.win32.txt'},
+                   '1374583608/firefox-25.0a1.en-US.win32.txt'},
     # -a firefox -t tinderbox -p mac --extension=txt
     {'args': {'application': 'firefox',
               'extension': 'txt',
