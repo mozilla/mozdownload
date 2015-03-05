@@ -1,3 +1,13 @@
+1.14 / 2015-03-05
+=================
+
+ * Allow download of files with specified extension for Tinderbox builds on Windows (#264)
+ * Replace --directoy option with --destination to allow a filename for the target file (#92)
+ * Always show correct build number for candidate builds (#232)
+ * Add test for invalid branches of daily builds (#236)
+ * `mac` platform option for tinderbox builds should default to `macosx64` (#215)
+ * Reverse check for non-empty tinderbox build dirs (#253)
+
 1.13 / 2015-02-11
 =================
 
