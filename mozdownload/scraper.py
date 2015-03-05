@@ -36,7 +36,7 @@ mozdownload version: %(version)s
 APPLICATIONS = ('b2g', 'firefox', 'thunderbird')
 
 # Base URL for the path to all builds
-BASE_URL = 'https://ftp.mozilla.org/pub/mozilla.org'
+BASE_URL = 'https://download-installer.cdn.mozilla.net/pub'
 
 # Chunk size when downloading a file
 CHUNK_SIZE = 16 * 1024
