@@ -1062,6 +1062,12 @@ def cli():
                       metavar='APPLICATION',
                       help='The name of the application to download, '
                            'default: "%default"')
+    parser.add_option('--base_url',
+                      dest='base_url',
+                      default=BASE_URL,
+                      metavar='BASE_URL',
+                      help='The base url to be used, '
+                           'default: "%default"')
     parser.add_option('--destination', '-d',
                       dest='destination',
                       default=os.getcwd(),
@@ -1212,6 +1218,7 @@ def cli():
 
     # Instantiate scraper and download the build
     scraper_keywords = {'application': options.application,
+                        'base_url': options.base_url,
                         'locale': options.locale,
                         'platform': options.platform,
                         'version': options.version,
