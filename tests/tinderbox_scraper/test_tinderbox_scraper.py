@@ -142,6 +142,20 @@ firefox_tests = [
      'target': 'mozilla-central-firefox-25.0a1.en-US.linux-i686.txt',
      'target_url': 'firefox/tinderbox-builds/mozilla-central-linux/'
                    '1374583608/firefox-25.0a1.en-US.linux-i686.txt'},
+    # -a firefox -t tinderbox -p win32 --extension=txt
+    {'args': {'application': 'firefox',
+              'extension': 'txt',
+              'platform': 'win32'},
+     'target': 'mozilla-central-firefox-25.0a1.en-US.win32.txt',
+     'target_url': 'firefox/tinderbox-builds/mozilla-central-win32/'
+                   '1374568307/firefox-25.0a1.en-US.win32.txt'},
+    # -a firefox -t tinderbox -p mac --extension=txt
+    {'args': {'application': 'firefox',
+              'extension': 'txt',
+              'platform': 'mac'},
+     'target': 'mozilla-central-firefox-25.0a1.en-US.mac.txt',
+     'target_url': 'firefox/tinderbox-builds/mozilla-central-macosx64/'
+                   '1374568307/firefox-25.0a1.en-US.mac.txt'},
 ]
 
 thunderbird_tests = [
@@ -248,13 +262,14 @@ class TinderboxScraperTest(mhttpd.MozHttpdBaseTest):
         """Testing various download scenarios for TinderboxScraper"""
 
         for entry in tests:
-            scraper = TinderboxScraper(directory=self.temp_dir, version=None,
+            scraper = TinderboxScraper(destination=self.temp_dir, version=None,
                                        base_url=self.wdir, log_level='ERROR',
                                        **entry['args'])
             expected_target = os.path.join(self.temp_dir, entry['target'])
             self.assertEqual(scraper.target, expected_target)
             self.assertEqual(urllib.unquote(scraper.final_url),
                              urljoin(self.wdir, entry['target_url']))
+
 
 if __name__ == '__main__':
     unittest.main()

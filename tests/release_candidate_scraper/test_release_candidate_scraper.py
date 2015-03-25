@@ -135,7 +135,7 @@ class ReleaseCandidateScraperTest(mhttpd.MozHttpdBaseTest):
         """Testing various download scenarios for ReleaseCandidateScraper"""
 
         for entry in tests:
-            scraper = ReleaseCandidateScraper(directory=self.temp_dir,
+            scraper = ReleaseCandidateScraper(destination=self.temp_dir,
                                               base_url=self.wdir,
                                               log_level='ERROR',
                                               **entry['args'])

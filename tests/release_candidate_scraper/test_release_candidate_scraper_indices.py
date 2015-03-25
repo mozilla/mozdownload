@@ -49,7 +49,7 @@ class ReleaseCandidateScraperTest_build_indices(mhttpd.MozHttpdBaseTest):
         """Testing indices in choosing builds for ReleaseCandidateScraper"""
 
         for entry in test_params:
-            scraper = ReleaseCandidateScraper(directory=self.temp_dir,
+            scraper = ReleaseCandidateScraper(destination=self.temp_dir,
                                               base_url=self.wdir,
                                               log_level='ERROR',
                                               **entry['args'])

@@ -62,7 +62,7 @@ class TryScraperTest(mhttpd.MozHttpdBaseTest):
         """Testing various download scenarios for TryScraper"""
 
         for entry in tests:
-            scraper = TryScraper(directory=self.temp_dir, version=None,
+            scraper = TryScraper(destination=self.temp_dir, version=None,
                                  base_url=self.wdir, log_level='ERROR',
                                  **entry['args'])
             expected_target = os.path.join(self.temp_dir, entry['target'])
