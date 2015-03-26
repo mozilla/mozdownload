@@ -28,6 +28,7 @@ class DirectoryParser(HTMLParser):
                          headers=headers, timeout=self.timeout)
         r.raise_for_status()
         self.feed(r.text)
+        r.close()
 
     def filter(self, filter):
         """Filter entries by calling function or applying regex."""
