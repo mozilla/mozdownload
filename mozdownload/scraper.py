@@ -433,7 +433,7 @@ class DailyScraper(Scraper):
 
         retval = datetime.strptime(r.text.split('\n')[0], '%Y%m%d%H%M%S')
         r.close()
-        return relval
+        return retval
 
     def is_build_dir(self, dir):
         """Return whether or not the given dir contains a build."""
