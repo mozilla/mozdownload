@@ -431,7 +431,9 @@ class DailyScraper(Scraper):
                          auth=self.authentication, headers=headers)
         r.raise_for_status()
 
-        return datetime.strptime(r.text.split('\n')[0], '%Y%m%d%H%M%S')
+        retval = datetime.strptime(r.text.split('\n')[0], '%Y%m%d%H%M%S')
+        r.close()
+        return relval
 
     def is_build_dir(self, dir):
         """Return whether or not the given dir contains a build."""
