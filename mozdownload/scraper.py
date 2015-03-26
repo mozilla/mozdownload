@@ -249,6 +249,7 @@ class Scraper(object):
             else:
                 self._target = os.path.join(self.destination,
                                             self.build_filename(self.binary))
+            self._target = os.path.abspath(self._target)
         return self._target
 
     def get_build_info(self):
@@ -576,7 +577,7 @@ class DirectScraper(Scraper):
             source_filename = (target.path.rpartition('/')[-1] or
                                target.hostname)
             target_file = os.path.join(self.destination, source_filename)
-        return target_file
+        return os.path.abspath(target_file)
 
     @property
     def final_url(self):
