@@ -427,13 +427,15 @@ class DailyScraper(Scraper):
         # Read status file for the platform, retrieve build id,
         # and convert to a date
         headers = {'Cache-Control': 'max-age=0'}
+
         r = requests.get(url + parser.entries[-1],
                          auth=self.authentication, headers=headers)
-        r.raise_for_status()
+        try:
+            r.raise_for_status()
 
-        retval = datetime.strptime(r.text.split('\n')[0], '%Y%m%d%H%M%S')
-        r.close()
-        return retval
+            return datetime.strptime(r.text.split('\n')[0], '%Y%m%d%H%M%S')
+        finally:
+            r.close()
 
     def is_build_dir(self, dir):
         """Return whether or not the given dir contains a build."""
