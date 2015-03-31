@@ -428,17 +428,14 @@ class DailyScraper(Scraper):
         # and convert to a date
         headers = {'Cache-Control': 'max-age=0'}
 
-        retval = None
         r = requests.get(url + parser.entries[-1],
                          auth=self.authentication, headers=headers)
         try:
             r.raise_for_status()
 
-            retval = datetime.strptime(r.text.split('\n')[0], '%Y%m%d%H%M%S')
+            return datetime.strptime(r.text.split('\n')[0], '%Y%m%d%H%M%S')
         finally:
             r.close()
-
-        return retval
 
     def is_build_dir(self, dir):
         """Return whether or not the given dir contains a build."""
