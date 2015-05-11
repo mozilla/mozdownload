@@ -16,21 +16,21 @@ tests = [
     # ReleaseScraper
     {'command': ['-v', 'latest'],
      'fname': 'firefox-latest.en-US.linux64.tar.bz2'},
+
     # ReleaseCandidateScraper
-    {'command': ['-t', 'candidate', '-v',
-                 '21.0', '-p', 'win32',],
+    {'command': ['-t', 'candidate', '-v', '21.0', '-p', 'win32',],
      'fname': 'firefox-21.0-build3.en-US.win32.exe'},
+
     # DailyScraper
-    {'command': ['-t', 'daily',
-                 '-p', 'win32'],
+    {'command': ['-t', 'daily', '-p', 'win32'],
      'fname': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe'},
+
     # TinderboxScraper
-    {'command': ['-t', 'tinderbox',
-                 '-p', 'win32'],
+    {'command': ['-t', 'tinderbox', '-p', 'win32'],
      'fname': 'mozilla-central-firefox-25.0a1.en-US.win32.installer.exe'},
+
     # TryScraper
-    {'command': ['-t', 'try', '-p',
-                 'mac64', '--changeset=8fcac92cfcad'],
+    {'command': ['-t', 'try', '-p', 'mac64', '--changeset=8fcac92cfcad'],
      'fname': '8fcac92cfcad-firefox-38.0a1.en-US.mac.dmg'},
 ]
 
@@ -42,11 +42,10 @@ class CorrectScraperTest(mhttpd.MozHttpdBaseTest):
         """Testing various download scenarios for DailyScraper"""
 
         for entry in tests:
-            #p = processhandler.ProcessHandler(entry['command'])
-            commands = ['./mozdownload/scraper.py',
+            command = ['./mozdownload/scraper.py',
                         '--base_url=%s' % self.wdir,
                         '--destination=%s' % self.temp_dir]
-            p = processhandler.ProcessHandler(commands + entry['command'])
+            p = processhandler.ProcessHandler(command + entry['command'])
             p.run()
             p.wait()
             dir_content = os.listdir(self.temp_dir)
