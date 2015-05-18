@@ -1,13 +1,5 @@
 # Test Cases
 
-## Correct Choice of Scraper
-```
-mozdownload -t release -p win32 -v latest
-mozdownload -t candidate -p win32 -v 21.0
-mozdownload -t daily -p win32
-mozdownload -t tinderbox -p win32
-```
-
 ## Thunderbird
 
 ### Tinderbox
