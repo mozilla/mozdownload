@@ -625,11 +625,12 @@ class ReleaseScraper(Scraper):
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
-        template = '%(APP)s-%(VERSION)s.%(LOCALE)s.%(PLATFORM)s.%(EXT)s'
+        template = '%(APP)s-%(VERSION)s.%(LOCALE)s.%(PLATFORM)s%(STUB)s.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'LOCALE': self.locale,
                            'PLATFORM': self.platform,
+                           'STUB': '-stub' if self.is_stub_installer else '',
                            'EXT': self.extension}
 
 
@@ -712,12 +713,13 @@ class ReleaseCandidateScraper(ReleaseScraper):
         """Return the proposed filename with extension for the binary"""
 
         template = '%(APP)s-%(VERSION)s-%(BUILD)s.%(LOCALE)s.' \
-                   '%(PLATFORM)s.%(EXT)s'
+                   '%(PLATFORM)s%(STUB)s.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'BUILD': self.builds[self.build_index],
                            'LOCALE': self.locale,
                            'PLATFORM': self.platform,
+                           'STUB': '-stub' if self.is_stub_installer else '', 
                            'EXT': self.extension}
 
     def download(self):
