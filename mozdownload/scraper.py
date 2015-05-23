@@ -427,11 +427,15 @@ class DailyScraper(Scraper):
         # Read status file for the platform, retrieve build id,
         # and convert to a date
         headers = {'Cache-Control': 'max-age=0'}
+
         r = requests.get(url + parser.entries[-1],
                          auth=self.authentication, headers=headers)
-        r.raise_for_status()
+        try:
+            r.raise_for_status()
 
-        return datetime.strptime(r.text.split('\n')[0], '%Y%m%d%H%M%S')
+            return datetime.strptime(r.text.split('\n')[0], '%Y%m%d%H%M%S')
+        finally:
+            r.close()
 
     def is_build_dir(self, dir):
         """Return whether or not the given dir contains a build."""
@@ -1062,6 +1066,12 @@ def cli():
                       metavar='APPLICATION',
                       help='The name of the application to download, '
                            'default: "%default"')
+    parser.add_option('--base_url',
+                      dest='base_url',
+                      default=BASE_URL,
+                      metavar='BASE_URL',
+                      help='The base url to be used, '
+                           'default: "%default"')
     parser.add_option('--destination', '-d',
                       dest='destination',
                       default=os.getcwd(),
@@ -1212,6 +1222,7 @@ def cli():
 
     # Instantiate scraper and download the build
     scraper_keywords = {'application': options.application,
+                        'base_url': options.base_url,
                         'locale': options.locale,
                         'platform': options.platform,
                         'version': options.version,
