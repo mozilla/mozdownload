@@ -136,9 +136,9 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
 
         # destination only has filename
         scraper = mozdownload.DirectScraper(url=test_url,
-                                      destination=filename,
-                                      version=None,
-                                      log_level='ERROR')
+                                            destination=filename,
+                                            version=None,
+                                            log_level='ERROR')
         self.assertEqual(scraper.target, os.path.abspath(filename))
 
         # destination directory does not exist
