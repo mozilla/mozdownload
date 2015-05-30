@@ -618,18 +618,22 @@ class ReleaseScraper(Scraper):
         """Return the platform fragment of the URL"""
 
         if self.platform == 'win64':
-            return self.platform
+            return PLATFORM_FRAGMENTS['win32']
 
         return PLATFORM_FRAGMENTS[self.platform]
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
+        if self.platform == 'win64':
+            platform_part = 'win32'
+        else:
+            platform_part = self.platform
         template = '%(APP)s-%(VERSION)s.%(LOCALE)s.%(PLATFORM)s.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'LOCALE': self.locale,
-                           'PLATFORM': self.platform,
+                           'PLATFORM': platform_part,
                            'EXT': self.extension}
 
 
@@ -704,20 +708,24 @@ class ReleaseCandidateScraper(ReleaseScraper):
         """Return the platform fragment of the URL"""
 
         if self.platform == 'win64':
-            return self.platform
+            return PLATFORM_FRAGMENTS['win32']
 
         return PLATFORM_FRAGMENTS[self.platform]
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
+        if self.platform == 'win64':
+            platform_part = 'win32'
+        else:
+            platform_part = self.platform
         template = '%(APP)s-%(VERSION)s-%(BUILD)s.%(LOCALE)s.' \
                    '%(PLATFORM)s.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'BUILD': self.builds[self.build_index],
                            'LOCALE': self.locale,
-                           'PLATFORM': self.platform,
+                           'PLATFORM': platform_part,
                            'EXT': self.extension}
 
     def download(self):
