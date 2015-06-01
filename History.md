@@ -1,3 +1,14 @@
+1.15 / 2015-06-02
+=================
+
+ * Daily Scraper: Limit Check for non-empty build dirs (#255)
+ * Use -stub suffix for release and candidate builds (#167)
+ * Upgrade dependency for requests module to 2.7.0 (#271)
+ * Ensure that --destination is always using an absolute path (#267)
+ * Test for correct choice of scraper (#257)
+ * Ensure to close the HTTP connection also in case of failures (#275)
+ * Close HTTP connections after traversing directories on ftp.mozilla.org (#272)
+
 1.14 / 2015-03-05
 =================
 
