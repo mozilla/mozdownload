@@ -70,11 +70,11 @@ firefox_tests = [
               'version': '21.0'},
      'target': 'firefox-21.0-build3.en-US.win32.exe',
      'target_url': 'firefox/candidates/21.0-candidates/build3/win32/en-US/Firefox Setup Stub 21.0.exe'},
-    # -p win64 -v 37.0b1
+    # -p win64 -v 21.0
     {'args': {'platform': 'win64',
-              'version': '37.0b1'},
-     'target': 'firefox-37.0b1-build1.en-US.win64.exe',
-     'target_url': 'firefox/candidates/37.0b1-candidates/build1/win64/en-US/Firefox Setup 37.0b1.exe'},
+              'version': '21.0'},
+     'target': 'firefox-21.0-build3.en-US.win32.exe',
+     'target_url': 'firefox/candidates/21.0-candidates/build3/win32/en-US/Firefox Setup 21.0.exe'},
 ]
 
 thunderbird_tests = [
