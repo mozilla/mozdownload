@@ -58,7 +58,7 @@ DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
 DEFAULT_BRANCHES = {'b2g': 'mozilla-central',
                     'firefox': 'mozilla-central',
                     'thunderbird': 'comm-central'}
-                           
+
 MULTI_LOCALE_APPLICATIONS = ('b2g')
 
 
@@ -387,7 +387,7 @@ class DailyScraper(Scraper):
 
     def get_build_info(self):
         """Defines additional build information"""
-        
+
         # Find branch by application
         if self.branch is None:
             self.branch = DEFAULT_BRANCHES[self.application]
