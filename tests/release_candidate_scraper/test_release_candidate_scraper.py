@@ -68,7 +68,7 @@ firefox_tests = [
               'is_stub_installer': True,
               'platform': 'win32',
               'version': '21.0'},
-     'target': 'firefox-21.0-build3.en-US.win32.exe',
+     'target': 'firefox-21.0-build3.en-US.win32-stub.exe',
      'target_url': 'firefox/candidates/21.0-candidates/build3/win32/en-US/Firefox Setup Stub 21.0.exe'},
     # -p win64 -v 37.0b1
     {'args': {'platform': 'win64',

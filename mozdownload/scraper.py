@@ -249,6 +249,7 @@ class Scraper(object):
             else:
                 self._target = os.path.join(self.destination,
                                             self.build_filename(self.binary))
+            self._target = os.path.abspath(self._target)
         return self._target
 
     def get_build_info(self):
@@ -490,8 +491,14 @@ class DailyScraper(Scraper):
 
         # If no index has been given, set it to the last build of the day.
         self.show_matching_builds(parser.entries)
+        # If no index has been given, set it to the last build of the day.
         if build_index is None:
-            build_index = len(parser.entries) - 1
+            # Find the most recent non-empty entry.
+            build_index = len(parser.entries)
+            for build in reversed(parser.entries):
+                build_index -= 1
+                if not build_index or self.is_build_dir(build):
+                    break
         self.logger.info('Selected build: %s' % parser.entries[build_index])
 
         return (parser.entries, build_index)
@@ -576,7 +583,7 @@ class DirectScraper(Scraper):
             source_filename = (target.path.rpartition('/')[-1] or
                                target.hostname)
             target_file = os.path.join(self.destination, source_filename)
-        return target_file
+        return os.path.abspath(target_file)
 
     @property
     def final_url(self):
@@ -625,11 +632,13 @@ class ReleaseScraper(Scraper):
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
-        template = '%(APP)s-%(VERSION)s.%(LOCALE)s.%(PLATFORM)s.%(EXT)s'
+        template = '%(APP)s-%(VERSION)s.%(LOCALE)s.%(PLATFORM)s%(STUB)s' \
+                   '.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'LOCALE': self.locale,
                            'PLATFORM': self.platform,
+                           'STUB': '-stub' if self.is_stub_installer else '',
                            'EXT': self.extension}
 
 
@@ -712,12 +721,13 @@ class ReleaseCandidateScraper(ReleaseScraper):
         """Return the proposed filename with extension for the binary"""
 
         template = '%(APP)s-%(VERSION)s-%(BUILD)s.%(LOCALE)s.' \
-                   '%(PLATFORM)s.%(EXT)s'
+                   '%(PLATFORM)s%(STUB)s.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'BUILD': self.builds[self.build_index],
                            'LOCALE': self.locale,
                            'PLATFORM': self.platform,
+                           'STUB': '-stub' if self.is_stub_installer else '',
                            'EXT': self.extension}
 
     def download(self):
