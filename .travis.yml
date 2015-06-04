@@ -4,7 +4,7 @@ python:
 install:
   - pip install pylama
 before_script:
-  - "pylama mozdownload"
+  - "pylama -i C901 mozdownload"
 script: ./run_tests.py
 notifications:
   email:
