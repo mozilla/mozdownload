@@ -4,13 +4,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import os
 import unittest
-import urllib
 
 from mozdownload import ReleaseCandidateScraper
-from mozdownload.utils import urljoin
 import mozhttpd_base_test as mhttpd
+
 
 test_params = [
     # -a firefox -p win32 -v 21.0 --build-number=1

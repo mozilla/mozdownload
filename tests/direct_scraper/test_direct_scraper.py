@@ -10,7 +10,8 @@ import unittest
 
 import mozfile
 
-from mozdownload import DirectScraper, NotImplementedError
+from mozdownload import DirectScraper
+import mozdownload.errors as errors
 
 
 class TestDirectScraper(unittest.TestCase):
@@ -34,7 +35,7 @@ class TestDirectScraper(unittest.TestCase):
                          os.path.join(self.temp_dir, 'index.html'))
 
         for attr in ['binary', 'binary_regex', 'path', 'path_regex']:
-            self.assertRaises(NotImplementedError, getattr, scraper, attr)
+            self.assertRaises(errors.NotImplementedError, getattr, scraper, attr)
 
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,

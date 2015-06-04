@@ -17,12 +17,14 @@ from urlparse import urlparse
 
 import mozinfo
 import mozlog
+import progressbar as pb
+
+import errors
 
 from parser import DirectoryParser
 from timezones import PacificTimezone
 from utils import urljoin
 
-import progressbar as pb
 
 version = pkg_resources.require("mozdownload")[0].version
 
@@ -64,32 +66,6 @@ DEFAULT_FILE_EXTENSIONS = {'android-api-9': 'apk',
 MULTI_LOCALE_APPLICATIONS = ('b2g', 'fennec')
 
 APPLICATION_TO_FTP_DIRECTORY = {'fennec': 'mobile'}
-
-
-class NotSupportedError(Exception):
-    """Exception for a build not being supported"""
-    def __init__(self, message):
-        Exception.__init__(self, message)
-
-
-class NotFoundError(Exception):
-    """Exception for a resource not being found (e.g. no logs)"""
-    def __init__(self, message, location):
-        self.location = location
-        Exception.__init__(self, ': '.join([message, location]))
-
-
-class NotImplementedError(Exception):
-    """Exception for a feature which is not implemented yet"""
-    def __init__(self, message):
-        Exception.__init__(self, message)
-
-
-class TimeoutError(Exception):
-    """Exception for a download exceeding the allocated timeout"""
-    def __init__(self):
-        self.message = 'The download exceeded the allocated timeout'
-        Exception.__init__(self, self.message)
 
 
 class Scraper(object):
@@ -152,7 +128,7 @@ class Scraper(object):
             try:
                 self.get_build_info()
                 break
-            except (NotFoundError, requests.exceptions.RequestException), e:
+            except (errors.NotFoundError, requests.exceptions.RequestException), e:
                 if self.retry_attempts > 0:
                     # Log only if multiple attempts are requested
                     self.logger.warning("Build not found: '%s'" % e.message)
@@ -165,7 +141,7 @@ class Scraper(object):
                     if hasattr(e, 'response') and \
                             e.response.status_code == 404:
                         message = "Specified build has not been found"
-                        raise NotFoundError(message, e.response.url)
+                        raise errors.NotFoundError(message, e.response.url)
                     else:
                         raise
 
@@ -183,7 +159,7 @@ class Scraper(object):
                                          authentication=self.authentication,
                                          timeout=self.timeout_network)
                 if not parser.entries:
-                    raise NotFoundError('No entries found', self.path)
+                    raise errors.NotFoundError('No entries found', self.path)
 
                 # Download the first matched directory entry
                 pattern = re.compile(self.binary_regex, re.IGNORECASE)
@@ -195,9 +171,9 @@ class Scraper(object):
                         # No match, continue with next entry
                         continue
                 else:
-                    raise NotFoundError("Binary not found in folder",
-                                        self.path)
-            except (NotFoundError, requests.exceptions.RequestException), e:
+                    raise errors.NotFoundError("Binary not found in folder",
+                                               self.path)
+            except (errors.NotFoundError, requests.exceptions.RequestException), e:
                 if self.retry_attempts > 0:
                     # Log only if multiple attempts are requested
                     self.logger.warning("Build not found: '%s'" % e.message)
@@ -210,7 +186,7 @@ class Scraper(object):
                     if hasattr(e, 'response') and \
                             e.response.status_code == 404:
                         message = "Specified build has not been found"
-                        raise NotFoundError(message, self.path)
+                        raise errors.NotFoundError(message, self.path)
                     else:
                         raise
 
@@ -220,7 +196,7 @@ class Scraper(object):
     def binary_regex(self):
         """Return the regex for the binary filename"""
 
-        raise NotImplementedError(sys._getframe(0).f_code.co_name)
+        raise errors.NotImplementedError(sys._getframe(0).f_code.co_name)
 
     @property
     def final_url(self):
@@ -238,7 +214,7 @@ class Scraper(object):
     def path_regex(self):
         """Return the regex for the path to the build"""
 
-        raise NotImplementedError(sys._getframe(0).f_code.co_name)
+        raise errors.NotImplementedError(sys._getframe(0).f_code.co_name)
 
     @property
     def platform_regex(self):
@@ -268,7 +244,7 @@ class Scraper(object):
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
-        raise NotImplementedError(sys._getframe(0).f_code.co_name)
+        raise errors.NotImplementedError(sys._getframe(0).f_code.co_name)
 
     def detect_platform(self):
         """Detect the current platform"""
@@ -346,12 +322,12 @@ class Scraper(object):
                         t1 = total_seconds(datetime.now() - start_time)
                         if self.timeout_download and \
                                 t1 >= self.timeout_download:
-                            raise TimeoutError
+                            raise errors.TimeoutError
 
                 if log_level <= mozlog.INFO and content_length:
                     pbar.finish()
                 break
-            except (requests.exceptions.RequestException, TimeoutError), e:
+            except (requests.exceptions.RequestException, errors.TimeoutError), e:
                 if tmp_file and os.path.isfile(tmp_file):
                     os.remove(tmp_file)
                 if self.retry_attempts > 0:
@@ -436,7 +412,7 @@ class DailyScraper(Scraper):
         if not parser.entries:
             message = 'Status file for %s build cannot be found' % \
                 self.platform_regex
-            raise NotFoundError(message, url)
+            raise errors.NotFoundError(message, url)
 
         # Read status file for the platform, retrieve build id,
         # and convert to a date
@@ -503,7 +479,7 @@ class DailyScraper(Scraper):
             date_format = '%Y-%m-%d-%H-%M-%S' if has_time else '%Y-%m-%d'
             message = 'Folder for builds on %s has not been found' % \
                 self.date.strftime(date_format)
-            raise NotFoundError(message, url)
+            raise errors.NotFoundError(message, url)
 
         # If no index has been given, set it to the last build of the day.
         self.show_matching_builds(parser.entries)
@@ -579,8 +555,8 @@ class DailyScraper(Scraper):
             return path
         except:
             folder = urljoin(self.base_url, self.monthly_build_list_regex)
-            raise NotFoundError("Specified sub folder cannot be found",
-                                folder)
+            raise errors.NotFoundError("Specified sub folder cannot be found",
+                                       folder)
 
 
 class DirectScraper(Scraper):
@@ -694,7 +670,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
         if not parser.entries:
             message = 'Folder for specific candidate builds at %s has not' \
                 'been found' % url
-            raise NotFoundError(message, url)
+            raise errors.NotFoundError(message, url)
 
         self.show_matching_builds(parser.entries)
 
@@ -752,7 +728,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
         try:
             # Try to download the signed candidate build
             Scraper.download(self)
-        except NotFoundError, e:
+        except errors.NotFoundError, e:
             self.logger.exception(str(e))
 
 
@@ -919,7 +895,7 @@ class TinderboxScraper(Scraper):
 
         if not parser.entries:
             message = 'No builds have been found'
-            raise NotFoundError(message, url)
+            raise errors.NotFoundError(message, url)
 
         self.show_matching_builds(parser.entries)
 
@@ -1030,7 +1006,7 @@ class TryScraper(Scraper):
         parser.entries = parser.filter('.*-%s$' % self.changeset)
 
         if not parser.entries:
-            raise NotFoundError('No builds have been found', url)
+            raise errors.NotFoundError('No builds have been found', url)
 
         self.show_matching_builds(parser.entries)
 
@@ -1262,10 +1238,10 @@ def cli():
     if options.application == 'b2g' and \
             options.type in ('candidate', 'release'):
         error_msg = "%s build is not yet supported for B2G" % options.type
-        raise NotSupportedError(error_msg)
+        raise errors.NotSupportedError(error_msg)
     if options.application == 'fennec' and options.type != 'daily':
         error_msg = "%s build is not yet supported for fennec" % options.type
-        raise NotSupportedError(error_msg)
+        raise errors.NotSupportedError(error_msg)
     if options.url:
         build = DirectScraper(options.url, **kwargs)
     else:

@@ -10,7 +10,9 @@ import urllib
 
 from mozdownload import ReleaseScraper
 from mozdownload.utils import urljoin
+
 import mozhttpd_base_test as mhttpd
+
 
 firefox_tests = [
     # -p win32 -v latest

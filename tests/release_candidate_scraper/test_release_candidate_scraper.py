@@ -12,6 +12,7 @@ from mozdownload import ReleaseCandidateScraper
 from mozdownload.utils import urljoin
 import mozhttpd_base_test as mhttpd
 
+
 firefox_tests = [
     # -p win32 -v 21.0
     {'args': {'platform': 'win32',

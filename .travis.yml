@@ -1,12 +1,15 @@
 language: python
 python:
-  - "2.6"
   - "2.7"
+
 install:
-  - pip install pep8
+  - pip install pylama
+
 before_script:
-  - "pep8 mozdownload"
+  - pylama mozdownload
+
 script: ./run_tests.py
+
 notifications:
   email:
     - dev-automation@lists.mozilla.org

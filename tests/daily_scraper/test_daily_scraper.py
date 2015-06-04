@@ -334,12 +334,12 @@ fennec_tests = [
     'target': '2015-06-12-00-40-06-mozilla-aurora-fennec-40.0a2.multi.android-arm.apk',
     'target_url': 'mobile/nightly/2015/06/2015-06-12-00-40-06-mozilla-aurora-android-api-11/fennec-40.0a2.multi.android-arm.apk'
     },
-] 
+]
 
 tests = firefox_tests + thunderbird_tests + b2g_tests + fennec_tests
 
 
-class DailyScraperTest(mhttpd.MozHttpdBaseTest):
+class TestDailyScraper(mhttpd.MozHttpdBaseTest):
     """Test mozdownload daily scraper class"""
 
     def test_scraper(self):

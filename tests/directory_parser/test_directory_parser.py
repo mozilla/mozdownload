@@ -7,8 +7,9 @@
 import os
 import unittest
 
-from mozdownload import DirectoryParser
+from mozdownload.parser import DirectoryParser
 from mozdownload.utils import urljoin
+
 import mozhttpd_base_test as mhttpd
 
 
