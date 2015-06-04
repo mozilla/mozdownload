@@ -55,6 +55,10 @@ DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
                            'win32': 'exe',
                            'win64': 'exe'}
 
+DEFAULT_BRANCHES = {'b2g': 'mozilla-central',
+                    'firefox': 'mozilla-central',
+                    'thunderbird': 'comm-central'}
+
 MULTI_LOCALE_APPLICATIONS = ('b2g')
 
 
@@ -371,7 +375,7 @@ class Scraper(object):
 class DailyScraper(Scraper):
     """Class to download a daily build from the Mozilla server"""
 
-    def __init__(self, branch='mozilla-central', build_id=None, date=None,
+    def __init__(self, branch=None, build_id=None, date=None,
                  build_number=None, *args, **kwargs):
 
         self.branch = branch
@@ -383,6 +387,10 @@ class DailyScraper(Scraper):
 
     def get_build_info(self):
         """Defines additional build information"""
+
+        # Find branch by application
+        if self.branch is None:
+            self.branch = DEFAULT_BRANCHES[self.application]
 
         # Internally we access builds via index
         if self.build_number is not None:
@@ -759,7 +767,7 @@ class TinderboxScraper(Scraper):
     2. If the build timestamp (UNIX) is given, and matches a specific build.
     """
 
-    def __init__(self, branch='mozilla-central', build_number=None, date=None,
+    def __init__(self, branch=None, build_number=None, date=None,
                  debug_build=False, *args, **kwargs):
 
         self.branch = branch
@@ -775,6 +783,10 @@ class TinderboxScraper(Scraper):
 
     def get_build_info(self):
         "Defines additional build information"
+
+        # Find branch by application
+        if self.branch is None:
+            self.branch = DEFAULT_BRANCHES[self.application]
 
         # Internally we access builds via index
         if self.build_number is not None:
@@ -1181,9 +1193,8 @@ def cli():
                         "Extra options for daily builds.")
     group.add_option('--branch',
                      dest='branch',
-                     default='mozilla-central',
                      metavar='BRANCH',
-                     help='Name of the branch, default: "%default"')
+                     help='Name of the branch')
     group.add_option('--build-id',
                      dest='build_id',
                      metavar='BUILD_ID',
