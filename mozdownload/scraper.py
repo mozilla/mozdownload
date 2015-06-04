@@ -645,11 +645,9 @@ class ReleaseScraper(Scraper):
 class ReleaseCandidateScraper(ReleaseScraper):
     """Class to download a release candidate build from the Mozilla server"""
 
-    def __init__(self, build_number=None, no_unsigned=False, *args, **kwargs):
+    def __init__(self, build_number=None, *args, **kwargs):
 
         self.build_number = build_number
-        self.no_unsigned = no_unsigned
-        self.unsigned = False
 
         Scraper.__init__(self, *args, **kwargs)
 
@@ -701,12 +699,11 @@ class ReleaseCandidateScraper(ReleaseScraper):
     def path_regex(self):
         """Return the regex for the path"""
 
-        regex = r'%(PREFIX)s%(BUILD)s/%(UNSIGNED)s%(PLATFORM)s/%(LOCALE)s'
+        regex = r'%(PREFIX)s%(BUILD)s/%(PLATFORM)s/%(LOCALE)s'
         return regex % {'PREFIX': self.candidate_build_list_regex,
                         'BUILD': self.builds[self.build_index],
                         'LOCALE': self.locale,
-                        'PLATFORM': self.platform_regex,
-                        'UNSIGNED': "unsigned/" if self.unsigned else ""}
+                        'PLATFORM': self.platform_regex}
 
     @property
     def platform_regex(self):
@@ -738,16 +735,6 @@ class ReleaseCandidateScraper(ReleaseScraper):
             Scraper.download(self)
         except NotFoundError, e:
             self.logger.exception(str(e))
-
-            # If the signed build cannot be downloaded and unsigned builds are
-            # allowed, try to download the unsigned build instead
-            if self.no_unsigned:
-                raise
-            else:
-                self.logger.warning("Signed build has not been found. "
-                                    "Falling back to unsigned build.")
-                self.unsigned = True
-                Scraper.download(self)
 
 
 class TinderboxScraper(Scraper):
@@ -1166,16 +1153,6 @@ def cli():
                       metavar='LOG_LEVEL',
                       help='Threshold for log output (default: %default)')
 
-    # Option group for candidate builds
-    group = OptionGroup(parser, "Candidate builds",
-                        "Extra options for candidate builds.")
-    group.add_option('--no-unsigned',
-                     dest='no_unsigned',
-                     action="store_true",
-                     help="Don't allow to download unsigned builds if signed\
-                           builds are not available")
-    parser.add_option_group(group)
-
     # Option group for daily builds
     group = OptionGroup(parser, "Daily builds",
                         "Extra options for daily builds.")
@@ -1247,8 +1224,7 @@ def cli():
                         'log_level': options.log_level}
 
     scraper_options = {
-        'candidate': {'build_number': options.build_number,
-                      'no_unsigned': options.no_unsigned},
+        'candidate': {'build_number': options.build_number},
         'daily': {'branch': options.branch,
                   'build_number': options.build_number,
                   'build_id': options.build_id,
