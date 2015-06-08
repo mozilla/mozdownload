@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/mozilla/mozdownload.png?label=ready&title=Ready)](https://waffle.io/mozilla/mozdownload)
 # mozdownload
 
 [![Latest Version](https://pypip.in/version/mozdownload/badge.png)](https://pypi.python.org/pypi/mozdownload/)
