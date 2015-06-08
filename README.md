@@ -1,7 +1,8 @@
-# mozdownload
-
-[![Latest Version](https://pypip.in/version/mozdownload/badge.png)](https://pypi.python.org/pypi/mozdownload/)
+[![PyPI version](https://badge.fury.io/py/mozdownload.svg)](http://badge.fury.io/py/mozdownload)
 [![Build Status](https://travis-ci.org/mozilla/mozdownload.svg?branch=master)](https://travis-ci.org/mozilla/mozdownload)
+[![Stories in Ready](https://badge.waffle.io/mozilla/mozdownload.png?label=ready&title=Ready)](https://waffle.io/mozilla/mozdownload)
+
+# mozdownload
 
 [mozdownload](https://github.com/mozilla/mozdownload)
 is a [python package](http://pypi.python.org/pypi/mozdownload)
