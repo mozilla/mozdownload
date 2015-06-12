@@ -33,7 +33,9 @@ applications.
 mozdownload version: %(version)s
 """ % {'version': version}
 
-APPLICATIONS = ('b2g', 'firefox', 'thunderbird')
+APPLICATIONS = {'b2g': 'mozilla-central',
+                'firefox': 'mozilla-central',
+                'thunderbird': 'comm-central'}
 
 # Base URL for the path to all builds
 BASE_URL = 'https://ftp.mozilla.org/pub/mozilla.org'
@@ -54,10 +56,6 @@ DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
                            'mac64': 'dmg',
                            'win32': 'exe',
                            'win64': 'exe'}
-
-DEFAULT_BRANCHES = {'b2g': 'mozilla-central',
-                    'firefox': 'mozilla-central',
-                    'thunderbird': 'comm-central'}
 
 MULTI_LOCALE_APPLICATIONS = ('b2g')
 
@@ -390,7 +388,7 @@ class DailyScraper(Scraper):
 
         # Find branch by application
         if self.branch is None:
-            self.branch = DEFAULT_BRANCHES[self.application]
+            self.branch = APPLICATIONS[self.application]
 
         # Internally we access builds via index
         if self.build_number is not None:
@@ -786,7 +784,7 @@ class TinderboxScraper(Scraper):
 
         # Find branch by application
         if self.branch is None:
-            self.branch = DEFAULT_BRANCHES[self.application]
+            self.branch = APPLICATIONS[self.application]
 
         # Internally we access builds via index
         if self.build_number is not None:
@@ -1083,7 +1081,7 @@ def cli():
     parser = OptionParser(usage=usage, description=__doc__)
     parser.add_option('--application', '-a',
                       dest='application',
-                      choices=APPLICATIONS,
+                      choices=APPLICATIONS.keys(),
                       default='firefox',
                       metavar='APPLICATION',
                       help='The name of the application to download, '
