@@ -423,7 +423,8 @@ class DailyScraper(Scraper):
         if not self.application == 'mobile':
             url = urljoin(self.base_url, 'nightly', 'latest-%s/' % self.branch)
         else:
-            url = urljoin(self.base_url, 'nightly', 'latest-%s-%s/' % (self.branch, self.platform))
+            url = urljoin(self.base_url, 'nightly', 'latest-%s-%s/' %
+                          (self.branch, self.platform))
 
         self.logger.info('Retrieving the build status file from %s' % url)
         parser = DirectoryParser(url, authentication=self.authentication,
@@ -478,12 +479,13 @@ class DailyScraper(Scraper):
         self.logger.info('Retrieving list of builds from %s' % url)
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
+        is_mobile = self.application == 'mobile'
         regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s%(PLATFORM)s$' % {
             'DATE': date.strftime('%Y-%m-%d'),
             'BRANCH': self.branch,
             # ensure to select the correct subfolder for localized builds
             'L10N': '' if self.locale in ('en-US', 'multi') else '(-l10n)?',
-            'PLATFORM': '-' + self.platform if self.application == 'mobile' else ''
+            'PLATFORM': '-' + self.platform if is_mobile else ''
         }
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
@@ -530,7 +532,8 @@ class DailyScraper(Scraper):
                         'win64': r'(\.installer%(STUB)s)?\.%(EXT)s$'}
         regex = regex_base_name + regex_suffix[self.platform]
 
-        return regex % {'APP': 'fennec' if self.application == 'mobile' else self.application,
+        is_mobile = self.application == 'mobile'
+        return regex % {'APP': 'fennec' if is_mobile else self.application,
                         'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
                         'EXT': self.extension,
