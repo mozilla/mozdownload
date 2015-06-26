@@ -423,7 +423,7 @@ class DailyScraper(Scraper):
 
     def get_latest_build_date(self):
         """ Returns date of latest available nightly build."""
-        if not self.application in ('fennec'):
+        if self.application not in ('fennec'):
             url = urljoin(self.base_url, 'nightly', 'latest-%s/' % self.branch)
         else:
             url = urljoin(self.base_url, 'nightly', 'latest-%s-%s/' %
