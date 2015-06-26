@@ -33,7 +33,7 @@ applications.
 mozdownload version: %(version)s
 """ % {'version': version}
 
-APPLICATIONS = ('b2g', 'firefox', 'mobile', 'thunderbird')
+APPLICATIONS = ('b2g', 'firefox', 'fennec', 'thunderbird')
 
 # Base URL for the path to all builds
 BASE_URL = 'https://ftp.mozilla.org/pub/mozilla.org'
@@ -61,7 +61,9 @@ DEFAULT_FILE_EXTENSIONS = {'android-api-9': 'apk',
                            'win32': 'exe',
                            'win64': 'exe'}
 
-MULTI_LOCALE_APPLICATIONS = ('b2g', 'mobile')
+MULTI_LOCALE_APPLICATIONS = ('b2g', 'fennec')
+
+APPLICATION_TO_FTP_DIRECTORY = {'fennec': 'mobile'}
 
 
 class NotSupportedError(Exception):
@@ -131,7 +133,8 @@ class Scraper(object):
 
         # build the base URL
         self.application = application
-        self.base_url = urljoin(base_url, self.application)
+        self.base_url = urljoin(base_url, APPLICATION_TO_FTP_DIRECTORY.get(
+            self.application, self.application))
 
         if extension:
             self.extension = extension
@@ -420,7 +423,7 @@ class DailyScraper(Scraper):
 
     def get_latest_build_date(self):
         """ Returns date of latest available nightly build."""
-        if not self.application == 'mobile':
+        if not self.application in ('fennec'):
             url = urljoin(self.base_url, 'nightly', 'latest-%s/' % self.branch)
         else:
             url = urljoin(self.base_url, 'nightly', 'latest-%s-%s/' %
@@ -479,13 +482,13 @@ class DailyScraper(Scraper):
         self.logger.info('Retrieving list of builds from %s' % url)
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
-        is_mobile = self.application == 'mobile'
         regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s%(PLATFORM)s$' % {
             'DATE': date.strftime('%Y-%m-%d'),
             'BRANCH': self.branch,
             # ensure to select the correct subfolder for localized builds
             'L10N': '' if self.locale in ('en-US', 'multi') else '(-l10n)?',
-            'PLATFORM': '-' + self.platform if is_mobile else ''
+            'PLATFORM': '' if self.application not in (
+                        'fennec') else '-' + self.platform
         }
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
@@ -532,8 +535,7 @@ class DailyScraper(Scraper):
                         'win64': r'(\.installer%(STUB)s)?\.%(EXT)s$'}
         regex = regex_base_name + regex_suffix[self.platform]
 
-        is_mobile = self.application == 'mobile'
-        return regex % {'APP': 'fennec' if is_mobile else self.application,
+        return regex % {'APP': self.application,
                         'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
                         'EXT': self.extension,
@@ -1261,8 +1263,8 @@ def cli():
             options.type in ('candidate', 'release'):
         error_msg = "%s build is not yet supported for B2G" % options.type
         raise NotSupportedError(error_msg)
-    if options.application == 'mobile' and options.type != 'daily':
-        error_msg = "%s build is not yet supported for mobile" % options.type
+    if options.application == 'fennec' and options.type != 'daily':
+        error_msg = "%s build is not yet supported for fennec" % options.type
         raise NotSupportedError(error_msg)
     if options.url:
         build = DirectScraper(options.url, **kwargs)
