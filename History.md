@@ -1,3 +1,13 @@
+1.16 / 2015-06-30
+=================
+
+ * Remove support for Python 2.6 (#250)
+ * Enhance Travis CI job with more validity checks (#157)
+ * Add support for downloading Fennec (Firefox Mobile) daily builds (#292)
+ * Update dependencies for python packages for test environment (#293)
+ * Add waffle.io badge to README
+ * Remove support for unsigned candidate builds (#108)
+
 1.15 / 2015-06-02
 =================
 
