@@ -9,6 +9,7 @@ from .scraper import (Scraper,
                       ReleaseCandidateScraper,
                       TinderboxScraper,
                       TryScraper,
+                      cli,
                       )
 
 __all__ = [Scraper,
@@ -18,4 +19,5 @@ __all__ = [Scraper,
            ReleaseCandidateScraper,
            TinderboxScraper,
            TryScraper,
+           cli,
            ]
