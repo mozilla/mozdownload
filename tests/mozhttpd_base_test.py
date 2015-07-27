@@ -28,7 +28,7 @@ class MozHttpdBaseTest(unittest.TestCase):
 
     def setUp(self):
         """Starts server that lists all files in the directory"""
-        self.logger = mozlog.getLogger(self.__class__.__name__)
+        self.logger = mozlog.unstructured.getLogger(self.__class__.__name__)
         self.logger.setLevel('ERROR')
         self.httpd = mozhttpd.MozHttpd(port=8080, docroot=HERE,
                                        urlhandlers=[{'method': 'GET',
