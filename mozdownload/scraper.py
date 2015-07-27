@@ -5,6 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from datetime import datetime
+import logging
 from optparse import OptionParser, OptionGroup
 import os
 import pkg_resources
@@ -104,8 +105,8 @@ class Scraper(object):
         self.timeout_download = timeout
         self.timeout_network = 60.
 
-        self.logger = mozlog.getLogger(' ')
-        self.logger.setLevel(getattr(mozlog, log_level.upper()))
+        self.logger = mozlog.unstructured.getLogger(' ')
+        self.logger.setLevel(getattr(logging, log_level.upper()))
 
         # build the base URL
         self.application = application
@@ -305,7 +306,7 @@ class Scraper(object):
                 bytes_downloaded = 0
 
                 log_level = self.logger.getEffectiveLevel()
-                if log_level <= mozlog.INFO and content_length:
+                if log_level <= logging.INFO and content_length:
                     widgets = [pb.Percentage(), ' ', pb.Bar(), ' ', pb.ETA(),
                                ' ', pb.FileTransferSpeed()]
                     pbar = pb.ProgressBar(widgets=widgets,
@@ -316,7 +317,7 @@ class Scraper(object):
                         f.write(chunk)
                         bytes_downloaded += CHUNK_SIZE
 
-                        if log_level <= mozlog.INFO and content_length:
+                        if log_level <= logging.INFO and content_length:
                             pbar.update(bytes_downloaded)
 
                         t1 = total_seconds(datetime.now() - start_time)
@@ -324,7 +325,7 @@ class Scraper(object):
                                 t1 >= self.timeout_download:
                             raise errors.TimeoutError
 
-                if log_level <= mozlog.INFO and content_length:
+                if log_level <= logging.INFO and content_length:
                     pbar.finish()
                 break
             except (requests.exceptions.RequestException, errors.TimeoutError), e:
