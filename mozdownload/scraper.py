@@ -648,24 +648,12 @@ class ReleaseCandidateScraper(ReleaseScraper):
         Scraper.__init__(self, *args, **kwargs)
 
     def get_build_info(self):
-        "Defines additional build information"
+        """Defines additional build information"""
 
         # Internally we access builds via index
-        self.builds, self.build_index = self.get_build_info_for_version(
-            self.version)
-        if self.build_number and \
-                ('build%s' % self.build_number) in self.builds:
-            self.builds = ['build%s' % self.build_number]
-            self.build_index = 0
-            self.logger.info('Selected build: build%s' % self.build_number)
-        else:
-            self.logger.info('Selected build: build%d' %
-                             (self.build_index + 1))
-
-    def get_build_info_for_version(self, version, build_index=None):
         url = urljoin(self.base_url, self.candidate_build_list_regex)
-
         self.logger.info('Retrieving list of candidate builds from %s' % url)
+
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
         if not parser.entries:
@@ -674,13 +662,17 @@ class ReleaseCandidateScraper(ReleaseScraper):
             raise errors.NotFoundError(message, url)
 
         self.show_matching_builds(parser.entries)
+        self.builds = parser.entries
+        self.build_index = len(parser.entries) - 1
 
-        # If no index has been given, set it to the last build of the given
-        # version.
-        if build_index is None:
-            build_index = len(parser.entries) - 1
-
-        return (parser.entries, build_index)
+        if self.build_number and \
+                ('build%s' % self.build_number) in self.builds:
+            self.builds = ['build%s' % self.build_number]
+            self.build_index = 0
+            self.logger.info('Selected build: build%s' % self.build_number)
+        else:
+            self.logger.info('Selected build: build%d' %
+                             (self.build_index + 1))
 
     @property
     def candidate_build_list_regex(self):
