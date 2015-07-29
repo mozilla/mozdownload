@@ -30,7 +30,7 @@ from utils import urljoin
 version = pkg_resources.require("mozdownload")[0].version
 
 __doc__ = """
-Module to handle downloads for different types of ftp.mozilla.org hosted \
+Module to handle downloads for different types of archive.mozilla.org hosted \
 applications.
 
 mozdownload version: %(version)s
@@ -39,7 +39,7 @@ mozdownload version: %(version)s
 APPLICATIONS = ('b2g', 'firefox', 'fennec', 'thunderbird')
 
 # Base URL for the path to all builds
-BASE_URL = 'https://ftp.mozilla.org/pub/mozilla.org'
+BASE_URL = 'https://archive.mozilla.org/pub/mozilla.org'
 
 # Chunk size when downloading a file
 CHUNK_SIZE = 16 * 1024
