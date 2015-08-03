@@ -1,3 +1,12 @@
+1.17 / 2015-08-03
+=================
+
+ * Remove dependency for mozlog (#304)
+ * Replace ftp.mozilla.org with archive.mozilla.org (#302)
+ * Removed all unused variables from get_build_info_for_version (#169)
+ * Adapt to mozlog 3.0 (#300)
+ * Re-add scraper.cli to __init__.py (#298)
+
 1.16 / 2015-06-30
 =================
 
