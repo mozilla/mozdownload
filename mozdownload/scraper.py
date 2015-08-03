@@ -17,7 +17,6 @@ import urllib
 from urlparse import urlparse
 
 import mozinfo
-import mozlog
 import progressbar as pb
 
 import errors
@@ -105,8 +104,9 @@ class Scraper(object):
         self.timeout_download = timeout
         self.timeout_network = 60.
 
-        self.logger = mozlog.unstructured.getLogger(' ')
-        self.logger.setLevel(getattr(logging, log_level.upper()))
+        logging.basicConfig(format=' %(levelname)s | %(message)s')
+        self.logger = logging.getLogger(self.__module__)
+        self.logger.setLevel(log_level)
 
         # build the base URL
         self.application = application
