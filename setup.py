@@ -17,7 +17,6 @@ except (OSError, IOError):
 version = '1.16'
 
 deps = ['mozinfo >= 0.7',
-        'mozlog >= 3.0',
         'progressbar == 2.2',
         'requests == 2.7.0',
         ]
