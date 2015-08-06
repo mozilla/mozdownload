@@ -18,15 +18,14 @@ install it via pip. The following command will install the latest release:
 Otherwise follow the steps below to setup a development environment. It is
 recommended that [virtualenv](http://virtualenv.readthedocs.org/en/latest/installation.html)
 and [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/)
-be used in conjunction with mozdownload. Start by installing these.
+be used in conjunction with mozdownload. Start by installing these. Then first fork
+our repository into your own github account, and run:
 
-Then:
-
-    git clone https://github.com/%username%/mozdownload.git
+    git clone https://github.com/%your_account%/mozdownload.git
     cd mozdownload
     python setup.py develop
 
-More detailed developer documentation can be found in the [[wiki|wiki]].
+More detailed developer documentation can be found in the [wiki](https://github.com/mozilla/mozdownload/wiki).
 
 ## Command Line Usage
 
