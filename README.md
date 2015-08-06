@@ -34,7 +34,8 @@ command line options.
 
 ### Examples
 
-Download the latest official Firefox release for your platform:
+Download the latest official Firefox release for your platform (as long as there is no
+64bit build of Firefox for Windows64, users on that platform have to download the 32bit build):
 
     mozdownload --version=latest
 
