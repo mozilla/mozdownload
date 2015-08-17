@@ -1,3 +1,33 @@
+1.17 / 2015-08-03
+=================
+
+ * Remove dependency for mozlog (#304)
+ * Replace ftp.mozilla.org with archive.mozilla.org (#302)
+ * Removed all unused variables from get_build_info_for_version (#169)
+ * Adapt to mozlog 3.0 (#300)
+ * Re-add scraper.cli to __init__.py (#298)
+
+1.16 / 2015-06-30
+=================
+
+ * Remove support for Python 2.6 (#250)
+ * Enhance Travis CI job with more validity checks (#157)
+ * Add support for downloading Fennec (Firefox Mobile) daily builds (#292)
+ * Update dependencies for python packages for test environment (#293)
+ * Add waffle.io badge to README
+ * Remove support for unsigned candidate builds (#108)
+
+1.15 / 2015-06-02
+=================
+
+ * Daily Scraper: Limit Check for non-empty build dirs (#255)
+ * Use -stub suffix for release and candidate builds (#167)
+ * Upgrade dependency for requests module to 2.7.0 (#271)
+ * Ensure that --destination is always using an absolute path (#267)
+ * Test for correct choice of scraper (#257)
+ * Ensure to close the HTTP connection also in case of failures (#275)
+ * Close HTTP connections after traversing directories on ftp.mozilla.org (#272)
+
 1.14 / 2015-03-05
 =================
 

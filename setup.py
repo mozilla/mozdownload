@@ -14,12 +14,11 @@ try:
 except (OSError, IOError):
     description = None
 
-version = '1.14'
+version = '1.17'
 
 deps = ['mozinfo >= 0.7',
-        'mozlog >= 1.3',
         'progressbar == 2.2',
-        'requests == 1.2.2',
+        'requests == 2.7.0',
         ]
 
 setup(name='mozdownload',

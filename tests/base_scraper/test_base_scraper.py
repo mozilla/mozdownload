@@ -7,25 +7,27 @@
 import os
 import unittest
 
+import mozhttpd_base_test as mhttpd
 import requests
 
 import mozdownload
+import mozdownload.errors as errors
+from mozdownload.scraper import PLATFORM_FRAGMENTS
 from mozdownload.utils import create_md5, urljoin
-import mozhttpd_base_test as mhttpd
 
 
-class BaseScraperTest(mhttpd.MozHttpdBaseTest):
+class TestBaseScraper(mhttpd.MozHttpdBaseTest):
     """Testing the basic functionality of the Base Scraper Class"""
 
     def test_platform_regex(self):
         """Test for correct platform_regex output"""
 
-        for key in mozdownload.PLATFORM_FRAGMENTS:
+        for key in PLATFORM_FRAGMENTS:
             scraper = mozdownload.Scraper(destination=self.temp_dir,
                                           version=None,
                                           platform=key)
             self.assertEqual(scraper.platform_regex,
-                             mozdownload.PLATFORM_FRAGMENTS[key])
+                             PLATFORM_FRAGMENTS[key])
 
     def test_download(self):
         """Test download method"""
@@ -71,9 +73,9 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
         scraper = mozdownload.Scraper(destination=self.temp_dir,
                                       version=None, log_level='ERROR')
         for attr in ['binary', 'binary_regex', 'path_regex']:
-            self.assertRaises(mozdownload.NotImplementedError, getattr,
+            self.assertRaises(errors.NotImplementedError, getattr,
                               scraper, attr)
-        self.assertRaises(mozdownload.NotImplementedError,
+        self.assertRaises(errors.NotImplementedError,
                           scraper.build_filename, 'invalid binary')
 
     def test_authentication(self):
@@ -126,13 +128,20 @@ class BaseScraperTest(mhttpd.MozHttpdBaseTest):
                                             log_level='ERROR')
         self.assertEqual(scraper.target, os.path.join(self.temp_dir, filename))
 
-        # destination is file
+        # destination has directory path with filename
         destination = os.path.join(self.temp_dir, filename)
         scraper = mozdownload.DirectScraper(url=test_url,
                                             destination=destination,
                                             version=None,
                                             log_level='ERROR')
         self.assertEqual(scraper.target, destination)
+
+        # destination only has filename
+        scraper = mozdownload.DirectScraper(url=test_url,
+                                            destination=filename,
+                                            version=None,
+                                            log_level='ERROR')
+        self.assertEqual(scraper.target, os.path.abspath(filename))
 
         # destination directory does not exist
         destination = os.path.join(self.temp_dir, 'temp_folder', filename)

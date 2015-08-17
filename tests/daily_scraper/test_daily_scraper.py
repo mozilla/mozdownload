@@ -305,10 +305,41 @@ b2g_tests = [
      }
 ]
 
-tests = firefox_tests + thunderbird_tests + b2g_tests
+fennec_tests = [
+    # -p android-api-9 --branch=mozilla-central
+    {'args': {'application': 'fennec',
+              'platform': 'android-api-9',
+              'branch': 'mozilla-central'},
+    'target': '2015-06-12-03-02-05-mozilla-central-fennec-41.0a1.multi.android-arm.apk',
+    'target_url': 'mobile/nightly/2015/06/2015-06-12-03-02-05-mozilla-central-android-api-9/fennec-41.0a1.multi.android-arm.apk'
+    },
+    # -p android-api-11 --branch=mozilla-central
+    {'args': {'application': 'fennec',
+              'platform': 'android-api-11',
+              'branch': 'mozilla-central'},
+    'target': '2015-06-11-03-02-08-mozilla-central-fennec-41.0a1.multi.android-arm.apk',
+    'target_url': 'mobile/nightly/2015/06/2015-06-11-03-02-08-mozilla-central-android-api-11/fennec-41.0a1.multi.android-arm.apk'
+    },
+    # -p android-x86 --branch=mozilla-central
+    {'args': {'application': 'fennec',
+              'platform': 'android-x86',
+              'branch': 'mozilla-central'},
+    'target': '2015-06-12-03-02-05-mozilla-central-fennec-41.0a1.multi.android-i386.apk',
+    'target_url': 'mobile/nightly/2015/06/2015-06-12-03-02-05-mozilla-central-android-x86/fennec-41.0a1.multi.android-i386.apk'
+     },
+    # -p android-api-11 --branch=mozilla-aurora
+    {'args': {'application': 'fennec',
+              'platform': 'android-api-11',
+              'branch': 'mozilla-aurora'},
+    'target': '2015-06-12-00-40-06-mozilla-aurora-fennec-40.0a2.multi.android-arm.apk',
+    'target_url': 'mobile/nightly/2015/06/2015-06-12-00-40-06-mozilla-aurora-android-api-11/fennec-40.0a2.multi.android-arm.apk'
+    },
+]
+
+tests = firefox_tests + thunderbird_tests + b2g_tests + fennec_tests
 
 
-class DailyScraperTest(mhttpd.MozHttpdBaseTest):
+class TestDailyScraper(mhttpd.MozHttpdBaseTest):
     """Test mozdownload daily scraper class"""
 
     def test_scraper(self):

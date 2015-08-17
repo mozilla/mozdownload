@@ -10,7 +10,9 @@ import urllib
 
 from mozdownload import ReleaseScraper
 from mozdownload.utils import urljoin
+
 import mozhttpd_base_test as mhttpd
+
 
 firefox_tests = [
     # -p win32 -v latest
@@ -60,7 +62,7 @@ firefox_tests = [
               'platform': 'win32',
               'is_stub_installer': True,
               'version': 'latest'},
-     'target': 'firefox-latest.en-US.win32.exe',
+     'target': 'firefox-latest.en-US.win32-stub.exe',
      'target_url': 'firefox/releases/latest/win32/en-US/Firefox Setup Stub 23.0.1.exe'},
     # -a firefox -p win32 -v 21.0
     {'args': {'application': 'firefox',

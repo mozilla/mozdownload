@@ -4,14 +4,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import os
-import mozlog
-import sys
 import unittest
-import urllib
 
 from mozdownload import DailyScraper
-from mozdownload.utils import urljoin
 
 import mozhttpd_base_test as mhttpd
 
@@ -39,7 +34,7 @@ tests_with_invalid_date = [
 tests = tests_with_invalid_date
 
 
-class TestDailyScraper_invalidParameters(mhttpd.MozHttpdBaseTest):
+class TestDailyScraperInvalidParameters(mhttpd.MozHttpdBaseTest):
     """test mozdownload DailyScraper class with invalid parameters"""
 
     def test_scraper(self):

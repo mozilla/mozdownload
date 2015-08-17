@@ -4,12 +4,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import os
 import unittest
-import urllib
 
 from mozdownload import DailyScraper
-from mozdownload.utils import urljoin
 import mozhttpd_base_test as mhttpd
 
 test_params = [
@@ -43,7 +40,7 @@ test_params = [
 ]
 
 
-class DailyScraperTest_indices(mhttpd.MozHttpdBaseTest):
+class TestDailyScraperIndices(mhttpd.MozHttpdBaseTest):
     """Test mozdownload daily scraper class"""
 
     def test_build_indices(self):

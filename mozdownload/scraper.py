@@ -5,6 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from datetime import datetime
+import logging
 from optparse import OptionParser, OptionGroup
 import os
 import pkg_resources
@@ -16,72 +17,55 @@ import urllib
 from urlparse import urlparse
 
 import mozinfo
-import mozlog
+import progressbar as pb
+
+import errors
 
 from parser import DirectoryParser
 from timezones import PacificTimezone
 from utils import urljoin
 
-import progressbar as pb
 
 version = pkg_resources.require("mozdownload")[0].version
 
 __doc__ = """
-Module to handle downloads for different types of ftp.mozilla.org hosted \
+Module to handle downloads for different types of archive.mozilla.org hosted \
 applications.
 
 mozdownload version: %(version)s
 """ % {'version': version}
 
-APPLICATIONS = ('b2g', 'firefox', 'thunderbird')
+APPLICATIONS = ('b2g', 'firefox', 'fennec', 'thunderbird')
 
 # Base URL for the path to all builds
-BASE_URL = 'https://ftp.mozilla.org/pub/mozilla.org'
+BASE_URL = 'https://archive.mozilla.org/pub/mozilla.org'
 
 # Chunk size when downloading a file
 CHUNK_SIZE = 16 * 1024
 
-PLATFORM_FRAGMENTS = {'linux': r'linux-i686',
+PLATFORM_FRAGMENTS = {'android-api-9': r'android-arm',
+                      'android-api-11': r'android-arm',
+                      'android-x86': r'android-i386',
+                      'linux': r'linux-i686',
                       'linux64': r'linux-x86_64',
                       'mac': r'mac',
                       'mac64': r'mac(64)?',
                       'win32': r'win32',
                       'win64': r'win64(-x86_64)?'}
 
-DEFAULT_FILE_EXTENSIONS = {'linux': 'tar.bz2',
+DEFAULT_FILE_EXTENSIONS = {'android-api-9': 'apk',
+                           'android-api-11': 'apk',
+                           'android-x86': 'apk',
+                           'linux': 'tar.bz2',
                            'linux64': 'tar.bz2',
                            'mac': 'dmg',
                            'mac64': 'dmg',
                            'win32': 'exe',
                            'win64': 'exe'}
 
-MULTI_LOCALE_APPLICATIONS = ('b2g')
+MULTI_LOCALE_APPLICATIONS = ('b2g', 'fennec')
 
-
-class NotSupportedError(Exception):
-    """Exception for a build not being supported"""
-    def __init__(self, message):
-        Exception.__init__(self, message)
-
-
-class NotFoundError(Exception):
-    """Exception for a resource not being found (e.g. no logs)"""
-    def __init__(self, message, location):
-        self.location = location
-        Exception.__init__(self, ': '.join([message, location]))
-
-
-class NotImplementedError(Exception):
-    """Exception for a feature which is not implemented yet"""
-    def __init__(self, message):
-        Exception.__init__(self, message)
-
-
-class TimeoutError(Exception):
-    """Exception for a download exceeding the allocated timeout"""
-    def __init__(self):
-        self.message = 'The download exceeded the allocated timeout'
-        Exception.__init__(self, self.message)
+APPLICATION_TO_FTP_DIRECTORY = {'fennec': 'mobile'}
 
 
 class Scraper(object):
@@ -120,12 +104,14 @@ class Scraper(object):
         self.timeout_download = timeout
         self.timeout_network = 60.
 
-        self.logger = mozlog.getLogger(' ')
-        self.logger.setLevel(getattr(mozlog, log_level.upper()))
+        logging.basicConfig(format=' %(levelname)s | %(message)s')
+        self.logger = logging.getLogger(self.__module__)
+        self.logger.setLevel(log_level)
 
         # build the base URL
         self.application = application
-        self.base_url = urljoin(base_url, self.application)
+        self.base_url = urljoin(base_url, APPLICATION_TO_FTP_DIRECTORY.get(
+            self.application, self.application))
 
         if extension:
             self.extension = extension
@@ -143,7 +129,7 @@ class Scraper(object):
             try:
                 self.get_build_info()
                 break
-            except (NotFoundError, requests.exceptions.RequestException), e:
+            except (errors.NotFoundError, requests.exceptions.RequestException), e:
                 if self.retry_attempts > 0:
                     # Log only if multiple attempts are requested
                     self.logger.warning("Build not found: '%s'" % e.message)
@@ -156,7 +142,7 @@ class Scraper(object):
                     if hasattr(e, 'response') and \
                             e.response.status_code == 404:
                         message = "Specified build has not been found"
-                        raise NotFoundError(message, e.response.url)
+                        raise errors.NotFoundError(message, e.response.url)
                     else:
                         raise
 
@@ -174,7 +160,7 @@ class Scraper(object):
                                          authentication=self.authentication,
                                          timeout=self.timeout_network)
                 if not parser.entries:
-                    raise NotFoundError('No entries found', self.path)
+                    raise errors.NotFoundError('No entries found', self.path)
 
                 # Download the first matched directory entry
                 pattern = re.compile(self.binary_regex, re.IGNORECASE)
@@ -186,9 +172,9 @@ class Scraper(object):
                         # No match, continue with next entry
                         continue
                 else:
-                    raise NotFoundError("Binary not found in folder",
-                                        self.path)
-            except (NotFoundError, requests.exceptions.RequestException), e:
+                    raise errors.NotFoundError("Binary not found in folder",
+                                               self.path)
+            except (errors.NotFoundError, requests.exceptions.RequestException), e:
                 if self.retry_attempts > 0:
                     # Log only if multiple attempts are requested
                     self.logger.warning("Build not found: '%s'" % e.message)
@@ -201,7 +187,7 @@ class Scraper(object):
                     if hasattr(e, 'response') and \
                             e.response.status_code == 404:
                         message = "Specified build has not been found"
-                        raise NotFoundError(message, self.path)
+                        raise errors.NotFoundError(message, self.path)
                     else:
                         raise
 
@@ -211,7 +197,7 @@ class Scraper(object):
     def binary_regex(self):
         """Return the regex for the binary filename"""
 
-        raise NotImplementedError(sys._getframe(0).f_code.co_name)
+        raise errors.NotImplementedError(sys._getframe(0).f_code.co_name)
 
     @property
     def final_url(self):
@@ -229,7 +215,7 @@ class Scraper(object):
     def path_regex(self):
         """Return the regex for the path to the build"""
 
-        raise NotImplementedError(sys._getframe(0).f_code.co_name)
+        raise errors.NotImplementedError(sys._getframe(0).f_code.co_name)
 
     @property
     def platform_regex(self):
@@ -249,6 +235,7 @@ class Scraper(object):
             else:
                 self._target = os.path.join(self.destination,
                                             self.build_filename(self.binary))
+            self._target = os.path.abspath(self._target)
         return self._target
 
     def get_build_info(self):
@@ -258,7 +245,7 @@ class Scraper(object):
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
-        raise NotImplementedError(sys._getframe(0).f_code.co_name)
+        raise errors.NotImplementedError(sys._getframe(0).f_code.co_name)
 
     def detect_platform(self):
         """Detect the current platform"""
@@ -319,7 +306,7 @@ class Scraper(object):
                 bytes_downloaded = 0
 
                 log_level = self.logger.getEffectiveLevel()
-                if log_level <= mozlog.INFO and content_length:
+                if log_level <= logging.INFO and content_length:
                     widgets = [pb.Percentage(), ' ', pb.Bar(), ' ', pb.ETA(),
                                ' ', pb.FileTransferSpeed()]
                     pbar = pb.ProgressBar(widgets=widgets,
@@ -330,18 +317,18 @@ class Scraper(object):
                         f.write(chunk)
                         bytes_downloaded += CHUNK_SIZE
 
-                        if log_level <= mozlog.INFO and content_length:
+                        if log_level <= logging.INFO and content_length:
                             pbar.update(bytes_downloaded)
 
                         t1 = total_seconds(datetime.now() - start_time)
                         if self.timeout_download and \
                                 t1 >= self.timeout_download:
-                            raise TimeoutError
+                            raise errors.TimeoutError
 
-                if log_level <= mozlog.INFO and content_length:
+                if log_level <= logging.INFO and content_length:
                     pbar.finish()
                 break
-            except (requests.exceptions.RequestException, TimeoutError), e:
+            except (requests.exceptions.RequestException, errors.TimeoutError), e:
                 if tmp_file and os.path.isfile(tmp_file):
                     os.remove(tmp_file)
                 if self.retry_attempts > 0:
@@ -413,7 +400,11 @@ class DailyScraper(Scraper):
 
     def get_latest_build_date(self):
         """ Returns date of latest available nightly build."""
-        url = urljoin(self.base_url, 'nightly', 'latest-%s/' % self.branch)
+        if self.application not in ('fennec'):
+            url = urljoin(self.base_url, 'nightly', 'latest-%s/' % self.branch)
+        else:
+            url = urljoin(self.base_url, 'nightly', 'latest-%s-%s/' %
+                          (self.branch, self.platform))
 
         self.logger.info('Retrieving the build status file from %s' % url)
         parser = DirectoryParser(url, authentication=self.authentication,
@@ -422,7 +413,7 @@ class DailyScraper(Scraper):
         if not parser.entries:
             message = 'Status file for %s build cannot be found' % \
                 self.platform_regex
-            raise NotFoundError(message, url)
+            raise errors.NotFoundError(message, url)
 
         # Read status file for the platform, retrieve build id,
         # and convert to a date
@@ -468,11 +459,14 @@ class DailyScraper(Scraper):
         self.logger.info('Retrieving list of builds from %s' % url)
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
-        regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s$' % {
+        regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s%(PLATFORM)s$' % {
             'DATE': date.strftime('%Y-%m-%d'),
             'BRANCH': self.branch,
             # ensure to select the correct subfolder for localized builds
-            'L10N': '' if self.locale in ('en-US', 'multi') else '(-l10n)?'}
+            'L10N': '' if self.locale in ('en-US', 'multi') else '(-l10n)?',
+            'PLATFORM': '' if self.application not in (
+                        'fennec') else '-' + self.platform
+        }
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
 
@@ -486,12 +480,18 @@ class DailyScraper(Scraper):
             date_format = '%Y-%m-%d-%H-%M-%S' if has_time else '%Y-%m-%d'
             message = 'Folder for builds on %s has not been found' % \
                 self.date.strftime(date_format)
-            raise NotFoundError(message, url)
+            raise errors.NotFoundError(message, url)
 
         # If no index has been given, set it to the last build of the day.
         self.show_matching_builds(parser.entries)
+        # If no index has been given, set it to the last build of the day.
         if build_index is None:
-            build_index = len(parser.entries) - 1
+            # Find the most recent non-empty entry.
+            build_index = len(parser.entries)
+            for build in reversed(parser.entries):
+                build_index -= 1
+                if not build_index or self.is_build_dir(build):
+                    break
         self.logger.info('Selected build: %s' % parser.entries[build_index])
 
         return (parser.entries, build_index)
@@ -501,7 +501,10 @@ class DailyScraper(Scraper):
         """Return the regex for the binary"""
 
         regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.%(PLATFORM)s'
-        regex_suffix = {'linux': r'\.%(EXT)s$',
+        regex_suffix = {'android-api-9': r'\.%(EXT)s$',
+                        'android-api-11': r'\.%(EXT)s$',
+                        'android-x86': r'\.%(EXT)s$',
+                        'linux': r'\.%(EXT)s$',
                         'linux64': r'\.%(EXT)s$',
                         'mac': r'\.%(EXT)s$',
                         'mac64': r'\.%(EXT)s$',
@@ -553,8 +556,8 @@ class DailyScraper(Scraper):
             return path
         except:
             folder = urljoin(self.base_url, self.monthly_build_list_regex)
-            raise NotFoundError("Specified sub folder cannot be found",
-                                folder)
+            raise errors.NotFoundError("Specified sub folder cannot be found",
+                                       folder)
 
 
 class DirectScraper(Scraper):
@@ -576,7 +579,7 @@ class DirectScraper(Scraper):
             source_filename = (target.path.rpartition('/')[-1] or
                                target.hostname)
             target_file = os.path.join(self.destination, source_filename)
-        return target_file
+        return os.path.abspath(target_file)
 
     @property
     def final_url(self):
@@ -625,31 +628,43 @@ class ReleaseScraper(Scraper):
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary"""
 
-        template = '%(APP)s-%(VERSION)s.%(LOCALE)s.%(PLATFORM)s.%(EXT)s'
+        template = '%(APP)s-%(VERSION)s.%(LOCALE)s.%(PLATFORM)s%(STUB)s' \
+                   '.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'LOCALE': self.locale,
                            'PLATFORM': self.platform,
+                           'STUB': '-stub' if self.is_stub_installer else '',
                            'EXT': self.extension}
 
 
 class ReleaseCandidateScraper(ReleaseScraper):
     """Class to download a release candidate build from the Mozilla server"""
 
-    def __init__(self, build_number=None, no_unsigned=False, *args, **kwargs):
+    def __init__(self, build_number=None, *args, **kwargs):
 
         self.build_number = build_number
-        self.no_unsigned = no_unsigned
-        self.unsigned = False
 
         Scraper.__init__(self, *args, **kwargs)
 
     def get_build_info(self):
-        "Defines additional build information"
+        """Defines additional build information"""
 
         # Internally we access builds via index
-        self.builds, self.build_index = self.get_build_info_for_version(
-            self.version)
+        url = urljoin(self.base_url, self.candidate_build_list_regex)
+        self.logger.info('Retrieving list of candidate builds from %s' % url)
+
+        parser = DirectoryParser(url, authentication=self.authentication,
+                                 timeout=self.timeout_network)
+        if not parser.entries:
+            message = 'Folder for specific candidate builds at %s has not' \
+                'been found' % url
+            raise errors.NotFoundError(message, url)
+
+        self.show_matching_builds(parser.entries)
+        self.builds = parser.entries
+        self.build_index = len(parser.entries) - 1
+
         if self.build_number and \
                 ('build%s' % self.build_number) in self.builds:
             self.builds = ['build%s' % self.build_number]
@@ -658,26 +673,6 @@ class ReleaseCandidateScraper(ReleaseScraper):
         else:
             self.logger.info('Selected build: build%d' %
                              (self.build_index + 1))
-
-    def get_build_info_for_version(self, version, build_index=None):
-        url = urljoin(self.base_url, self.candidate_build_list_regex)
-
-        self.logger.info('Retrieving list of candidate builds from %s' % url)
-        parser = DirectoryParser(url, authentication=self.authentication,
-                                 timeout=self.timeout_network)
-        if not parser.entries:
-            message = 'Folder for specific candidate builds at %s has not' \
-                'been found' % url
-            raise NotFoundError(message, url)
-
-        self.show_matching_builds(parser.entries)
-
-        # If no index has been given, set it to the last build of the given
-        # version.
-        if build_index is None:
-            build_index = len(parser.entries) - 1
-
-        return (parser.entries, build_index)
 
     @property
     def candidate_build_list_regex(self):
@@ -692,12 +687,11 @@ class ReleaseCandidateScraper(ReleaseScraper):
     def path_regex(self):
         """Return the regex for the path"""
 
-        regex = r'%(PREFIX)s%(BUILD)s/%(UNSIGNED)s%(PLATFORM)s/%(LOCALE)s'
+        regex = r'%(PREFIX)s%(BUILD)s/%(PLATFORM)s/%(LOCALE)s'
         return regex % {'PREFIX': self.candidate_build_list_regex,
                         'BUILD': self.builds[self.build_index],
                         'LOCALE': self.locale,
-                        'PLATFORM': self.platform_regex,
-                        'UNSIGNED': "unsigned/" if self.unsigned else ""}
+                        'PLATFORM': self.platform_regex}
 
     @property
     def platform_regex(self):
@@ -712,12 +706,13 @@ class ReleaseCandidateScraper(ReleaseScraper):
         """Return the proposed filename with extension for the binary"""
 
         template = '%(APP)s-%(VERSION)s-%(BUILD)s.%(LOCALE)s.' \
-                   '%(PLATFORM)s.%(EXT)s'
+                   '%(PLATFORM)s%(STUB)s.%(EXT)s'
         return template % {'APP': self.application,
                            'VERSION': self.version,
                            'BUILD': self.builds[self.build_index],
                            'LOCALE': self.locale,
                            'PLATFORM': self.platform,
+                           'STUB': '-stub' if self.is_stub_installer else '',
                            'EXT': self.extension}
 
     def download(self):
@@ -726,18 +721,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
         try:
             # Try to download the signed candidate build
             Scraper.download(self)
-        except NotFoundError, e:
+        except errors.NotFoundError, e:
             self.logger.exception(str(e))
-
-            # If the signed build cannot be downloaded and unsigned builds are
-            # allowed, try to download the unsigned build instead
-            if self.no_unsigned:
-                raise
-            else:
-                self.logger.warning("Signed build has not been found. "
-                                    "Falling back to unsigned build.")
-                self.unsigned = True
-                Scraper.download(self)
 
 
 class TinderboxScraper(Scraper):
@@ -903,7 +888,7 @@ class TinderboxScraper(Scraper):
 
         if not parser.entries:
             message = 'No builds have been found'
-            raise NotFoundError(message, url)
+            raise errors.NotFoundError(message, url)
 
         self.show_matching_builds(parser.entries)
 
@@ -1014,7 +999,7 @@ class TryScraper(Scraper):
         parser.entries = parser.filter('.*-%s$' % self.changeset)
 
         if not parser.entries:
-            raise NotFoundError('No builds have been found', url)
+            raise errors.NotFoundError('No builds have been found', url)
 
         self.show_matching_builds(parser.entries)
 
@@ -1156,16 +1141,6 @@ def cli():
                       metavar='LOG_LEVEL',
                       help='Threshold for log output (default: %default)')
 
-    # Option group for candidate builds
-    group = OptionGroup(parser, "Candidate builds",
-                        "Extra options for candidate builds.")
-    group.add_option('--no-unsigned',
-                     dest='no_unsigned',
-                     action="store_true",
-                     help="Don't allow to download unsigned builds if signed\
-                           builds are not available")
-    parser.add_option_group(group)
-
     # Option group for daily builds
     group = OptionGroup(parser, "Daily builds",
                         "Extra options for daily builds.")
@@ -1237,8 +1212,7 @@ def cli():
                         'log_level': options.log_level}
 
     scraper_options = {
-        'candidate': {'build_number': options.build_number,
-                      'no_unsigned': options.no_unsigned},
+        'candidate': {'build_number': options.build_number},
         'daily': {'branch': options.branch,
                   'build_number': options.build_number,
                   'build_id': options.build_id,
@@ -1257,7 +1231,10 @@ def cli():
     if options.application == 'b2g' and \
             options.type in ('candidate', 'release'):
         error_msg = "%s build is not yet supported for B2G" % options.type
-        raise NotSupportedError(error_msg)
+        raise errors.NotSupportedError(error_msg)
+    if options.application == 'fennec' and options.type != 'daily':
+        error_msg = "%s build is not yet supported for fennec" % options.type
+        raise errors.NotSupportedError(error_msg)
     if options.url:
         build = DirectScraper(options.url, **kwargs)
     else:

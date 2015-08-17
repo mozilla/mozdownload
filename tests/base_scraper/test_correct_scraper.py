@@ -8,8 +8,9 @@ import os
 import unittest
 
 import mozfile
-import mozhttpd_base_test as mhttpd
 from mozprocess import processhandler
+
+import mozhttpd_base_test as mhttpd
 
 tests = [
     # ReleaseScraper
@@ -17,7 +18,7 @@ tests = [
      'fname': 'firefox-latest.en-US.linux64.tar.bz2'},
 
     # ReleaseCandidateScraper
-    {'options': ['-t', 'candidate', '-v', '21.0', '-p', 'win32',],
+    {'options': ['-t', 'candidate', '-v', '21.0', '-p', 'win32'],
      'fname': 'firefox-21.0-build3.en-US.win32.exe'},
 
     # DailyScraper
@@ -34,7 +35,7 @@ tests = [
 ]
 
 
-class CorrectScraperTest(mhttpd.MozHttpdBaseTest):
+class TestCorrectScraper(mhttpd.MozHttpdBaseTest):
     """Test mozdownload for correct choice of scraper"""
 
     def test_scraper(self):
@@ -42,8 +43,8 @@ class CorrectScraperTest(mhttpd.MozHttpdBaseTest):
 
         for entry in tests:
             command = ['./mozdownload/scraper.py',
-                        '--base_url=%s' % self.wdir,
-                        '--destination=%s' % self.temp_dir]
+                       '--base_url=%s' % self.wdir,
+                       '--destination=%s' % self.temp_dir]
             p = processhandler.ProcessHandler(command + entry['options'])
             p.run()
             p.wait()
