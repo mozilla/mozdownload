@@ -12,19 +12,16 @@ import mozfile
 
 from mozdownload import DirectScraper
 import mozdownload.errors as errors
+import mozhttpd_base_test as mhttpd
+from mozdownload.utils import urljoin
 
 
-class TestDirectScraper(unittest.TestCase):
+class TestDirectScraper(mhttpd.MozHttpdBaseTest):
     """test mozdownload direct url scraper"""
 
-    def setUp(self):
-        self.temp_dir = tempfile.mkdtemp()
-
-    def tearDown(self):
-        mozfile.rmtree(self.temp_dir)
-
     def test_url_download(self):
-        test_url = 'https://mozqa.com/index.html'
+        filename = 'download_test.txt'
+        test_url = urljoin(self.wdir, filename)
         scraper = DirectScraper(url=test_url,
                                 destination=self.temp_dir,
                                 version=None,
@@ -32,7 +29,7 @@ class TestDirectScraper(unittest.TestCase):
         self.assertEqual(scraper.url, test_url)
         self.assertEqual(scraper.final_url, test_url)
         self.assertEqual(scraper.target,
-                         os.path.join(self.temp_dir, 'index.html'))
+                         os.path.join(self.temp_dir, filename))
 
         for attr in ['binary', 'binary_regex', 'path', 'path_regex']:
             self.assertRaises(errors.NotImplementedError, getattr, scraper, attr)
