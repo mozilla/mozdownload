@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from . import cli
+
 from .scraper import (Scraper,
                       DailyScraper,
                       DirectScraper,
@@ -9,7 +11,6 @@ from .scraper import (Scraper,
                       ReleaseCandidateScraper,
                       TinderboxScraper,
                       TryScraper,
-                      cli,
                       )
 
 __all__ = [Scraper,

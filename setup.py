@@ -39,6 +39,6 @@ setup(name='mozdownload',
       entry_points="""
       # -*- Entry points: -*-
       [console_scripts]
-      mozdownload = mozdownload:cli
+      mozdownload = mozdownload.cli:cli
       """,
       )

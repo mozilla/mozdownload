@@ -1,16 +1,10 @@
-#!/usr/bin/env python
-
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this file,
-# You can obtain one at http://mozilla.org/MPL/2.0/.
-
 import os
-import unittest
 
 import mozfile
 from mozprocess import processhandler
 
 import mozhttpd_base_test as mhttpd
+
 
 tests = [
     # ReleaseScraper
@@ -35,23 +29,25 @@ tests = [
 ]
 
 
-class TestCorrectScraper(mhttpd.MozHttpdBaseTest):
+class TestCLICorrectScraper(mhttpd.MozHttpdBaseTest):
     """Test mozdownload for correct choice of scraper"""
+
+    def output(self, line):
+        # Ignore any output to stdout
+        pass
 
     def test_scraper(self):
         """Testing various download scenarios for DailyScraper"""
 
         for entry in tests:
-            command = ['./mozdownload/scraper.py',
+            command = ['mozdownload',
                        '--base_url=%s' % self.wdir,
                        '--destination=%s' % self.temp_dir]
-            p = processhandler.ProcessHandler(command + entry['options'])
+            p = processhandler.ProcessHandler(command + entry['options'],
+                                              processOutputLine=[self.output])
             p.run()
             p.wait()
             dir_content = os.listdir(self.temp_dir)
             self.assertTrue(entry['fname'] in dir_content)
 
             mozfile.remove(os.path.join(self.temp_dir, entry['fname']))
-
-if __name__ == '__main__':
-    unittest.main()
