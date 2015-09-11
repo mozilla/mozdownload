@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import os
+
 from . import errors
 from . import scraper
 
@@ -73,7 +75,7 @@ class FactoryScraper(scraper.Scraper):
         # Instantiate scraper and download the build
         scraper_keywords = {'application': kwargs.get('application', 'firefox'),
                             'base_url': kwargs.get('base_url', scraper.BASE_URL),
-                            'destination': kwargs.get('destination'),
+                            'destination': kwargs.get('destination', os.getcwd()),
                             'extension': kwargs.get('extension'),
                             'is_stub_installer': kwargs.get('is_stub_installer'),
                             'locale': kwargs.get('locale'),
