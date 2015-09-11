@@ -4,6 +4,8 @@
 
 from . import cli
 
+from .factory import FactoryScraper
+
 from .scraper import (Scraper,
                       DailyScraper,
                       DirectScraper,
@@ -13,12 +15,13 @@ from .scraper import (Scraper,
                       TryScraper,
                       )
 
-__all__ = [Scraper,
+__all__ = [cli,
+           FactoryScraper,
+           Scraper,
            DailyScraper,
            DirectScraper,
            ReleaseScraper,
            ReleaseCandidateScraper,
            TinderboxScraper,
            TryScraper,
-           cli,
            ]

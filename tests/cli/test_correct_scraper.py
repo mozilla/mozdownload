@@ -37,7 +37,7 @@ class TestCLICorrectScraper(mhttpd.MozHttpdBaseTest):
         pass
 
     def test_scraper(self):
-        """Testing various download scenarios for DailyScraper"""
+        """Testing various download scenarios."""
 
         for entry in tests:
             command = ['mozdownload',
