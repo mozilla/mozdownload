@@ -1,3 +1,14 @@
+1.18 / 2015-09-14
+=================
+
+ * Improve API and documentation (#324)
+ * Create Factory class for various Scraper instances (#320)
+ * Switch from optparse to argparse (#318)
+ * Move CLI into its own module (#316)
+ * test_direct_scraper.py should make use of local http server (#214)
+ * Add instructions for contribution (#310)
+ * Enhance documentation for developers (#307)
+
 1.17 / 2015-08-03
 =================
 
