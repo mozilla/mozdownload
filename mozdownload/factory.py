@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import os
-
 from . import errors
 from . import scraper
 
@@ -56,10 +54,6 @@ class FactoryScraper(scraper.Scraper):
         :param changeset: Changeset of the try build to download.
 
         """
-        # If a URL has been specified use to the direct scraper
-        if kwargs.get('url'):
-            scraper_type = 'direct'
-
         # Check for valid arguments
         if scraper_type in ('candidate', 'release') and not kwargs.get('version'):
             raise ValueError('The version to download has to be specified.')
@@ -75,7 +69,7 @@ class FactoryScraper(scraper.Scraper):
         # Instantiate scraper and download the build
         scraper_keywords = {'application': kwargs.get('application', 'firefox'),
                             'base_url': kwargs.get('base_url', scraper.BASE_URL),
-                            'destination': kwargs.get('destination', os.getcwd()),
+                            'destination': kwargs.get('destination'),
                             'extension': kwargs.get('extension'),
                             'is_stub_installer': kwargs.get('is_stub_installer'),
                             'locale': kwargs.get('locale'),
@@ -86,12 +80,15 @@ class FactoryScraper(scraper.Scraper):
                             'retry_delay': kwargs.get('retry_delay', 10),
                             'timeout': kwargs.get('timeout'),
                             'username': kwargs.get('username'),
-                            'version': kwargs.get('version'),
                             }
 
         scraper_type_keywords = {
+            'release': {
+                'version': kwargs.get('version'),
+            },
             'candidate': {
                 'build_number': kwargs.get('build_number'),
+                'version': kwargs.get('version'),
             },
             'daily': {
                 'branch': kwargs.get('branch', 'mozilla-central'),

@@ -31,7 +31,6 @@ class TestTryScraperInvalidParameters(mhttpd.MozHttpdBaseTest):
         for entry in tests:
             self.assertRaises(errors.NotFoundError, TryScraper,
                               destination=self.temp_dir,
-                              version=None,
                               base_url=self.wdir,
                               log_level='ERROR',
                               **entry['args'])

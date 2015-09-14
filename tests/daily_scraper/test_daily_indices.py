@@ -47,8 +47,9 @@ class TestDailyScraperIndices(mhttpd.MozHttpdBaseTest):
         """Testing for correct build_index in DailyScraper"""
 
         for entry in test_params:
-            scraper = DailyScraper(destination=self.temp_dir, base_url=self.wdir,
-                                   version=None, log_level='ERROR',
+            scraper = DailyScraper(destination=self.temp_dir,
+                                   base_url=self.wdir,
+                                   log_level='ERROR',
                                    **entry['args'])
             self.assertEqual(scraper.build_index, entry['build_index'])
             self.assertEqual(scraper.builds, entry['builds'])

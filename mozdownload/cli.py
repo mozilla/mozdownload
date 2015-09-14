@@ -160,6 +160,10 @@ def cli():
     try:
         scraper_type = kwargs.pop('scraper_type')
 
+        # If a URL has been specified use the direct scraper
+        if kwargs.get('url'):
+            scraper_type = 'direct'
+
         build = factory.FactoryScraper(scraper_type, **kwargs)
         build.download()
     except KeyboardInterrupt:

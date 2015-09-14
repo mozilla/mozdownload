@@ -24,21 +24,17 @@ from utils import urljoin
 
 APPLICATIONS = ('b2g', 'firefox', 'fennec', 'thunderbird')
 
+# Some applications contain all locales in a single build
+APPLICATIONS_MULTI_LOCALE = ('b2g', 'fennec')
+
+# Used if the application is named differently than the subfolder on the server
+APPLICATIONS_TO_FTP_DIRECTORY = {'fennec': 'mobile'}
+
 # Base URL for the path to all builds
 BASE_URL = 'https://archive.mozilla.org/pub/mozilla.org'
 
 # Chunk size when downloading a file
 CHUNK_SIZE = 16 * 1024
-
-PLATFORM_FRAGMENTS = {'android-api-9': r'android-arm',
-                      'android-api-11': r'android-arm',
-                      'android-x86': r'android-i386',
-                      'linux': r'linux-i686',
-                      'linux64': r'linux-x86_64',
-                      'mac': r'mac',
-                      'mac64': r'mac(64)?',
-                      'win32': r'win32',
-                      'win64': r'win64(-x86_64)?'}
 
 DEFAULT_FILE_EXTENSIONS = {'android-api-9': 'apk',
                            'android-api-11': 'apk',
@@ -50,15 +46,21 @@ DEFAULT_FILE_EXTENSIONS = {'android-api-9': 'apk',
                            'win32': 'exe',
                            'win64': 'exe'}
 
-MULTI_LOCALE_APPLICATIONS = ('b2g', 'fennec')
-
-APPLICATION_TO_FTP_DIRECTORY = {'fennec': 'mobile'}
+PLATFORM_FRAGMENTS = {'android-api-9': r'android-arm',
+                      'android-api-11': r'android-arm',
+                      'android-x86': r'android-i386',
+                      'linux': r'linux-i686',
+                      'linux64': r'linux-x86_64',
+                      'mac': r'mac',
+                      'mac64': r'mac(64)?',
+                      'win32': r'win32',
+                      'win64': r'win64(-x86_64)?'}
 
 
 class Scraper(object):
     """Generic class to download an application from the Mozilla server"""
 
-    def __init__(self, destination, version, platform=None,
+    def __init__(self, destination=None, platform=None,
                  application='firefox', locale=None, extension=None,
                  username=None, password=None,
                  retry_attempts=0, retry_delay=10.,
@@ -67,12 +69,13 @@ class Scraper(object):
                  base_url=BASE_URL):
 
         # Private properties for caching
-        self._target = None
+        self._filename = None
         self._binary = None
 
-        self.destination = destination
+        self.destination = destination or os.getcwd()
+
         if not locale:
-            if application in MULTI_LOCALE_APPLICATIONS:
+            if application in APPLICATIONS_MULTI_LOCALE:
                 self.locale = 'multi'
             else:
                 self.locale = 'en-US'
@@ -80,11 +83,12 @@ class Scraper(object):
             self.locale = locale
 
         self.platform = platform or self.detect_platform()
-        self.version = version
+
         if (username, password) == (None, None):
             self.authentication = None
         else:
             self.authentication = (username, password)
+
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
         self.is_stub_installer = is_stub_installer
@@ -97,15 +101,15 @@ class Scraper(object):
 
         # build the base URL
         self.application = application
-        self.base_url = urljoin(base_url, APPLICATION_TO_FTP_DIRECTORY.get(
+        self.base_url = urljoin(base_url, APPLICATIONS_TO_FTP_DIRECTORY.get(
             self.application, self.application))
 
         if extension:
             self.extension = extension
         else:
-            if self.application in MULTI_LOCALE_APPLICATIONS and \
+            if self.application in APPLICATIONS_MULTI_LOCALE and \
                     self.platform in ('win32', 'win64'):
-                # builds for MULTI_LOCALE_APPLICATIONS only exist in zip
+                # builds for APPLICATIONS_MULTI_LOCALE only exist in zip
                 self.extension = 'zip'
             else:
                 self.extension = DEFAULT_FILE_EXTENSIONS[self.platform]
@@ -187,8 +191,8 @@ class Scraper(object):
         raise errors.NotImplementedError(sys._getframe(0).f_code.co_name)
 
     @property
-    def final_url(self):
-        """Return the final URL of the build"""
+    def url(self):
+        """Return the URL of the build"""
 
         return urljoin(self.path, self.binary)
 
@@ -211,19 +215,21 @@ class Scraper(object):
         return PLATFORM_FRAGMENTS[self.platform]
 
     @property
-    def target(self):
-        """Return the target file name of the build"""
+    def filename(self):
+        """Return the local filename of the build"""
 
-        if self._target is None:
-
-            # if destination contains filename
+        if self._filename is None:
             if os.path.splitext(self.destination)[1]:
-                self._target = self.destination
+                # If the filename has been given make use of it
+                target_file = self.destination
             else:
-                self._target = os.path.join(self.destination,
-                                            self.build_filename(self.binary))
-            self._target = os.path.abspath(self._target)
-        return self._target
+                # Otherwise create it from the build details
+                target_file = os.path.join(self.destination,
+                                           self.build_filename(self.binary))
+
+            self._filename = os.path.abspath(target_file)
+
+        return self._filename
 
     def get_build_info(self):
         """Returns additional build information in subclasses if necessary"""
@@ -259,20 +265,20 @@ class Scraper(object):
         attempt = 0
 
         # Don't re-download the file
-        if os.path.isfile(os.path.abspath(self.target)):
+        if os.path.isfile(os.path.abspath(self.filename)):
             self.logger.info("File has already been downloaded: %s" %
-                             (self.target))
-            return
+                             (self.filename))
+            return self.filename
 
-        directory = os.path.dirname(self.target)
+        directory = os.path.dirname(self.filename)
         if not os.path.isdir(directory):
             os.makedirs(directory)
 
         self.logger.info('Downloading from: %s' %
-                         (urllib.unquote(self.final_url)))
-        self.logger.info('Saving as: %s' % self.target)
+                         (urllib.unquote(self.url)))
+        self.logger.info('Saving as: %s' % self.filename)
 
-        tmp_file = self.target + ".part"
+        tmp_file = self.filename + ".part"
 
         while True:
             attempt += 1
@@ -280,7 +286,7 @@ class Scraper(object):
                 start_time = datetime.now()
 
                 # Enable streaming mode so we can download content in chunks
-                r = requests.get(self.final_url, stream=True,
+                r = requests.get(self.url, stream=True,
                                  auth=self.authentication)
                 r.raise_for_status()
 
@@ -329,7 +335,9 @@ class Scraper(object):
                     raise
                 time.sleep(self.retry_delay)
 
-        os.rename(tmp_file, self.target)
+        os.rename(tmp_file, self.filename)
+
+        return self.filename
 
     def show_matching_builds(self, builds):
         """Output the matching builds"""
@@ -422,7 +430,7 @@ class DailyScraper(Scraper):
         # get_build_info_for_date (see below)
         url = urljoin(self.base_url, self.monthly_build_list_regex, dir)
 
-        if self.application in MULTI_LOCALE_APPLICATIONS \
+        if self.application in APPLICATIONS_MULTI_LOCALE \
                 and self.locale != 'multi':
             url = urljoin(url, self.locale)
 
@@ -537,7 +545,7 @@ class DailyScraper(Scraper):
         try:
             path = urljoin(self.monthly_build_list_regex,
                            self.builds[self.build_index])
-            if self.application in MULTI_LOCALE_APPLICATIONS \
+            if self.application in APPLICATIONS_MULTI_LOCALE \
                     and self.locale != 'multi':
                 path = urljoin(path, self.locale)
             return path
@@ -551,32 +559,35 @@ class DirectScraper(Scraper):
     """Class to download a file from a specified URL"""
 
     def __init__(self, url, *args, **kwargs):
-        self.url = url
+        self._url = url
 
         Scraper.__init__(self, *args, **kwargs)
 
     @property
-    def target(self):
-        target = urlparse(self.final_url)
-
-        # if destination is path to file
+    def filename(self):
         if os.path.splitext(self.destination)[1]:
+            # If the filename has been given make use of it
             target_file = self.destination
         else:
-            source_filename = (target.path.rpartition('/')[-1] or
-                               target.hostname)
+            # Otherwise determine it from the url.
+            parsed_url = urlparse(self.url)
+            source_filename = (parsed_url.path.rpartition('/')[-1] or
+                               parsed_url.hostname)
             target_file = os.path.join(self.destination, source_filename)
+
         return os.path.abspath(target_file)
 
     @property
-    def final_url(self):
-        return self.url
+    def url(self):
+        return self._url
 
 
 class ReleaseScraper(Scraper):
     """Class to download a release build from the Mozilla server"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, version, *args, **kwargs):
+        self.version = version
+
         Scraper.__init__(self, *args, **kwargs)
 
     @property
@@ -628,8 +639,8 @@ class ReleaseScraper(Scraper):
 class ReleaseCandidateScraper(ReleaseScraper):
     """Class to download a release candidate build from the Mozilla server"""
 
-    def __init__(self, build_number=None, *args, **kwargs):
-
+    def __init__(self, version, build_number=None, *args, **kwargs):
+        self.version = version
         self.build_number = build_number
 
         Scraper.__init__(self, *args, **kwargs)
@@ -838,7 +849,7 @@ class TinderboxScraper(Scraper):
         # get_build_info_for_index (see below)
         url = urljoin(self.base_url, self.build_list_regex, dir)
 
-        if self.application in MULTI_LOCALE_APPLICATIONS \
+        if self.application in APPLICATIONS_MULTI_LOCALE \
                 and self.locale != 'multi':
             url = urljoin(url, self.locale)
 

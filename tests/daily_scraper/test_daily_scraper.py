@@ -17,91 +17,91 @@ import mozhttpd_base_test as mhttpd
 firefox_tests = [
     # -p win32
     {'args': {'platform': 'win32'},
-    'target': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
-    'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'
+    'filename': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
+    'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'
     },
 
     # -p win32 --branch=mozilla-central
     {'args': {'platform': 'win32',
               'branch': 'mozilla-central'},
-    'target': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
-    'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'
+    'filename': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
+    'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'
     },
 
     # -p win64 --branch=mozilla-central
     {'args': {'platform': 'win64',
               'branch': 'mozilla-central'},
-    'target': '2015-02-05-03-02-05-mozilla-central-firefox-38.0a1.en-US.win64.installer.exe',
-    'target_url': 'firefox/nightly/2015/02/2015-02-05-03-02-05-mozilla-central/firefox-38.0a1.en-US.win64.installer.exe'
+    'filename': '2015-02-05-03-02-05-mozilla-central-firefox-38.0a1.en-US.win64.installer.exe',
+    'url': 'firefox/nightly/2015/02/2015-02-05-03-02-05-mozilla-central/firefox-38.0a1.en-US.win64.installer.exe'
    },
 
     # -p win64 --branch=mozilla-central --date 2013-10-01 (old filename format)
     {'args': {'platform': 'win64',
               'branch': 'mozilla-central',
               'date': '2013-10-01'},
-    'target': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win64-x86_64.installer.exe',
-    'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64-x86_64.installer.exe'
+    'filename': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win64-x86_64.installer.exe',
+    'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64-x86_64.installer.exe'
    },
 
     # -p linux --branch=mozilla-central
     {'args': {'platform': 'linux',
                'branch': 'mozilla-central'},
-     'target': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.linux-i686.tar.bz2',
-     'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.linux-i686.tar.bz2'
+     'filename': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.linux-i686.tar.bz2',
+     'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.linux-i686.tar.bz2'
      },
 
     # -p linux64 --branch=mozilla-central
     {'args': {'platform': 'linux64',
                'branch': 'mozilla-central'},
-     'target': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.linux-x86_64.tar.bz2',
-     'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.linux-x86_64.tar.bz2'
+     'filename': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.linux-x86_64.tar.bz2',
+     'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.linux-x86_64.tar.bz2'
     },
 
     # -p mac --branch=mozilla-central
     {'args': {'platform': 'mac',
                'branch': 'mozilla-central'},
-    'target': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.mac.dmg',
-    'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.mac.dmg'
+    'filename': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.mac.dmg',
+    'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.mac.dmg'
     },
 
     # -p linux --branch=mozilla-central --extension=txt
     {'args': {'platform': 'linux',
               'branch': 'mozilla-central',
               'extension': 'txt'},
-    'target': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.linux-i686.txt',
-    'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.linux-i686.txt'
+    'filename': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.linux-i686.txt',
+    'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.linux-i686.txt'
     },
 
     # -p win32 --branch=mozilla-central -l it
     {'args': {'platform': 'win32',
               'branch': 'mozilla-central',
               'locale': 'it'},
-    'target': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.it.win32.installer.exe',
-    'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central-l10n/firefox-27.0a1.it.win32.installer.exe'
+    'filename': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.it.win32.installer.exe',
+    'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central-l10n/firefox-27.0a1.it.win32.installer.exe'
     },
 
     # -p win32 --branch=mozilla-central -l sv-SE
     {'args': {'platform': 'win32',
               'branch': 'mozilla-central',
               'locale': 'sv-SE'},
-    'target': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.sv-SE.win32.installer.exe',
-    'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central-l10n/firefox-27.0a1.sv-SE.win32.installer.exe'
+    'filename': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.sv-SE.win32.installer.exe',
+    'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central-l10n/firefox-27.0a1.sv-SE.win32.installer.exe'
     },
 
     # -p win32 --branch=mozilla-central --build-id=20130706031213
     {'args': {'platform': 'win32',
               'branch': 'mozilla-central',
               'build_id': '20130706031213'},
-    'target': '2013-07-06-03-12-13-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
-    'target_url': 'firefox/nightly/2013/07/2013-07-06-03-12-13-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'
+    'filename': '2013-07-06-03-12-13-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
+    'url': 'firefox/nightly/2013/07/2013-07-06-03-12-13-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'
     },
 
     # -p win32 --branch=mozilla-central --date=2013-07-02
     {'args': {'platform': 'win32',
               'branch': 'mozilla-central',
               'date': '2013-07-02'},
-    'target': '2013-07-02-04-12-13-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
-    'target_url': 'firefox/nightly/2013/07/2013-07-02-04-12-13-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'
+    'filename': '2013-07-02-04-12-13-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
+    'url': 'firefox/nightly/2013/07/2013-07-02-04-12-13-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'
     },
 
     # -p win32 --branch=mozilla-central --date=2013-07-02 --build-number=1
@@ -109,30 +109,30 @@ firefox_tests = [
               'branch': 'mozilla-central',
               'date': '2013-07-02',
               'build_number': 1},
-    'target': '2013-07-02-03-12-13-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
-    'target_url': 'firefox/nightly/2013/07/2013-07-02-03-12-13-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'
+    'filename': '2013-07-02-03-12-13-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
+    'url': 'firefox/nightly/2013/07/2013-07-02-03-12-13-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'
     },
 
     # -p win32 --branch=mozilla-central --stub
     {'args': {'platform': 'win32',
               'branch': 'mozilla-central',
               'is_stub_installer': True},
-    'target': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer-stub.exe',
-    'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.installer-stub.exe'
+    'filename': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer-stub.exe',
+    'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.installer-stub.exe'
     },
 
     # -p win32 --branch=mozilla-aurora
     {'args': {'platform': 'win32',
               'branch': 'mozilla-aurora'},
-    'target': '2013-10-01-03-02-04-mozilla-aurora-firefox-27.0a1.en-US.win32.installer.exe',
-    'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-aurora/firefox-27.0a1.en-US.win32.installer.exe'
+    'filename': '2013-10-01-03-02-04-mozilla-aurora-firefox-27.0a1.en-US.win32.installer.exe',
+    'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-aurora/firefox-27.0a1.en-US.win32.installer.exe'
     },
 
     # -p win32 --branch=ux
     {'args': {'platform': 'win32',
               'branch': 'ux'},
-    'target': '2013-10-01-03-02-04-ux-firefox-27.0a1.en-US.win32.installer.exe',
-    'target_url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-ux/firefox-27.0a1.en-US.win32.installer.exe'
+    'filename': '2013-10-01-03-02-04-ux-firefox-27.0a1.en-US.win32.installer.exe',
+    'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-ux/firefox-27.0a1.en-US.win32.installer.exe'
     },
 ]
 
@@ -141,40 +141,40 @@ thunderbird_tests = [
     {'args': {'application': 'thunderbird',
               'platform': 'linux',
               'branch': 'comm-central'},
-    'target': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.linux-i686.tar.bz2',
-    'target_url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.linux-i686.tar.bz2'
+    'filename': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.linux-i686.tar.bz2',
+    'url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.linux-i686.tar.bz2'
     },
 
     # -p linux64 --branch=comm-central
     {'args': {'application': 'thunderbird',
               'platform': 'linux64',
               'branch': 'comm-central'},
-    'target': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.linux-x86_64.tar.bz2',
-    'target_url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.linux-x86_64.tar.bz2'
+    'filename': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.linux-x86_64.tar.bz2',
+    'url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.linux-x86_64.tar.bz2'
     },
 
     # -p mac --branch=comm-central
     {'args': {'application': 'thunderbird',
               'platform': 'mac',
               'branch': 'comm-central'},
-    'target': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.mac.dmg',
-    'target_url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.mac.dmg'
+    'filename': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.mac.dmg',
+    'url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.mac.dmg'
     },
 
     # -p win32 --branch=comm-central
     {'args': {'application': 'thunderbird',
               'platform': 'win32',
               'branch': 'comm-central'},
-    'target': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
-    'target_url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.win32.installer.exe'
+    'filename': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
+    'url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.win32.installer.exe'
     },
 
     # -p win64 --branch=comm-central
     {'args': {'application': 'thunderbird',
               'platform': 'win64',
               'branch': 'comm-central'},
-    'target': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.win64-x86_64.installer.exe',
-    'target_url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.win64-x86_64.installer.exe'
+    'filename': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.win64-x86_64.installer.exe',
+    'url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.win64-x86_64.installer.exe'
     },
 
     # -p linux --branch=comm-central --extension=txt
@@ -182,8 +182,8 @@ thunderbird_tests = [
               'platform': 'linux',
               'branch': 'comm-central',
               'extension': 'txt'},
-    'target': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.linux-i686.txt',
-    'target_url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.linux-i686.txt'
+    'filename': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.linux-i686.txt',
+    'url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.linux-i686.txt'
     },
 
     # -p win32 --branch=comm-central -l it
@@ -191,8 +191,8 @@ thunderbird_tests = [
               'platform': 'win32',
               'branch': 'comm-central',
               'locale': 'it'},
-    'target': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.it.win32.installer.exe',
-    'target_url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central-l10n/thunderbird-27.0a1.it.win32.installer.exe'
+    'filename': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.it.win32.installer.exe',
+    'url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central-l10n/thunderbird-27.0a1.it.win32.installer.exe'
     },
 
     # -p win32 --branch=comm-central -l sv-SE
@@ -200,8 +200,8 @@ thunderbird_tests = [
               'platform': 'win32',
               'branch': 'comm-central',
               'locale': 'sv-SE'},
-    'target': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.sv-SE.win32.installer.exe',
-    'target_url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central-l10n/thunderbird-27.0a1.sv-SE.win32.installer.exe'
+    'filename': '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.sv-SE.win32.installer.exe',
+    'url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central-l10n/thunderbird-27.0a1.sv-SE.win32.installer.exe'
     },
 
     # -p win32 --branch=comm-central --build-id=20130710110153
@@ -209,8 +209,8 @@ thunderbird_tests = [
               'platform': 'win32',
               'branch': 'comm-central',
               'build_id': '20130710110153'},
-    'target': '2013-07-10-11-01-53-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
-    'target_url': 'thunderbird/nightly/2013/07/2013-07-10-11-01-53-comm-central/thunderbird-27.0a1.en-US.win32.installer.exe'
+    'filename': '2013-07-10-11-01-53-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
+    'url': 'thunderbird/nightly/2013/07/2013-07-10-11-01-53-comm-central/thunderbird-27.0a1.en-US.win32.installer.exe'
     },
 
     # -p win32 --branch=comm-central --date=2013-07-10
@@ -218,8 +218,8 @@ thunderbird_tests = [
               'platform': 'win32',
               'branch': 'comm-central',
               'date': '2013-07-10'},
-    'target': '2013-07-10-11-01-53-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
-    'target_url': 'thunderbird/nightly/2013/07/2013-07-10-11-01-53-comm-central/thunderbird-27.0a1.en-US.win32.installer.exe'
+    'filename': '2013-07-10-11-01-53-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
+    'url': 'thunderbird/nightly/2013/07/2013-07-10-11-01-53-comm-central/thunderbird-27.0a1.en-US.win32.installer.exe'
     },
 
     # -p win32 --branch=comm-central --date=2013-07-10 --build-number=1
@@ -228,16 +228,16 @@ thunderbird_tests = [
               'branch': 'comm-central',
               'date': '2013-07-10',
               'build_number': 1},
-    'target': '2013-07-10-10-01-53-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
-    'target_url': 'thunderbird/nightly/2013/07/2013-07-10-10-01-53-comm-central/thunderbird-27.0a1.en-US.win32.installer.exe'
+    'filename': '2013-07-10-10-01-53-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
+    'url': 'thunderbird/nightly/2013/07/2013-07-10-10-01-53-comm-central/thunderbird-27.0a1.en-US.win32.installer.exe'
     },
 
     # -p win32 --branch=comm-central
     {'args': {'application': 'thunderbird',
               'platform': 'win32',
               'branch': 'comm-aurora'},
-    'target': '2013-10-01-03-02-04-comm-aurora-thunderbird-27.0a1.en-US.win32.installer.exe',
-    'target_url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-aurora/thunderbird-27.0a1.en-US.win32.installer.exe'
+    'filename': '2013-10-01-03-02-04-comm-aurora-thunderbird-27.0a1.en-US.win32.installer.exe',
+    'url': 'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-aurora/thunderbird-27.0a1.en-US.win32.installer.exe'
     },
 ]
 
@@ -246,45 +246,45 @@ b2g_tests = [
     {'args': {'application': 'b2g',
               'platform': 'linux',
               'branch': 'mozilla-central'},
-    'target': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.multi.linux-i686.tar.bz2',
-    'target_url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/b2g-29.0a1.multi.linux-i686.tar.bz2'
+    'filename': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.multi.linux-i686.tar.bz2',
+    'url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/b2g-29.0a1.multi.linux-i686.tar.bz2'
      },
     # -p linux64 --branch=mozilla-central
     {'args': {'application': 'b2g',
               'platform': 'linux64',
               'branch': 'mozilla-central'},
-    'target': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.multi.linux-x86_64.tar.bz2',
-    'target_url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/b2g-29.0a1.multi.linux-x86_64.tar.bz2'
+    'filename': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.multi.linux-x86_64.tar.bz2',
+    'url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/b2g-29.0a1.multi.linux-x86_64.tar.bz2'
      },
     # -p mac64 --branch=mozilla-central
     {'args': {'application': 'b2g',
               'platform': 'mac64',
               'branch': 'mozilla-central'},
-    'target': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.multi.mac64.dmg',
-    'target_url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/b2g-29.0a1.multi.mac64.dmg'
+    'filename': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.multi.mac64.dmg',
+    'url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/b2g-29.0a1.multi.mac64.dmg'
      },
     # -p mac64 --branch=mozilla-central
     {'args': {'application': 'b2g',
               'platform': 'win32',
               'branch': 'mozilla-central'},
-    'target': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.multi.win32.zip',
-    'target_url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/b2g-29.0a1.multi.win32.zip'
+    'filename': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.multi.win32.zip',
+    'url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/b2g-29.0a1.multi.win32.zip'
      },
     # -p win32 --branch=mozilla-central -l en-US
     {'args': {'application': 'b2g',
               'platform': 'win32',
               'branch': 'mozilla-central',
               'locale': 'en-US'},
-    'target': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.en-US.win32.zip',
-    'target_url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/en-US/b2g-29.0a1.en-US.win32.zip'
+    'filename': '2014-01-12-04-02-02-mozilla-central-b2g-29.0a1.en-US.win32.zip',
+    'url': 'b2g/nightly/2014/01/2014-01-12-04-02-02-mozilla-central/en-US/b2g-29.0a1.en-US.win32.zip'
      },
     # -p win32 --branch=mozilla-central --date=2013-07-01
     {'args': {'application': 'b2g',
               'platform': 'win32',
               'branch': 'mozilla-central',
               'date': '2013-07-01'},
-    'target': '2013-07-01-04-02-02-mozilla-central-b2g-29.0a1.multi.win32.zip',
-    'target_url': 'b2g/nightly/2013/07/2013-07-01-04-02-02-mozilla-central/b2g-29.0a1.multi.win32.zip'
+    'filename': '2013-07-01-04-02-02-mozilla-central-b2g-29.0a1.multi.win32.zip',
+    'url': 'b2g/nightly/2013/07/2013-07-01-04-02-02-mozilla-central/b2g-29.0a1.multi.win32.zip'
      },
     # -p win32 --branch=mozilla-central --date=2013-07-01 --build-number=1
     {'args': {'application': 'b2g',
@@ -292,16 +292,16 @@ b2g_tests = [
               'branch': 'mozilla-central',
               'date': '2013-07-01',
               'build_number': 1},
-    'target': '2013-07-01-04-01-01-mozilla-central-b2g-29.0a1.multi.win32.zip',
-    'target_url': 'b2g/nightly/2013/07/2013-07-01-04-01-01-mozilla-central/b2g-29.0a1.multi.win32.zip'
+    'filename': '2013-07-01-04-01-01-mozilla-central-b2g-29.0a1.multi.win32.zip',
+    'url': 'b2g/nightly/2013/07/2013-07-01-04-01-01-mozilla-central/b2g-29.0a1.multi.win32.zip'
      },
     # -p linux --branch=mozilla-central --build-id=20130702031336
     {'args': {'application': 'b2g',
               'platform': 'linux',
               'branch': 'mozilla-central',
               'build_id': '20130702031336'},
-    'target': '2013-07-02-03-13-36-mozilla-central-b2g-29.0a1.multi.linux-i686.tar.bz2',
-    'target_url': 'b2g/nightly/2013/07/2013-07-02-03-13-36-mozilla-central/b2g-29.0a1.multi.linux-i686.tar.bz2'
+    'filename': '2013-07-02-03-13-36-mozilla-central-b2g-29.0a1.multi.linux-i686.tar.bz2',
+    'url': 'b2g/nightly/2013/07/2013-07-02-03-13-36-mozilla-central/b2g-29.0a1.multi.linux-i686.tar.bz2'
      }
 ]
 
@@ -310,29 +310,29 @@ fennec_tests = [
     {'args': {'application': 'fennec',
               'platform': 'android-api-9',
               'branch': 'mozilla-central'},
-    'target': '2015-06-12-03-02-05-mozilla-central-fennec-41.0a1.multi.android-arm.apk',
-    'target_url': 'mobile/nightly/2015/06/2015-06-12-03-02-05-mozilla-central-android-api-9/fennec-41.0a1.multi.android-arm.apk'
+    'filename': '2015-06-12-03-02-05-mozilla-central-fennec-41.0a1.multi.android-arm.apk',
+    'url': 'mobile/nightly/2015/06/2015-06-12-03-02-05-mozilla-central-android-api-9/fennec-41.0a1.multi.android-arm.apk'
     },
     # -p android-api-11 --branch=mozilla-central
     {'args': {'application': 'fennec',
               'platform': 'android-api-11',
               'branch': 'mozilla-central'},
-    'target': '2015-06-11-03-02-08-mozilla-central-fennec-41.0a1.multi.android-arm.apk',
-    'target_url': 'mobile/nightly/2015/06/2015-06-11-03-02-08-mozilla-central-android-api-11/fennec-41.0a1.multi.android-arm.apk'
+    'filename': '2015-06-11-03-02-08-mozilla-central-fennec-41.0a1.multi.android-arm.apk',
+    'url': 'mobile/nightly/2015/06/2015-06-11-03-02-08-mozilla-central-android-api-11/fennec-41.0a1.multi.android-arm.apk'
     },
     # -p android-x86 --branch=mozilla-central
     {'args': {'application': 'fennec',
               'platform': 'android-x86',
               'branch': 'mozilla-central'},
-    'target': '2015-06-12-03-02-05-mozilla-central-fennec-41.0a1.multi.android-i386.apk',
-    'target_url': 'mobile/nightly/2015/06/2015-06-12-03-02-05-mozilla-central-android-x86/fennec-41.0a1.multi.android-i386.apk'
+    'filename': '2015-06-12-03-02-05-mozilla-central-fennec-41.0a1.multi.android-i386.apk',
+    'url': 'mobile/nightly/2015/06/2015-06-12-03-02-05-mozilla-central-android-x86/fennec-41.0a1.multi.android-i386.apk'
      },
     # -p android-api-11 --branch=mozilla-aurora
     {'args': {'application': 'fennec',
               'platform': 'android-api-11',
               'branch': 'mozilla-aurora'},
-    'target': '2015-06-12-00-40-06-mozilla-aurora-fennec-40.0a2.multi.android-arm.apk',
-    'target_url': 'mobile/nightly/2015/06/2015-06-12-00-40-06-mozilla-aurora-android-api-11/fennec-40.0a2.multi.android-arm.apk'
+    'filename': '2015-06-12-00-40-06-mozilla-aurora-fennec-40.0a2.multi.android-arm.apk',
+    'url': 'mobile/nightly/2015/06/2015-06-12-00-40-06-mozilla-aurora-android-api-11/fennec-40.0a2.multi.android-arm.apk'
     },
 ]
 
@@ -346,14 +346,15 @@ class TestDailyScraper(mhttpd.MozHttpdBaseTest):
         """Testing various download scenarios for DailyScraper"""
 
         for entry in tests:
-            scraper = DailyScraper(destination=self.temp_dir, base_url=self.wdir,
-                                   version=None, log_level='ERROR',
+            scraper = DailyScraper(destination=self.temp_dir,
+                                   base_url=self.wdir,
+                                   log_level='ERROR',
                                    **entry['args'])
 
-            expected_target = os.path.join(self.temp_dir, entry['target'])
-            self.assertEqual(scraper.target, expected_target)
-            self.assertEqual(urllib.unquote(scraper.final_url),
-                             urljoin(self.wdir, entry['target_url']))
+            expected_target = os.path.join(self.temp_dir, entry['filename'])
+            self.assertEqual(scraper.filename, expected_target)
+            self.assertEqual(urllib.unquote(scraper.url),
+                             urljoin(self.wdir, entry['url']))
 
 
 if __name__ == '__main__':

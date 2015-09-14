@@ -5,10 +5,7 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-import tempfile
 import unittest
-
-import mozfile
 
 from mozdownload import DirectScraper
 import mozdownload.errors as errors
@@ -24,11 +21,9 @@ class TestDirectScraper(mhttpd.MozHttpdBaseTest):
         test_url = urljoin(self.wdir, filename)
         scraper = DirectScraper(url=test_url,
                                 destination=self.temp_dir,
-                                version=None,
                                 log_level='ERROR')
         self.assertEqual(scraper.url, test_url)
-        self.assertEqual(scraper.final_url, test_url)
-        self.assertEqual(scraper.target,
+        self.assertEqual(scraper.filename,
                          os.path.join(self.temp_dir, filename))
 
         for attr in ['binary', 'binary_regex', 'path', 'path_regex']:
@@ -36,7 +31,7 @@ class TestDirectScraper(mhttpd.MozHttpdBaseTest):
 
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
-                                                    scraper.target)))
+                                                    scraper.filename)))
 
 
 if __name__ == '__main__':
