@@ -1,3 +1,8 @@
+1.18.1 / 2015-10-21
+===================
+
+ * Workaround for downloading files via ftp-origin-scl3.mozilla.org (#329)
+
 1.18 / 2015-09-14
 =================
 
