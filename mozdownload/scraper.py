@@ -31,7 +31,7 @@ APPLICATIONS_MULTI_LOCALE = ('b2g', 'fennec')
 APPLICATIONS_TO_FTP_DIRECTORY = {'fennec': 'mobile'}
 
 # Base URL for the path to all builds
-BASE_URL = 'https://archive.mozilla.org/pub/mozilla.org'
+BASE_URL = 'http://ftp-origin-scl3.mozilla.org/pub'
 
 # Chunk size when downloading a file
 CHUNK_SIZE = 16 * 1024
