@@ -1,3 +1,8 @@
+1.19 / 2015-10-23
+=================
+
+ * Fix parser and scraper to handle new S3 based archive.mozilla.org (#329)
+
 1.18.1 / 2015-10-21
 ===================
 
