@@ -48,7 +48,16 @@ class DirectoryParser(HTMLParser):
 
         for attr in attrs:
             if attr[0] == 'href':
-                self.active_url = attr[1]
+                # Links look like: /pub/firefox/nightly/2015/
+                # We have to trim the fragment down to the last item. Also to ensure we
+                # always get it, we remove a possible final slash first
+                has_final_slash = attr[1][-1] == '/'
+                self.active_url = attr[1].rstrip('/').split('/')[-1]
+
+                # Add back slash in case of sub folders
+                if has_final_slash:
+                    self.active_url = '%s/' % self.active_url
+
                 return
 
     def handle_endtag(self, tag):

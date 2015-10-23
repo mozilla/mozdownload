@@ -31,7 +31,7 @@ APPLICATIONS_MULTI_LOCALE = ('b2g', 'fennec')
 APPLICATIONS_TO_FTP_DIRECTORY = {'fennec': 'mobile'}
 
 # Base URL for the path to all builds
-BASE_URL = 'http://ftp-origin-scl3.mozilla.org/pub'
+BASE_URL = 'https://archive.mozilla.org/pub/mozilla.org/'
 
 # Chunk size when downloading a file
 CHUNK_SIZE = 16 * 1024
@@ -101,8 +101,10 @@ class Scraper(object):
 
         # build the base URL
         self.application = application
-        self.base_url = urljoin(base_url, APPLICATIONS_TO_FTP_DIRECTORY.get(
-            self.application, self.application))
+        self.base_url = '%s/' % urljoin(
+            base_url,
+            APPLICATIONS_TO_FTP_DIRECTORY.get(self.application, self.application)
+        )
 
         if extension:
             self.extension = extension
@@ -198,13 +200,13 @@ class Scraper(object):
 
     @property
     def path(self):
-        """Return the path to the build"""
+        """Return the path to the build folder"""
 
         return urljoin(self.base_url, self.path_regex)
 
     @property
     def path_regex(self):
-        """Return the regex for the path to the build"""
+        """Return the regex for the path to the build folder"""
 
         raise errors.NotImplementedError(sys._getframe(0).f_code.co_name)
 
@@ -423,16 +425,16 @@ class DailyScraper(Scraper):
         finally:
             r.close()
 
-    def is_build_dir(self, dir):
+    def is_build_dir(self, folder_name):
         """Return whether or not the given dir contains a build."""
 
         # Cannot move up to base scraper due to parser.entries call in
         # get_build_info_for_date (see below)
-        url = urljoin(self.base_url, self.monthly_build_list_regex, dir)
 
+        url = '%s/' % urljoin(self.base_url, self.monthly_build_list_regex, folder_name)
         if self.application in APPLICATIONS_MULTI_LOCALE \
                 and self.locale != 'multi':
-            url = urljoin(url, self.locale)
+            url = '%s/' % urljoin(url, self.locale)
 
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
@@ -462,6 +464,7 @@ class DailyScraper(Scraper):
             'PLATFORM': '' if self.application not in (
                         'fennec') else '-' + self.platform
         }
+
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
 
@@ -534,20 +537,20 @@ class DailyScraper(Scraper):
         """Return the regex for the folder containing builds of a month."""
 
         # Regex for possible builds for the given date
-        return r'nightly/%(YEAR)s/%(MONTH)s' % {
+        return r'nightly/%(YEAR)s/%(MONTH)s/' % {
             'YEAR': self.date.year,
             'MONTH': str(self.date.month).zfill(2)}
 
     @property
     def path_regex(self):
-        """Return the regex for the path"""
+        """Return the regex for the path to the build folder"""
 
         try:
-            path = urljoin(self.monthly_build_list_regex,
-                           self.builds[self.build_index])
+            path = '%s/' % urljoin(self.monthly_build_list_regex,
+                                   self.builds[self.build_index])
             if self.application in APPLICATIONS_MULTI_LOCALE \
                     and self.locale != 'multi':
-                path = urljoin(path, self.locale)
+                path = '%s/' % urljoin(path, self.locale)
             return path
         except:
             folder = urljoin(self.base_url, self.monthly_build_list_regex)
@@ -607,9 +610,9 @@ class ReleaseScraper(Scraper):
 
     @property
     def path_regex(self):
-        """Return the regex for the path"""
+        """Return the regex for the path to the build folder"""
 
-        regex = r'releases/%(VERSION)s/%(PLATFORM)s/%(LOCALE)s'
+        regex = r'releases/%(VERSION)s/%(PLATFORM)s/%(LOCALE)s/'
         return regex % {'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
                         'VERSION': self.version}
@@ -683,9 +686,9 @@ class ReleaseCandidateScraper(ReleaseScraper):
 
     @property
     def path_regex(self):
-        """Return the regex for the path"""
+        """Return the regex for the path to the build folder"""
 
-        regex = r'%(PREFIX)s%(BUILD)s/%(PLATFORM)s/%(LOCALE)s'
+        regex = r'%(PREFIX)s%(BUILD)s/%(PLATFORM)s/%(LOCALE)s/'
         return regex % {'PREFIX': self.candidate_build_list_regex,
                         'BUILD': self.builds[self.build_index],
                         'LOCALE': self.locale,
@@ -807,7 +810,7 @@ class TinderboxScraper(Scraper):
     def build_list_regex(self):
         """Return the regex for the folder which contains the list of builds"""
 
-        regex = 'tinderbox-builds/%(BRANCH)s-%(PLATFORM)s%(L10N)s%(DEBUG)s'
+        regex = 'tinderbox-builds/%(BRANCH)s-%(PLATFORM)s%(L10N)s%(DEBUG)s/'
 
         return regex % {
             'BRANCH': self.branch,
@@ -842,16 +845,16 @@ class TinderboxScraper(Scraper):
 
         return platform
 
-    def is_build_dir(self, dir):
+    def is_build_dir(self, folder_name):
         """Return whether or not the given dir contains a build."""
 
         # Cannot move up to base scraper due to parser.entries call in
         # get_build_info_for_index (see below)
-        url = urljoin(self.base_url, self.build_list_regex, dir)
+        url = '%s/' % urljoin(self.base_url, self.build_list_regex, folder_name)
 
         if self.application in APPLICATIONS_MULTI_LOCALE \
                 and self.locale != 'multi':
-            url = urljoin(url, self.locale)
+            url = '%s/' % urljoin(url, self.locale)
 
         parser = DirectoryParser(url, authentication=self.authentication,
                                  timeout=self.timeout_network)
@@ -905,12 +908,12 @@ class TinderboxScraper(Scraper):
 
     @property
     def path_regex(self):
-        """Return the regex for the path"""
+        """Return the regex for the path to the build folder"""
 
         if self.locale_build:
             return self.build_list_regex
 
-        return urljoin(self.build_list_regex, self.builds[self.build_index])
+        return '%s/' % urljoin(self.build_list_regex, self.builds[self.build_index])
 
     @property
     def platform_regex(self):
@@ -973,7 +976,7 @@ class TryScraper(Scraper):
     def build_list_regex(self):
         """Return the regex for the folder which contains the list of builds"""
 
-        return 'try-builds'
+        return 'try-builds/'
 
     def detect_platform(self):
         """Detect the current platform"""
@@ -1007,9 +1010,9 @@ class TryScraper(Scraper):
 
     @property
     def path_regex(self):
-        """Return the regex for the path"""
+        """Return the regex for the path to the build folder"""
 
-        build_dir = 'try-%(PLATFORM)s%(DEBUG)s' % {
+        build_dir = 'try-%(PLATFORM)s%(DEBUG)s/' % {
             'PLATFORM': self.platform_regex,
             'DEBUG': '-debug' if self.debug_build else ''}
         return urljoin(self.build_list_regex,

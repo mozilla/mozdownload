@@ -10,7 +10,11 @@ import hashlib
 def urljoin(*fragments):
     """Concatenates multi part strings into urls"""
 
-    return '/'.join(fragments)
+    # Strip possible already existent final slashes of fragments except for the last one
+    parts = [fragment.rstrip('/') for fragment in fragments[:len(fragments) - 1]]
+    parts.append(fragments[-1])
+
+    return '/'.join(parts)
 
 
 def create_md5(path):

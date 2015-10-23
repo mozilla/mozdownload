@@ -7,6 +7,7 @@
 import unittest
 
 from mozdownload import ReleaseCandidateScraper
+
 import mozhttpd_base_test as mhttpd
 
 

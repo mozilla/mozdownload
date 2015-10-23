@@ -10,6 +10,7 @@ import urllib
 
 from mozdownload import ReleaseCandidateScraper
 from mozdownload.utils import urljoin
+
 import mozhttpd_base_test as mhttpd
 
 
