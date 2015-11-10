@@ -84,15 +84,17 @@ class Scraper(object):
 
         self.platform = platform or self.detect_platform()
 
-        if (username, password) == (None, None):
-            self.authentication = None
-        else:
-            self.authentication = (username, password)
+        self.session = requests.Session()
+        if (username, password) != (None, None):
+            self.session.auth = (username, password)
 
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
         self.is_stub_installer = is_stub_installer
         self.timeout_download = timeout
+        # this is the timeout used in requests.get. Unlike "auth",
+        # it does not work if we attach it on the session, so we handle
+        # it independently.
         self.timeout_network = 60.
 
         logging.basicConfig(format=' %(levelname)s | %(message)s')
@@ -139,6 +141,11 @@ class Scraper(object):
                     else:
                         raise
 
+    def _create_directory_parser(self, url):
+        return DirectoryParser(url,
+                               session=self.session,
+                               timeout=self.timeout_network)
+
     @property
     def binary(self):
         """Return the name of the build"""
@@ -149,9 +156,7 @@ class Scraper(object):
             attempt += 1
             try:
                 # Retrieve all entries from the remote virtual folder
-                parser = DirectoryParser(self.path,
-                                         authentication=self.authentication,
-                                         timeout=self.timeout_network)
+                parser = self._create_directory_parser(self.path)
                 if not parser.entries:
                     raise errors.NotFoundError('No entries found', self.path)
 
@@ -288,8 +293,7 @@ class Scraper(object):
                 start_time = datetime.now()
 
                 # Enable streaming mode so we can download content in chunks
-                r = requests.get(self.url, stream=True,
-                                 auth=self.authentication)
+                r = self.session.get(self.url, stream=True)
                 r.raise_for_status()
 
                 content_length = r.headers.get('Content-length')
@@ -404,8 +408,7 @@ class DailyScraper(Scraper):
                           (self.branch, self.platform))
 
         self.logger.info('Retrieving the build status file from %s' % url)
-        parser = DirectoryParser(url, authentication=self.authentication,
-                                 timeout=self.timeout_network)
+        parser = self._create_directory_parser(url)
         parser.entries = parser.filter(r'.*%s\.txt' % self.platform_regex)
         if not parser.entries:
             message = 'Status file for %s build cannot be found' % \
@@ -416,8 +419,7 @@ class DailyScraper(Scraper):
         # and convert to a date
         headers = {'Cache-Control': 'max-age=0'}
 
-        r = requests.get(url + parser.entries[-1],
-                         auth=self.authentication, headers=headers)
+        r = self.session.get(url + parser.entries[-1], headers=headers)
         try:
             r.raise_for_status()
 
@@ -436,8 +438,7 @@ class DailyScraper(Scraper):
                 and self.locale != 'multi':
             url = '%s/' % urljoin(url, self.locale)
 
-        parser = DirectoryParser(url, authentication=self.authentication,
-                                 timeout=self.timeout_network)
+        parser = self._create_directory_parser(url)
 
         pattern = re.compile(self.binary_regex, re.IGNORECASE)
         for entry in parser.entries:
@@ -454,8 +455,7 @@ class DailyScraper(Scraper):
         has_time = date and date.time()
 
         self.logger.info('Retrieving list of builds from %s' % url)
-        parser = DirectoryParser(url, authentication=self.authentication,
-                                 timeout=self.timeout_network)
+        parser = self._create_directory_parser(url)
         regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s%(PLATFORM)s$' % {
             'DATE': date.strftime('%Y-%m-%d'),
             'BRANCH': self.branch,
@@ -655,8 +655,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
         url = urljoin(self.base_url, self.candidate_build_list_regex)
         self.logger.info('Retrieving list of candidate builds from %s' % url)
 
-        parser = DirectoryParser(url, authentication=self.authentication,
-                                 timeout=self.timeout_network)
+        parser = self._create_directory_parser(url)
         if not parser.entries:
             message = 'Folder for specific candidate builds at %s has not' \
                 'been found' % url
@@ -856,8 +855,7 @@ class TinderboxScraper(Scraper):
                 and self.locale != 'multi':
             url = '%s/' % urljoin(url, self.locale)
 
-        parser = DirectoryParser(url, authentication=self.authentication,
-                                 timeout=self.timeout_network)
+        parser = self._create_directory_parser(url)
 
         pattern = re.compile(self.binary_regex, re.IGNORECASE)
         for entry in parser.entries:
@@ -873,8 +871,7 @@ class TinderboxScraper(Scraper):
         url = urljoin(self.base_url, self.build_list_regex)
 
         self.logger.info('Retrieving list of builds from %s' % url)
-        parser = DirectoryParser(url, authentication=self.authentication,
-                                 timeout=self.timeout_network)
+        parser = self._create_directory_parser(url)
         parser.entries = parser.filter(r'^\d+$')
 
         if self.timestamp:
@@ -995,8 +992,7 @@ class TryScraper(Scraper):
         url = urljoin(self.base_url, self.build_list_regex)
 
         self.logger.info('Retrieving list of builds from %s' % url)
-        parser = DirectoryParser(url, authentication=self.authentication,
-                                 timeout=self.timeout_network)
+        parser = self._create_directory_parser(url)
         parser.entries = parser.filter('.*-%s$' % self.changeset)
 
         if not parser.entries:
