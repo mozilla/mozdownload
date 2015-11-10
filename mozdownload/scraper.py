@@ -6,9 +6,9 @@ from datetime import datetime
 import logging
 import os
 import re
+import redo
 import requests
 import sys
-import time
 import urllib
 from urlparse import urlparse
 
@@ -100,6 +100,7 @@ class Scraper(object):
         logging.basicConfig(format=' %(levelname)s | %(message)s')
         self.logger = logging.getLogger(self.__module__)
         self.logger.setLevel(log_level)
+        logging.getLogger('redo').setLevel(logging.INFO)
 
         # build the base URL
         self.application = application
@@ -118,28 +119,27 @@ class Scraper(object):
             else:
                 self.extension = DEFAULT_FILE_EXTENSIONS[self.platform]
 
-        attempt = 0
-        while True:
-            attempt += 1
-            try:
-                self.get_build_info()
-                break
-            except (errors.NotFoundError, requests.exceptions.RequestException), e:
-                if self.retry_attempts > 0:
-                    # Log only if multiple attempts are requested
-                    self.logger.warning("Build not found: '%s'" % e.message)
-                    self.logger.info('Will retry in %s seconds...' %
-                                     (self.retry_delay))
-                    time.sleep(self.retry_delay)
-                    self.logger.info("Retrying... (attempt %s)" % attempt)
+        self._retry_check_404(self.get_build_info)
 
-                if attempt >= self.retry_attempts:
-                    if hasattr(e, 'response') and \
-                            e.response.status_code == 404:
-                        message = "Specified build has not been found"
-                        raise errors.NotFoundError(message, e.response.url)
-                    else:
-                        raise
+    def _retry(self, func, **retry_kwargs):
+        retry_kwargs.setdefault('jitter', 0)
+        retry_kwargs.setdefault('sleeptime', self.retry_delay)
+        retry_kwargs.setdefault('attempts', self.retry_attempts + 1)
+        return redo.retry(func, **retry_kwargs)
+
+    def _retry_check_404(self, func,
+                         err_message="Specified build has not been found",
+                         **retry_kwargs):
+        retry_kwargs.setdefault('retry_exceptions',
+                                (errors.NotFoundError,
+                                 requests.exceptions.RequestException))
+        try:
+            self._retry(func, **retry_kwargs)
+        except requests.exceptions.RequestException as exc:
+            if exc.response.status_code == 404:
+                raise errors.NotFoundError(err_message, exc.response.url)
+            else:
+                raise
 
     def _create_directory_parser(self, url):
         return DirectoryParser(url,
@@ -150,44 +150,26 @@ class Scraper(object):
     def binary(self):
         """Return the name of the build"""
 
-        attempt = 0
+        def _get_binary():
+            # Retrieve all entries from the remote virtual folder
+            parser = self._create_directory_parser(self.path)
+            if not parser.entries:
+                raise errors.NotFoundError('No entries found', self.path)
 
-        while self._binary is None:
-            attempt += 1
-            try:
-                # Retrieve all entries from the remote virtual folder
-                parser = self._create_directory_parser(self.path)
-                if not parser.entries:
-                    raise errors.NotFoundError('No entries found', self.path)
+            # Download the first matched directory entry
+            pattern = re.compile(self.binary_regex, re.IGNORECASE)
+            for entry in parser.entries:
+                try:
+                    self._binary = pattern.match(entry).group()
+                    break
+                except:
+                    # No match, continue with next entry
+                    continue
+            else:
+                raise errors.NotFoundError("Binary not found in folder",
+                                           self.path)
 
-                # Download the first matched directory entry
-                pattern = re.compile(self.binary_regex, re.IGNORECASE)
-                for entry in parser.entries:
-                    try:
-                        self._binary = pattern.match(entry).group()
-                        break
-                    except:
-                        # No match, continue with next entry
-                        continue
-                else:
-                    raise errors.NotFoundError("Binary not found in folder",
-                                               self.path)
-            except (errors.NotFoundError, requests.exceptions.RequestException), e:
-                if self.retry_attempts > 0:
-                    # Log only if multiple attempts are requested
-                    self.logger.warning("Build not found: '%s'" % e.message)
-                    self.logger.info('Will retry in %s seconds...' %
-                                     (self.retry_delay))
-                    time.sleep(self.retry_delay)
-                    self.logger.info("Retrying... (attempt %s)" % attempt)
-
-                if attempt >= self.retry_attempts:
-                    if hasattr(e, 'response') and \
-                            e.response.status_code == 404:
-                        message = "Specified build has not been found"
-                        raise errors.NotFoundError(message, self.path)
-                    else:
-                        raise
+        self._retry_check_404(_get_binary)
 
         return self._binary
 
@@ -269,8 +251,6 @@ class Scraper(object):
                 return (td.microseconds +
                         (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10 ** 6
 
-        attempt = 0
-
         # Don't re-download the file
         if os.path.isfile(os.path.abspath(self.filename)):
             self.logger.info("File has already been downloaded: %s" %
@@ -287,8 +267,7 @@ class Scraper(object):
 
         tmp_file = self.filename + ".part"
 
-        while True:
-            attempt += 1
+        def _download():
             try:
                 start_time = datetime.now()
 
@@ -326,20 +305,15 @@ class Scraper(object):
 
                 if log_level <= logging.INFO and content_length:
                     pbar.finish()
-                break
-            except (requests.exceptions.RequestException, errors.TimeoutError), e:
-                if tmp_file and os.path.isfile(tmp_file):
+            except:
+                if os.path.isfile(tmp_file):
                     os.remove(tmp_file)
-                if self.retry_attempts > 0:
-                    # Log only if multiple attempts are requested
-                    self.logger.warning('Download failed: "%s"' % str(e))
-                    self.logger.info('Will retry in %s seconds...' %
-                                     (self.retry_delay))
-                    time.sleep(self.retry_delay)
-                    self.logger.info("Retrying... (attempt %s)" % attempt)
-                if attempt >= self.retry_attempts:
-                    raise
-                time.sleep(self.retry_delay)
+                raise
+
+        self._retry(
+            _download,
+            retry_exceptions=(requests.exceptions.RequestException,
+                              errors.TimeoutError))
 
         os.rename(tmp_file, self.filename)
 
