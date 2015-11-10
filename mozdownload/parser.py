@@ -11,10 +11,26 @@ import urllib
 
 
 class DirectoryParser(HTMLParser):
-    """Class to parse directory listings"""
+    """
+    Class to parse directory listings.
 
-    def __init__(self, url, session=None, timeout=None):
-        self.session = session or requests.Session()
+    :param url: url of the directory on the web server.
+    :param session: a requests Session instance used to fetch the directory
+                    content. If None, a new session will be created.
+    :param authentication: a tuple (username, password) to authenticate against
+                           the web server, or None for no authentication. Note
+                           that it will only be used if the given *session* is
+                           None.
+    :param timeout: timeout in seconds used when fetching the directory
+                    content.
+    """
+
+    def __init__(self, url, session=None, authentication=None, timeout=None):
+        if session is None:
+            session = requests.Session()
+            if authentication:
+                session.auth = authentication
+        self.session = session
         self.timeout = timeout
 
         self.active_url = None
