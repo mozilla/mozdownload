@@ -26,10 +26,9 @@ class DirectoryParser(HTMLParser):
     """
 
     def __init__(self, url, session=None, authentication=None, timeout=None):
-        if session is None:
+        if not session:
             session = requests.Session()
-            if authentication:
-                session.auth = authentication
+            session.auth = authentication
         self.session = session
         self.timeout = timeout
 
