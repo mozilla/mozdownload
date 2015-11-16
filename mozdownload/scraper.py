@@ -310,10 +310,9 @@ class Scraper(object):
                     os.remove(tmp_file)
                 raise
 
-        self._retry(
-            _download,
-            retry_exceptions=(requests.exceptions.RequestException,
-                              errors.TimeoutError))
+        self._retry(_download,
+                    retry_exceptions=(requests.exceptions.RequestException,
+                                      errors.TimeoutError))
 
         os.rename(tmp_file, self.filename)
 
