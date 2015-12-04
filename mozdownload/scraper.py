@@ -135,7 +135,7 @@ class Scraper(object):
                                  requests.exceptions.RequestException))
         try:
             self._retry(func, **retry_kwargs)
-        except requests.exceptions.RequestException as exc:
+        except requests.exceptions.HTTPError as exc:
             if exc.response.status_code == 404:
                 raise errors.NotFoundError(err_message, exc.response.url)
             else:
