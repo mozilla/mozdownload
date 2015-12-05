@@ -139,7 +139,7 @@ class Scraper(object):
             # NB: The requests Response object overrides the bool operator to
             #     return False if there was an HTTP exception, so we need to
             #     test for None explicitly.
-            if exc.response != None and exc.response.status_code == 404:
+            if exc.response is not None and exc.response.status_code == 404:
                 raise errors.NotFoundError(err_message, exc.response.url)
             else:
                 raise
