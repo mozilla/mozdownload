@@ -98,7 +98,7 @@ class TestBaseScraper(mhttpd.MozHttpdBaseTest):
 
     def test_optional_authentication(self):
         """testing with optional basic authentication"""
-        optional_auth_url = 'https://ci.mozilla.org/'
+        optional_auth_url = 'https://webqa-ci.mozilla.com/'
 
         # requires optional authentication with no data specified
         scraper = mozdownload.DirectScraper(destination=self.temp_dir,
@@ -106,7 +106,7 @@ class TestBaseScraper(mhttpd.MozHttpdBaseTest):
                                             log_level='ERROR')
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
-                                                    'ci.mozilla.org')))
+                                                    'webqa-ci.mozilla.com')))
 
     def test_destination(self):
         """Test for various destination scenarios"""
