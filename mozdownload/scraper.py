@@ -135,11 +135,8 @@ class Scraper(object):
                                  requests.exceptions.RequestException))
         try:
             self._retry(func, **retry_kwargs)
-        except requests.exceptions.RequestException as exc:
-            # NB: The requests Response object overrides the bool operator to
-            #     return False if there was an HTTP exception, so we need to
-            #     test for None explicitly.
-            if exc.response is not None and exc.response.status_code == 404:
+        except requests.exceptions.HTTPError as exc:
+            if exc.response.status_code == 404:
                 raise errors.NotFoundError(err_message, exc.response.url)
             else:
                 raise
