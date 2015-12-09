@@ -3,13 +3,23 @@ import os
 import mozfile
 from mozprocess import processhandler
 
+from mozdownload import Scraper
 import mozhttpd_base_test as mhttpd
 
+
+default_latest_binary_names = {
+    'linux': 'firefox-latest-en-US.linux.tar.bz2',
+    'linux64': 'firefox-latest.en-US.linux64.tar.bz2',
+    'mac': 'firefox-latest.en-US.mac.dmg',
+    'mac64': 'firefox-latest.en-US.mac64.dmg',
+    'win32': 'firefox-latest.en-US.win.exe',
+    'win64': 'firefox-latest.en-US.win.exe'
+}
 
 tests = [
     # ReleaseScraper
     {'options': ['-v', 'latest'],
-     'fname': 'firefox-latest.en-US.linux64.tar.bz2'},
+     'fname': default_latest_binary_names[Scraper.detect_platform()]},
 
     # ReleaseCandidateScraper
     {'options': ['-t', 'candidate', '-v', '21.0', '-p', 'win32'],
