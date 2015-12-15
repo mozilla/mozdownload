@@ -229,7 +229,8 @@ class Scraper(object):
 
         raise errors.NotImplementedError(sys._getframe(0).f_code.co_name)
 
-    def detect_platform(self):
+    @staticmethod
+    def detect_platform():
         """Detect the current platform"""
 
         # For Mac and Linux 32bit we do not need the bits appended
