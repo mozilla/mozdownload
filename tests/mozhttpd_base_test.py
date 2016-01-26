@@ -23,7 +23,8 @@ class MozHttpdBaseTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        logging.basicConfig(format=' %(levelname)s | %(message)s', level=logging.ERROR)
+        logging.basicConfig(format=' %(levelname)s | %(message)s',
+                            level=logging.CRITICAL)
         cls.logger = logging.getLogger()
 
         cls.httpd = server.WebTestHttpd(port=8080,

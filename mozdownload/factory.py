@@ -31,7 +31,10 @@ class FactoryScraper(scraper.Scraper):
         Scraper:
         :param application: The name of the application to download.
         :param base_url: The base url to be used
+        :param branch: Name of the branch.
         :param build_number: Number of the build (for candidate, daily, and tinderbox builds).
+        :param date: Date of the build.
+        :param debug_build: Download a debug build.
         :param destination: Directory or file name to download the file to.
         :param extension: File extension of the build (e.g. ".zip").
         :param is_stub_installer: Stub installer (Only applicable to Windows builds).
@@ -42,26 +45,23 @@ class FactoryScraper(scraper.Scraper):
         :param retry_attempts: Number of times the download will be attempted
             in the event of a failure
         :param retry_delay: Amount of time (in seconds) to wait between retry attempts.
+        :param revision: Revision of the build to download.
         :param timeout: Amount of time (in seconds) until a download times out.
-        :param url: URL to download.
         :param username: Username for basic HTTP authentication.
         :param version: Version of the application to be downloaded.
 
         Daily builds:
-        :param branch: Name of the branch.
         :param build_id: ID of the build to download.
-        :param date: Date of the build.
 
-        Tinderbox:
-        :param debug_build: Download a debug build.
-
-        Try:
-        :param changeset: Changeset of the try build to download.
-
+        Direct scraper:
+        :param url: URL to download.
         """
         # Check for valid arguments
         if scraper_type in ('candidate', 'release') and not kwargs.get('version'):
             raise ValueError('The version to download has to be specified.')
+
+        if scraper_type in ('try') and not kwargs.get('revision'):
+            raise ValueError('The revision of the build has to be specified.')
 
         if kwargs.get('application') == 'b2g' and scraper_type in ('candidate', 'release'):
             error_msg = '%s build is not yet supported for B2G' % scraper_type
@@ -88,6 +88,9 @@ class FactoryScraper(scraper.Scraper):
                             }
 
         scraper_type_keywords = {
+            'direct': {
+                'url': kwargs.get('url'),
+            },
             'release': {
                 'version': kwargs.get('version'),
             },
@@ -100,19 +103,18 @@ class FactoryScraper(scraper.Scraper):
                 'build_number': kwargs.get('build_number'),
                 'build_id': kwargs.get('build_id'),
                 'date': kwargs.get('date'),
-            },
-            'direct': {
-                'url': kwargs.get('url'),
+                'revision': kwargs.get('revision'),
             },
             'tinderbox': {
                 'branch': kwargs.get('branch', 'mozilla-central'),
                 'build_number': kwargs.get('build_number'),
                 'date': kwargs.get('date'),
                 'debug_build': kwargs.get('debug_build', False),
+                'revision': kwargs.get('revision'),
             },
             'try': {
-                'changeset': kwargs.get('changeset'),
                 'debug_build': kwargs.get('debug_build', False),
+                'revision': kwargs.get('revision'),
             },
         }
 

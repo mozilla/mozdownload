@@ -22,6 +22,7 @@ import requests
 from mozdownload import errors
 from mozdownload.parser import DirectoryParser
 from mozdownload.timezones import PacificTimezone
+from mozdownload import treeherder
 from mozdownload.utils import urljoin
 
 
@@ -95,6 +96,7 @@ class Scraper(object):
                 self.locale = 'en-US'
         else:
             self.locale = locale
+        self.locale_build = self.locale not in ('en-US', 'multi')
 
         self.platform = platform or self.detect_platform()
 
@@ -331,17 +333,45 @@ class DailyScraper(Scraper):
     """Class to download a daily build from the Mozilla server."""
 
     def __init__(self, branch='mozilla-central', build_id=None, date=None,
-                 build_number=None, *args, **kwargs):
+                 build_number=None, revision=None, *args, **kwargs):
         """Create an instance of the daily scraper."""
         self.branch = branch
         self.build_id = build_id
         self.date = date
         self.build_number = build_number
+        self.revision = revision
 
         Scraper.__init__(self, *args, **kwargs)
 
     def get_build_info(self):
         """Define additional build information."""
+        # Retrieve build by revision
+        if self.revision:
+            th = treeherder.Treeherder(
+                APPLICATIONS_TO_FTP_DIRECTORY.get(self.application, self.application),
+                self.branch,
+                self.platform)
+            builds = th.query_builds_by_revision(
+                self.revision,
+                job_type_name='L10n Nightly' if self.locale_build else 'Nightly')
+
+            if not builds:
+                raise errors.NotFoundError('No builds have been found for revision', self.revision)
+
+            # Extract the build folders which are prefixed with the buildid
+            self.builds = [build.rsplit('/', 2)[1] for build in builds]
+            self.show_matching_builds(self.builds)
+
+            # There is only a single build per revision and platform
+            self.build_index = 0
+            self.logger.info('Selected build: %s' % self.builds[self.build_index])
+
+            # Retrieve the date from the build folder which is always 19 chars long
+            self.date = datetime.strptime(self.builds[self.build_index][:19],
+                                          '%Y-%m-%d-%H-%M-%S')
+
+            return
+
         # Internally we access builds via index
         if self.build_number is not None:
             self.build_index = int(self.build_number) - 1
@@ -362,7 +392,7 @@ class DailyScraper(Scraper):
             except:
                 raise ValueError('%s is not a valid date' % self.date)
         else:
-            # If no build id nor date have been specified the latest available
+            # If no querying option has been specified the latest available
             # build of the given branch has to be identified. We also have to
             # retrieve the date of the build via its build id.
             self.date = self.get_latest_build_date()
@@ -431,7 +461,7 @@ class DailyScraper(Scraper):
             'DATE': date.strftime('%Y-%m-%d'),
             'BRANCH': self.branch,
             # ensure to select the correct subfolder for localized builds
-            'L10N': '' if self.locale in ('en-US', 'multi') else '(-l10n)?',
+            'L10N': '(-l10n)?' if self.locale_build else '',
             'PLATFORM': '' if self.application not in (
                         'fennec') else '-' + self.platform
         }
@@ -706,12 +736,13 @@ class TinderboxScraper(Scraper):
     """Class to download a tinderbox build of a Gecko based application."""
 
     def __init__(self, branch='mozilla-central', build_number=None, date=None,
-                 debug_build=False, *args, **kwargs):
+                 debug_build=False, revision=None, *args, **kwargs):
         """Create instance of a tinderbox scraper."""
         self.branch = branch
         self.build_number = build_number
         self.debug_build = debug_build
         self.date = date
+        self.revision = revision
 
         self.timestamp = None
         # Currently any time in RelEng is based on the Pacific time zone.
@@ -721,6 +752,28 @@ class TinderboxScraper(Scraper):
 
     def get_build_info(self):
         """Define additional build information."""
+        # Retrieve build by revision
+        if self.revision:
+            th = treeherder.Treeherder(
+                APPLICATIONS_TO_FTP_DIRECTORY.get(self.application, self.application),
+                self.branch,
+                self.platform)
+            builds = th.query_builds_by_revision(
+                self.revision, job_type_name='Build', debug_build=self.debug_build)
+
+            if not builds:
+                raise errors.NotFoundError('No builds have been found for revision', self.revision)
+
+            # Extract timestamp from each build folder
+            self.builds = [build.rsplit('/', 2)[1] for build in builds]
+            self.show_matching_builds(self.builds)
+
+            # There is only a single build
+            self.build_index = 0
+            self.logger.info('Selected build: %s' % self.builds[self.build_index])
+
+            return
+
         # Internally we access builds via index
         if self.build_number is not None:
             self.build_index = int(self.build_number) - 1
@@ -739,7 +792,6 @@ class TinderboxScraper(Scraper):
                 except:
                     raise ValueError('%s is not a valid date' % self.date)
 
-        self.locale_build = self.locale != 'en-US'
         # For localized builds we do not have to retrieve the list of builds
         # because only the last build is available
         if not self.locale_build:
@@ -890,16 +942,33 @@ class TinderboxScraper(Scraper):
 class TryScraper(Scraper):
     """Class to download a try build of a Gecko based application."""
 
-    def __init__(self, changeset=None, debug_build=False, *args, **kwargs):
+    def __init__(self, revision=None, debug_build=False, *args, **kwargs):
         """Create an instance of a try scraper."""
         self.debug_build = debug_build
-        self.changeset = changeset
+        self.revision = revision
 
         Scraper.__init__(self, *args, **kwargs)
 
     def get_build_info(self):
         """Define additional build information."""
-        self.builds, self.build_index = self.get_build_info_for_index()
+        # Retrieve build by revision
+        th = treeherder.Treeherder(
+            APPLICATIONS_TO_FTP_DIRECTORY.get(self.application, self.application),
+            'try',
+            self.platform)
+        builds = th.query_builds_by_revision(
+            self.revision, job_type_name='Build', debug_build=self.debug_build)
+
+        if not builds:
+            raise errors.NotFoundError('No builds have been found for revision', self.revision)
+
+        # Extract username and revision from build folders
+        self.builds = [build.rsplit('/', 3)[1] for build in builds]
+        self.show_matching_builds(self.builds)
+
+        # There is only a single build per revision and platform
+        self.build_index = 0
+        self.logger.info('Selected build: %s' % self.builds[self.build_index])
 
     @property
     def binary_regex(self):
@@ -922,8 +991,8 @@ class TryScraper(Scraper):
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary."""
-        return '%(CHANGESET)s%(DEBUG)s-%(NAME)s' % {
-            'CHANGESET': self.changeset,
+        return '%(REVISION)s%(DEBUG)s-%(NAME)s' % {
+            'REVISION': self.revision,
             'DEBUG': '-debug' if self.debug_build else '',
             'NAME': binary}
 
@@ -943,23 +1012,6 @@ class TryScraper(Scraper):
             platform = "%s%d" % (mozinfo.os, mozinfo.bits)
 
         return platform
-
-    def get_build_info_for_index(self, build_index=None):
-        """Get additional information for the build at the given index."""
-        url = urljoin(self.base_url, self.build_list_regex)
-
-        self.logger.info('Retrieving list of builds from %s' % url)
-        parser = self._create_directory_parser(url)
-        parser.entries = parser.filter('.*-%s$' % self.changeset)
-
-        if not parser.entries:
-            raise errors.NotFoundError('No builds have been found', url)
-
-        self.show_matching_builds(parser.entries)
-
-        self.logger.info('Selected build: %s' % parser.entries[0])
-
-        return (parser.entries, 0)
 
     @property
     def path_regex(self):

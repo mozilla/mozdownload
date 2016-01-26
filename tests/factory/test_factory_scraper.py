@@ -2,6 +2,7 @@ import copy
 import os
 
 import mozfile
+from mock import patch
 
 from mozdownload import FactoryScraper
 import mozhttpd_base_test as mhttpd
@@ -48,9 +49,10 @@ tests = [
     # TryScraper
     {
         'scraper_type': 'try',
+        'builds': ['/firefox/try-builds/test-user@mozilla.com-8fcac92cfcad/try-foobar/'],
         'fname': '8fcac92cfcad-firefox-38.0a1.en-US.mac.dmg',
         'kwargs': {
-            'changeset': '8fcac92cfcad',
+            'revision': '8fcac92cfcad',
             'platform': 'mac64',
         },
     },
@@ -60,7 +62,8 @@ tests = [
 class TestFactoryCorrectScraper(mhttpd.MozHttpdBaseTest):
     """Test mozdownload for the factory scraper."""
 
-    def test_factory(self):
+    @patch('mozdownload.treeherder.Treeherder.query_builds_by_revision')
+    def test_factory(self, query_builds_by_revision):
         """Testing various download scenarios for the factory."""
 
         base_kwargs = {
@@ -70,6 +73,9 @@ class TestFactoryCorrectScraper(mhttpd.MozHttpdBaseTest):
         }
 
         for test in tests:
+            if test.get('builds'):
+                query_builds_by_revision.return_value = test['builds']
+
             kwargs = copy.deepcopy(base_kwargs)
             kwargs.update(test.get('kwargs'))
 

@@ -1,0 +1,31 @@
+{
+    "meta": {
+        "count": 1,
+        "filter_params": {
+            "revision__in": "29258f59e5456a1a518ccce6b473b50c1173477e,29258f59e545"
+        },
+        "repository": "mozilla-central",
+        "revision": "29258f59e5456a1a518ccce6b473b50c1173477e"
+    },
+    "results": [
+        {
+            "repository_id": 1,
+            "revision_hash": "5ff08a77c8e87ea46112fefc4333373f5a7a9bf9",
+            "revision_count": 121,
+            "author": "foo@bar.org",
+            "comments": "example",
+            "revisions_uri": "/api/project/mozilla-central/resultset/5319/revisions/",
+            "push_timestamp": 1451991550,
+            "revisions": [
+                {
+                    "repository_id": 1,
+                    "author": "foo@bar.org",
+                    "comments": "example",
+                    "revision": "29258f59e545"
+                }
+            ],
+            "id": 5319,
+            "revision": "29258f59e545"
+        }
+    ]
+}

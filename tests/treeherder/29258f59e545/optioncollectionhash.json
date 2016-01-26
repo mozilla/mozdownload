@@ -1,0 +1,18 @@
+[
+    {
+        "option_collection_hash": "102210fe594ee9b33d82058545b1ed14f4c8206e",
+        "options": [
+            {
+                "name": "opt"
+            }
+        ]
+    },
+    {
+        "option_collection_hash": "32faaecac742100f7753f0c1d0aa0add01b4046b",
+        "options": [
+            {
+                "name": "debug"
+            }
+        ]
+    }
+]

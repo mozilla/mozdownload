@@ -11,13 +11,14 @@ from __future__ import absolute_import, unicode_literals
 import argparse
 import logging
 import os
+import sys
 
 from mozdownload import factory, scraper
 
 __version__ = '1.19'
 
 
-def parse_arguments():
+def parse_arguments(argv):
     """Setup argument parser for command line arguments."""
     parser = argparse.ArgumentParser(description=__doc__.format(__version__))
     parser.add_argument('--application', '-a',
@@ -36,6 +37,10 @@ def parse_arguments():
                         type=int,
                         metavar='BUILD_NUMBER',
                         help='Number of the build (for candidate, daily, and tinderbox builds)')
+    parser.add_argument('--debug-build',
+                        dest='debug_build',
+                        action='store_true',
+                        help='Download a debug build (for tinderbox, and try builds)')
     parser.add_argument('--destination', '-d',
                         dest='destination',
                         default=os.getcwd(),
@@ -80,6 +85,9 @@ def parse_arguments():
                         metavar='RETRY_DELAY',
                         help='Amount of time (in seconds) to wait between retry '
                              'attempts, default: %(default)s')
+    parser.add_argument('--revision',
+                        dest='revision',
+                        help='Revision of the build (for daily, tinderbox, and try builds)')
     parser.add_argument('--stub',
                         dest='is_stub_installer',
                         action='store_true',
@@ -128,28 +136,15 @@ def parse_arguments():
                        metavar='DATE',
                        help='Date of the build, default: latest build')
 
-    # Group for tinderbox builds
-    group = parser.add_argument_group('Tinderbox builds', 'Extra options for tinderbox builds.')
-    group.add_argument('--debug-build',
-                       dest='debug_build',
-                       action='store_true',
-                       help='Download a debug build.')
-
-    # Group for try builds
-    group = parser.add_argument_group('Try builds', 'Extra options for try builds.')
-    group.add_argument('--changeset',
-                       dest='changeset',
-                       help='Changeset of the try build to download')
-
-    return vars(parser.parse_args())
+    return vars(parser.parse_args(argv))
 
 
-def cli():
+def cli(argv=None):
     """CLI entry point for mozdownload."""
-    kwargs = parse_arguments()
+    kwargs = parse_arguments(argv or sys.argv)
 
     log_level = kwargs.pop('log_level')
-    logging.basicConfig(format=' %(levelname)s | %(message)s', level=log_level)
+    logging.basicConfig(format='%(levelname)s | %(message)s', level=log_level)
     logger = logging.getLogger(__name__)
 
     # Configure logging levels for sub modules. Set to ERROR by default.
@@ -158,6 +153,7 @@ def cli():
         sub_log_level = logging.DEBUG
     logging.getLogger('redo').setLevel(sub_log_level)
     logging.getLogger('requests').setLevel(sub_log_level)
+    logging.getLogger('thclient').setLevel(sub_log_level)
 
     try:
         scraper_type = kwargs.pop('scraper_type')
@@ -173,4 +169,4 @@ def cli():
 
 
 if __name__ == '__main__':
-    cli()
+    sys.exit(cli())

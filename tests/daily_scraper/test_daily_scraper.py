@@ -31,16 +31,16 @@ firefox_tests = [
     # -p win64 --branch=mozilla-central
     {'args': {'platform': 'win64',
               'branch': 'mozilla-central'},
-    'filename': '2015-02-05-03-02-05-mozilla-central-firefox-38.0a1.en-US.win64.installer.exe',
-    'url': 'firefox/nightly/2015/02/2015-02-05-03-02-05-mozilla-central/firefox-38.0a1.en-US.win64.installer.exe'
+    'filename': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win64.installer.exe',
+    'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64.installer.exe'
    },
 
-    # -p win64 --branch=mozilla-central --date 2013-10-01 (old filename format)
+    # -p win64 --branch=mozilla-central --date 2013-09-30 (old filename format)
     {'args': {'platform': 'win64',
               'branch': 'mozilla-central',
-              'date': '2013-10-01'},
-    'filename': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win64-x86_64.installer.exe',
-    'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64-x86_64.installer.exe'
+              'date': '2013-09-30'},
+    'filename': '2013-09-30-03-02-04-mozilla-central-firefox-27.0a1.en-US.win64-x86_64.installer.exe',
+    'url': 'firefox/nightly/2013/09/2013-09-30-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64-x86_64.installer.exe'
    },
 
     # -p linux --branch=mozilla-central
@@ -133,6 +133,12 @@ firefox_tests = [
               'branch': 'ux'},
     'filename': '2013-10-01-03-02-04-ux-firefox-27.0a1.en-US.win32.installer.exe',
     'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-ux/firefox-27.0a1.en-US.win32.installer.exe'
+    },
+
+    # --revision 1dbe350b57b1
+    {'args': {'platform': 'win32'},
+    'filename': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
+    'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'
     },
 ]
 

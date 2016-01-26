@@ -2,6 +2,7 @@ import copy
 import os
 
 import mozfile
+from mock import patch
 
 from mozdownload import FactoryScraper
 from mozdownload.utils import urljoin
@@ -21,7 +22,7 @@ tests = [
             'branch': 'mozilla-central',
             'build_id': '20131001030204',
             'build_number': '1',
-            'changeset': '8fcac92cfcad',
+            'revision': '8fcac92cfcad',
             'date': '2013-10-01',
             'debug_build': True,
             'url': 'http://localhost',
@@ -38,7 +39,7 @@ tests = [
 
             'branch': 'mozilla-central',
             'build_id': '20131001030204',
-            'changeset': '8fcac92cfcad',
+            'revision': '8fcac92cfcad',
             'date': '2013-10-01',
             'debug_build': True,
             'url': 'http://localhost',
@@ -52,7 +53,6 @@ tests = [
         'kwargs': {
             'platform': 'win32',
 
-            'changeset': '8fcac92cfcad',
             'debug_build': True,
             'url': 'http://localhost',
             'version': '23.0.1',
@@ -66,7 +66,6 @@ tests = [
         'kwargs': {
             'platform': 'win32',
 
-            'changeset': '8fcac92cfcad',
             'url': 'http://localhost',
             'version': '23.0.1',
         },
@@ -75,9 +74,10 @@ tests = [
     # TryScraper
     {
         'scraper_type': 'try',
+        'builds': ['/firefox/try-builds/test-user@mozilla.com-8fcac92cfcad/try-foobar/'],
         'fname': '8fcac92cfcad-firefox-38.0a1.en-US.mac.dmg',
         'kwargs': {
-            'changeset': '8fcac92cfcad',
+            'revision': '8fcac92cfcad',
             'platform': 'mac64',
 
             'build_id': '20131001030204',
@@ -107,10 +107,19 @@ class TestFactoryMissingMandatoryOptions(mhttpd.MozHttpdBaseTest):
                           base_url=self.wdir,
                           logger=self.logger)
 
+    def test_try_without_revision(self):
+        """Test that missing mandatory options for try builds raise an exception"""
+        self.assertRaises(ValueError, FactoryScraper,
+                          scraper_type='try',
+                          destination=self.temp_dir,
+                          base_url=self.wdir,
+                          logger=self.logger)
+
 
 class TestFactoryUnusedOptions(mhttpd.MozHttpdBaseTest):
 
-    def test_unknown_options(self):
+    @patch('mozdownload.treeherder.Treeherder.query_builds_by_revision')
+    def test_unknown_options(self, query_builds_by_revision):
         """Test that unknown optional options do not break the given scraper."""
 
         base_kwargs = {
@@ -120,6 +129,9 @@ class TestFactoryUnusedOptions(mhttpd.MozHttpdBaseTest):
         }
 
         for test in tests:
+            if test.get('builds'):
+                query_builds_by_revision.return_value = test['builds']
+
             kwargs = copy.deepcopy(base_kwargs)
             kwargs.update(test.get('kwargs'))
 
@@ -143,7 +155,7 @@ class TestFactoryUnusedOptions(mhttpd.MozHttpdBaseTest):
                                  platform='win32',
                                  branch='mozilla-central',
                                  build_id='20131001030204',
-                                 changeset='8fcac92cfcad',
+                                 revision='8fcac92cfcad',
                                  date='2013-10-01',
                                  debug_build=True,
                                  version='23.0.1',
