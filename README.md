@@ -34,10 +34,21 @@ command line options.
 
 ### Examples
 
-Download the latest official Firefox release for your platform (as long as there is no
-64bit build of Firefox for Windows64, users on that platform have to download the 32bit build):
+Download the latest official Firefox release for your platform:
 
     mozdownload --version=latest
+
+Download the latest official Firefox beta release for your platform:
+
+    mozdownload --version=latest-beta
+
+Download the latest official Firefox esr release for your platform:
+
+    mozdownload --version=latest-esr
+
+Download the latest Firefox release candidate for your platform:
+
+    mozdownload --type candidate --version=latest
 
 Download the latest Firefox Aurora build for Windows (32bit):
 
