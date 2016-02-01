@@ -65,8 +65,9 @@ class DirectoryParser(HTMLParser):
                 # Links look like: /pub/firefox/nightly/2015/
                 # We have to trim the fragment down to the last item. Also to ensure we
                 # always get it, we remove a possible final slash first
-                has_final_slash = attr[1][-1] == '/'
-                self.active_url = attr[1].rstrip('/').split('/')[-1]
+                url = urllib.unquote(attr[1])
+                has_final_slash = url[-1] == '/'
+                self.active_url = url.rstrip('/').split('/')[-1]
 
                 # Add back slash in case of sub folders
                 if has_final_slash:
@@ -83,5 +84,5 @@ class DirectoryParser(HTMLParser):
         if not self.active_url:
             return
 
-        if self.active_url in (data, urllib.quote(data)):
+        if self.active_url == data:
             self.entries.append(self.active_url.strip('/'))

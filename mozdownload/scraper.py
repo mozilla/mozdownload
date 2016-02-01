@@ -190,7 +190,8 @@ class Scraper(object):
     def url(self):
         """Return the URL of the build"""
 
-        return urljoin(self.path, self.binary)
+        return urllib.quote(urljoin(self.path, self.binary),
+                            safe='%/:=&?~#+!$,;\'@()*[]|')
 
     @property
     def path(self):
@@ -268,8 +269,7 @@ class Scraper(object):
         if not os.path.isdir(directory):
             os.makedirs(directory)
 
-        self.logger.info('Downloading from: %s' %
-                         (urllib.unquote(self.url)))
+        self.logger.info('Downloading from: %s' % self.url)
         self.logger.info('Saving as: %s' % self.filename)
 
         tmp_file = self.filename + ".part"
@@ -577,16 +577,19 @@ class ReleaseScraper(Scraper):
     def binary_regex(self):
         """Return the regex for the binary"""
 
-        regex = {'linux': r'^%(APP)s-.*\.%(EXT)s$',
-                 'linux64': r'^%(APP)s-.*\.%(EXT)s$',
-                 'mac': r'^%(APP)s.*\.%(EXT)s$',
-                 'mac64': r'^%(APP)s.*\.%(EXT)s$',
-                 'win32': r'^%(APP)s.*%(STUB)s.*\.%(EXT)s$',
-                 'win64': r'^%(APP)s.*%(STUB)s.*\.%(EXT)s$'}
+        regex = {'linux': r'^%(APP)s-%(VERSION)s\.%(EXT)s$',
+                 'linux64': r'^%(APP)s-%(VERSION)s\.%(EXT)s$',
+                 'mac': r'^%(APP)s %(VERSION)s\.%(EXT)s$',
+                 'mac64': r'^%(APP)s %(VERSION)s\.%(EXT)s$',
+                 'win32': r'^%(APP)s Setup %(STUB)s%(VERSION)s\.%(EXT)s$',
+                 'win64': r'^%(APP)s Setup %(STUB)s%(VERSION)s\.%(EXT)s$',
+                 }
         return regex[self.platform] % {
             'APP': self.application,
             'EXT': self.extension,
-            'STUB': 'Stub' if self.is_stub_installer else ''}
+            'STUB': 'Stub ' if self.is_stub_installer else '',
+            'VERSION': self.version,
+        }
 
     @property
     def path_regex(self):
