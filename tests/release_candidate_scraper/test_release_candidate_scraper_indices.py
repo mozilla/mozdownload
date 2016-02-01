@@ -12,31 +12,34 @@ import mozhttpd_base_test as mhttpd
 
 
 test_params = [
-    # -a firefox -p win32 -v 21.0 --build-number=1
-    {'args': {'build_number': '1',
+    # -a firefox -p win32 -v 23.0.1 --build-number=1
+    {'args': {'application': 'firefox',
+              'build_number': '1',
               'platform': 'win32',
-              'version': '21.0'},
-    'build_index': 0,
-    'build_number': '1',
-    'builds': ['build1']
+              'version': '23.0.1'},
+     'build_index': 0,
+     'build_number': '1',
+     'builds': ['build1']
      },
-    # -a firefox -p mac -v 21.0 --build-number=3
-    {'args': {'build_number': '3',
+    # -a firefox -p mac -v 23.0.1 --build-number=3
+    {'args': {'application': 'firefox',
+              'build_number': '3',
               'platform': 'mac',
-              'version': '21.0'},
-    'build_index': 0,
-    'build_number': '3',
-    'builds': ['build3']
+              'version': '23.0.1'},
+     'build_index': 0,
+     'build_number': '3',
+     'builds': ['build3']
      },
-    # -a firefox -p linux -v 21.0 --build-number=2
+    # -a firefox -p linux -v 23.0.1 --build-number=2
     # Invalid build-number
-    {'args': {'build_number': '2',
+    {'args': {'application': 'firefox',
+              'build_number': '2',
               'platform': 'linux',
-              'version': '21.0'},
-    # build_index = len(parser.entries) - 1
-    'build_index': 1,
-    'build_number': '2',
-    'builds': ['build1', 'build3']
+              'version': '23.0.1'},
+     # build_index = len(parser.entries) - 1
+     'build_index': 1,
+     'build_number': '2',
+     'builds': ['build1', 'build3']
      }
 ]
 

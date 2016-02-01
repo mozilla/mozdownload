@@ -11,19 +11,19 @@ tests = [
     # ReleaseScraper
     {
         'scraper_type': 'release',
-        'fname': 'firefox-latest.en-US.linux64.tar.bz2',
+        'fname': 'firefox-23.0.1.en-US.linux64.tar.bz2',
         'kwargs': {
-            'version': 'latest',
+            'version': '23.0.1',
         }
     },
 
     # ReleaseCandidateScraper
     {
         'scraper_type': 'candidate',
-        'fname': 'firefox-21.0-build3.en-US.win32.exe',
+        'fname': 'firefox-23.0.1-build3.en-US.win32.exe',
         'kwargs': {
             'platform': 'win32',
-            'version': '21.0',
+            'version': '23.0.1',
         },
     },
 

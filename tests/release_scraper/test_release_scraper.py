@@ -15,115 +15,89 @@ import mozhttpd_base_test as mhttpd
 
 
 firefox_tests = [
-    # -p win32 -v latest
+    # -p win32 -v 23.0.1
     {'args': {'platform': 'win32',
-              'version': 'latest'},
-     'filename': 'firefox-latest.en-US.win32.exe',
-     'url': 'firefox/releases/latest/win32/en-US/Firefox Setup 23.0.1.exe'},
-    # -a firefox -p win32 -v latest
+              'version': '23.0.1'},
+     'filename': 'firefox-23.0.1.en-US.win32.exe',
+     'url': 'firefox/releases/23.0.1/win32/en-US/Firefox Setup 23.0.1.exe'},
+    # -a firefox -p win32 -v 23.0.1
     {'args': {'application': 'firefox',
               'platform': 'win32',
-              'version': 'latest'},
-     'filename': 'firefox-latest.en-US.win32.exe',
-     'url': 'firefox/releases/latest/win32/en-US/Firefox Setup 23.0.1.exe'},
-    # -a firefox -p win64 -v latest
+              'version': '23.0.1'},
+     'filename': 'firefox-23.0.1.en-US.win32.exe',
+     'url': 'firefox/releases/23.0.1/win32/en-US/Firefox Setup 23.0.1.exe'},
+    # -a firefox -p win64 -v 23.0.1
     {'args': {'application': 'firefox',
               'platform': 'win64',
-              'version': 'latest'},
-     'filename': 'firefox-latest.en-US.win64.exe',
-     'url': 'firefox/releases/latest/win64/en-US/Firefox Setup 37.0.exe'},
-    # -a firefox -p linux -v latest
+              'version': '23.0.1'},
+     'filename': 'firefox-23.0.1.en-US.win64.exe',
+     'url': 'firefox/releases/23.0.1/win64/en-US/Firefox Setup 23.0.1.exe'},
+    # -a firefox -p linux -v 23.0.1
     {'args': {'application': 'firefox',
               'platform': 'linux',
-              'version': 'latest'},
-     'filename': 'firefox-latest.en-US.linux.tar.bz2',
-     'url': 'firefox/releases/latest/linux-i686/en-US/firefox-23.0.1.en-US.linux.tar.bz2'},
-    # -a firefox -p linux64 -v latest
+              'version': '23.0.1'},
+     'filename': 'firefox-23.0.1.en-US.linux.tar.bz2',
+     'url': 'firefox/releases/23.0.1/linux-i686/en-US/firefox-23.0.1.tar.bz2'},
+    # -a firefox -p linux64 -v 23.0.1
     {'args': {'application': 'firefox',
               'platform': 'linux64',
-              'version': 'latest'},
-     'filename': 'firefox-latest.en-US.linux64.tar.bz2',
-     'url': 'firefox/releases/latest/linux-x86_64/en-US/firefox-23.0.1.en-US.linux.tar.bz2'},
-    # -a firefox -p mac -v latest
+              'version': '23.0.1'},
+     'filename': 'firefox-23.0.1.en-US.linux64.tar.bz2',
+     'url': 'firefox/releases/23.0.1/linux-x86_64/en-US/firefox-23.0.1.tar.bz2'},
+    # -a firefox -p mac -v 23.0.1
     {'args': {'application': 'firefox',
               'platform': 'mac',
-              'version': 'latest'},
-     'filename': 'firefox-latest.en-US.mac.dmg',
-     'url': 'firefox/releases/latest/mac/en-US/firefox-23.0.1.dmg'},
-    # -a firefox -p win32 -v latest -l de
+              'version': '23.0.1'},
+     'filename': 'firefox-23.0.1.en-US.mac.dmg',
+     'url': 'firefox/releases/23.0.1/mac/en-US/Firefox 23.0.1.dmg'},
+    # -a firefox -p win32 -v 23.0.1 -l de
     {'args': {'application': 'firefox',
               'locale': 'de',
               'platform': 'win32',
-              'version': 'latest'},
-     'filename': 'firefox-latest.de.win32.exe',
-     'url': 'firefox/releases/latest/win32/de/Firefox Setup 23.0.1.exe'},
-    # -a firefox -p win32 -v latest --stub
+              'version': '23.0.1'},
+     'filename': 'firefox-23.0.1.de.win32.exe',
+     'url': 'firefox/releases/23.0.1/win32/de/Firefox Setup 23.0.1.exe'},
+    # -a firefox -p win32 -v 23.0.1 --stub
     {'args': {'application': 'firefox',
               'platform': 'win32',
               'is_stub_installer': True,
-              'version': 'latest'},
-     'filename': 'firefox-latest.en-US.win32-stub.exe',
-     'url': 'firefox/releases/latest/win32/en-US/Firefox Setup Stub 23.0.1.exe'},
-    # -a firefox -p win32 -v 21.0
-    {'args': {'application': 'firefox',
-              'platform': 'win32',
-              'version': '21.0'},
-     'filename': 'firefox-21.0.en-US.win32.exe',
-     'url': 'firefox/releases/21.0/win32/en-US/Firefox Setup 21.0.exe'},
-    # -a firefox -p win32 -v 21.0 -l es-ES
-    {'args': {'application': 'firefox',
-              'locale': 'es-ES',
-              'platform': 'win32',
-              'version': '21.0'},
-     'filename': 'firefox-21.0.es-ES.win32.exe',
-     'url': 'firefox/releases/21.0/win32/es-ES/Firefox Setup 21.0.exe'}
+              'version': '23.0.1'},
+     'filename': 'firefox-23.0.1.en-US.win32-stub.exe',
+     'url': 'firefox/releases/23.0.1/win32/en-US/Firefox Setup Stub 23.0.1.exe'},
 ]
 
 thunderbird_tests = [
-    # -a thunderbird -p win32 -v latest
+    # -a thunderbird -p win32 -v 17.0
     {'args': {'application': 'thunderbird',
               'platform': 'win32',
-              'version': 'latest'},
-     'filename': 'thunderbird-latest.en-US.win32.exe',
-     'url': 'thunderbird/releases/latest/win32/en-US/Thunderbird Setup 17.0.1.exe'},
-    # -a thunderbird -p linux -v latest
+              'version': '17.0'},
+     'filename': 'thunderbird-17.0.en-US.win32.exe',
+     'url': 'thunderbird/releases/17.0/win32/en-US/Thunderbird Setup 17.0.exe'},
+    # -a thunderbird -p linux -v 17.0
     {'args': {'application': 'thunderbird',
               'platform': 'linux',
-              'version': 'latest'},
-     'filename': 'thunderbird-latest.en-US.linux.tar.bz2',
-     'url': 'thunderbird/releases/latest/linux-i686/en-US/thunderbird-17.0.en-US.linux.tar.bz2'},
-    # -a thunderbird -p linux64 -v latest
+              'version': '17.0'},
+     'filename': 'thunderbird-17.0.en-US.linux.tar.bz2',
+     'url': 'thunderbird/releases/17.0/linux-i686/en-US/thunderbird-17.0.tar.bz2'},
+    # -a thunderbird -p linux64 -v 17.0
     {'args': {'application': 'thunderbird',
               'platform': 'linux64',
-              'version': 'latest'},
-     'filename': 'thunderbird-latest.en-US.linux64.tar.bz2',
-     'url': 'thunderbird/releases/latest/linux-x86_64/en-US/thunderbird-17.0.en-US.linux.tar.bz2'},
-    # -a thunderbird -p mac -v latest
+              'version': '17.0'},
+     'filename': 'thunderbird-17.0.en-US.linux64.tar.bz2',
+     'url': 'thunderbird/releases/17.0/linux-x86_64/en-US/thunderbird-17.0.tar.bz2'},
+    # -a thunderbird -p mac -v 17.0
     {'args': {'application': 'thunderbird',
               'platform': 'mac',
-              'version': 'latest'},
-     'filename': 'thunderbird-latest.en-US.mac.dmg',
-     'url': 'thunderbird/releases/latest/mac/en-US/thunderbird-17.0.dmg'},
-    # -a thunderbird -p win32 -v latest -l de
+              'version': '17.0'},
+     'filename': 'thunderbird-17.0.en-US.mac.dmg',
+     'url': 'thunderbird/releases/17.0/mac/en-US/Thunderbird 17.0.dmg'},
+    # -a thunderbird -p win32 -v 17.0 -l de
     {'args': {'application': 'thunderbird',
               'locale': 'de',
               'platform': 'win32',
-              'version': 'latest'},
-     'filename': 'thunderbird-latest.de.win32.exe',
-     'url': 'thunderbird/releases/latest/win32/de/Thunderbird Setup 17.0.1.exe'},
-    # -a thunderbird -p win32 -v 16.0
-    {'args': {'application': 'thunderbird',
-              'platform': 'win32',
-              'version': '16.0'},
-     'filename': 'thunderbird-16.0.en-US.win32.exe',
-     'url': 'thunderbird/releases/16.0/win32/en-US/Thunderbird Setup 16.0.exe'},
-    # -a thunderbird -p win32 -v 16.0 -l es-ES
-    {'args': {'application': 'thunderbird',
-              'locale': 'es-ES',
-              'platform': 'win32',
-              'version': '16.0'},
-     'filename': 'thunderbird-16.0.es-ES.win32.exe',
-     'url': 'thunderbird/releases/16.0/win32/es-ES/Thunderbird Setup 16.0.exe'}
+              'version': '17.0'},
+     'filename': 'thunderbird-17.0.de.win32.exe',
+     'url': 'thunderbird/releases/17.0/win32/de/Thunderbird Setup 17.0.exe'},
 ]
 
 tests = firefox_tests + thunderbird_tests

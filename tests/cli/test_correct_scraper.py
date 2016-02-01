@@ -8,12 +8,12 @@ import mozhttpd_base_test as mhttpd
 
 tests = [
     # ReleaseScraper
-    {'options': ['-v', 'latest'],
-     'fname': 'firefox-latest.en-US.linux64.tar.bz2'},
+    {'options': ['-v', '23.0.1'],
+     'fname': 'firefox-23.0.1.en-US.linux64.tar.bz2'},
 
     # ReleaseCandidateScraper
-    {'options': ['-t', 'candidate', '-v', '21.0', '-p', 'win32'],
-     'fname': 'firefox-21.0-build3.en-US.win32.exe'},
+    {'options': ['-t', 'candidate', '-v', '23.0.1', '-p', 'win32'],
+     'fname': 'firefox-23.0.1-build3.en-US.win32.exe'},
 
     # DailyScraper
     {'options': ['-t', 'daily', '-p', 'win32'],

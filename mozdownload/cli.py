@@ -116,7 +116,8 @@ def cli():
                         dest='version',
                         metavar='VERSION',
                         help='Version of the application to be downloaded for release '
-                             'and candidate builds, i.e. "3.6"')
+                             'and candidate builds (special values: %s)' % ', '.join(
+                                scraper.RELEASE_AND_CANDIDATE_LATEST_VERSIONS.keys()))
 
     # Group for daily builds
     group = parser.add_argument_group('Daily builds', 'Extra options for daily builds.')

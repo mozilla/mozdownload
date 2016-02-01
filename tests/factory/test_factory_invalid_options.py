@@ -13,9 +13,9 @@ tests = [
     # ReleaseScraper
     {
         'scraper_type': 'release',
-        'fname': 'firefox-21.0.en-US.win32.exe',
+        'fname': 'firefox-23.0.1.en-US.win32.exe',
         'kwargs': {
-            'version': '21.0',
+            'version': '23.0.1',
             'platform': 'win32',
 
             'branch': 'mozilla-central',
@@ -31,10 +31,10 @@ tests = [
     # ReleaseCandidateScraper
     {
         'scraper_type': 'candidate',
-        'fname': 'firefox-21.0-build3.en-US.win32.exe',
+        'fname': 'firefox-23.0.1-build3.en-US.win32.exe',
         'kwargs': {
             'platform': 'win32',
-            'version': '21.0',
+            'version': '23.0.1',
 
             'branch': 'mozilla-central',
             'build_id': '20131001030204',
@@ -55,7 +55,7 @@ tests = [
             'changeset': '8fcac92cfcad',
             'debug_build': True,
             'url': 'http://localhost',
-            'version': '21.0',
+            'version': '23.0.1',
         },
     },
 
@@ -68,7 +68,7 @@ tests = [
 
             'changeset': '8fcac92cfcad',
             'url': 'http://localhost',
-            'version': '21.0',
+            'version': '23.0.1',
         },
     },
 
@@ -83,7 +83,7 @@ tests = [
             'build_id': '20131001030204',
             'build_number': '1',
             'url': 'http://localhost',
-            'version': '21.0',
+            'version': '23.0.1',
         },
     },
 ]
@@ -146,7 +146,7 @@ class TestFactoryUnusedOptions(mhttpd.MozHttpdBaseTest):
                                  changeset='8fcac92cfcad',
                                  date='2013-10-01',
                                  debug_build=True,
-                                 version='21.0',
+                                 version='23.0.1',
                                  )
 
         self.assertEqual(scraper.url, test_url)

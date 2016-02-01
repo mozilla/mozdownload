@@ -56,6 +56,13 @@ PLATFORM_FRAGMENTS = {'android-api-9': r'android-arm',
                       'win32': r'win32',
                       'win64': r'win64(-x86_64)?'}
 
+# Special versions for release and candidate builds
+RELEASE_AND_CANDIDATE_LATEST_VERSIONS = {
+    'latest': r'^\d+(\.\d+)+(-candidates)?$',
+    'latest-beta': r'^\d+(\.\d+)+b\d+(-candidates)?$',
+    'latest-esr': r'^\d+(\.\d+)+esr(-candidates)?$',
+}
+
 
 class Scraper(object):
     """Generic class to download an application from the Mozilla server"""
@@ -611,18 +618,37 @@ class ReleaseScraper(Scraper):
                            'STUB': '-stub' if self.is_stub_installer else '',
                            'EXT': self.extension}
 
+    def get_build_info(self):
+        self.version = self.query_versions(self.version)[0]
+
+    def query_versions(self, version=None):
+        """Check specified version and resolve special values"""
+        if version not in RELEASE_AND_CANDIDATE_LATEST_VERSIONS:
+            return [version]
+
+        url = urljoin(self.base_url, 'releases/')
+        parser = self._create_directory_parser(url)
+        if version:
+            versions = parser.filter(RELEASE_AND_CANDIDATE_LATEST_VERSIONS[version])
+            from distutils.version import LooseVersion
+            versions.sort(key=LooseVersion)
+            return [versions[-1]]
+        else:
+            return parser.entries
+
 
 class ReleaseCandidateScraper(ReleaseScraper):
     """Class to download a release candidate build from the Mozilla server"""
 
-    def __init__(self, version, build_number=None, *args, **kwargs):
-        self.version = version
+    def __init__(self, build_number=None, *args, **kwargs):
         self.build_number = build_number
 
-        Scraper.__init__(self, *args, **kwargs)
+        ReleaseScraper.__init__(self, *args, **kwargs)
 
     def get_build_info(self):
         """Defines additional build information"""
+
+        ReleaseScraper.get_build_info(self)
 
         # Internally we access builds via index
         url = urljoin(self.base_url, self.candidate_build_list_regex)
@@ -687,15 +713,6 @@ class ReleaseCandidateScraper(ReleaseScraper):
                            'PLATFORM': self.platform,
                            'STUB': '-stub' if self.is_stub_installer else '',
                            'EXT': self.extension}
-
-    def download(self):
-        """Download the specified file"""
-
-        try:
-            # Try to download the signed candidate build
-            Scraper.download(self)
-        except errors.NotFoundError, e:
-            self.logger.exception(str(e))
 
 
 class TinderboxScraper(Scraper):
