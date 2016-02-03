@@ -1,5 +1,5 @@
+.tox/
 *.egg-info
 *.pyc
 build
 dist
-tests/venv
