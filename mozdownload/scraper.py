@@ -2,24 +2,27 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from datetime import datetime
+"""Scrapers for various kinds of build types."""
+
+from __future__ import absolute_import, print_function, unicode_literals
+
 import logging
 import os
 import re
-import redo
-import requests
 import sys
 import urllib
+from datetime import datetime
 from urlparse import urlparse
 
 import mozinfo
 import progressbar as pb
+import redo
+import requests
 
-import errors
-
-from parser import DirectoryParser
-from timezones import PacificTimezone
-from utils import urljoin
+from mozdownload import errors
+from mozdownload.parser import DirectoryParser
+from mozdownload.timezones import PacificTimezone
+from mozdownload.utils import urljoin
 
 
 APPLICATIONS = ('b2g', 'firefox', 'fennec', 'thunderbird')
@@ -65,7 +68,7 @@ RELEASE_AND_CANDIDATE_LATEST_VERSIONS = {
 
 
 class Scraper(object):
-    """Generic class to download an application from the Mozilla server"""
+    """Generic class to download a Gecko based application."""
 
     def __init__(self, destination=None, platform=None,
                  application='firefox', locale=None, extension=None,
@@ -74,12 +77,12 @@ class Scraper(object):
                  is_stub_installer=False, timeout=None,
                  logger=None,
                  base_url=BASE_URL):
-
-        self.logger = logger or logging.getLogger(self.__module__)
-
+        """Create an instance of the generic scraper."""
         # Private properties for caching
         self._filename = None
         self._binary = None
+
+        self.logger = logger or logging.getLogger(self.__module__)
 
         self.destination = destination or os.getcwd()
 
@@ -152,8 +155,7 @@ class Scraper(object):
 
     @property
     def binary(self):
-        """Return the name of the build"""
-
+        """Return the name of the build."""
         def _get_binary():
             # Retrieve all entries from the remote virtual folder
             parser = self._create_directory_parser(self.path)
@@ -179,39 +181,33 @@ class Scraper(object):
 
     @property
     def binary_regex(self):
-        """Return the regex for the binary filename"""
-
+        """Return the regex for the binary filename."""
         raise errors.NotImplementedError(sys._getframe(0).f_code.co_name)
 
     @property
     def url(self):
-        """Return the URL of the build"""
-
+        """Return the URL of the build."""
         return urllib.quote(urljoin(self.path, self.binary),
                             safe='%/:=&?~#+!$,;\'@()*[]|')
 
     @property
     def path(self):
-        """Return the path to the build folder"""
-
+        """Return the path to the build folder."""
         return urljoin(self.base_url, self.path_regex)
 
     @property
     def path_regex(self):
-        """Return the regex for the path to the build folder"""
-
+        """Return the regex for the path to the build folder."""
         raise errors.NotImplementedError(sys._getframe(0).f_code.co_name)
 
     @property
     def platform_regex(self):
-        """Return the platform fragment of the URL"""
-
+        """Return the platform fragment of the URL."""
         return PLATFORM_FRAGMENTS[self.platform]
 
     @property
     def filename(self):
-        """Return the local filename of the build"""
-
+        """Return the local filename of the build."""
         if self._filename is None:
             if os.path.splitext(self.destination)[1]:
                 # If the filename has been given make use of it
@@ -226,17 +222,15 @@ class Scraper(object):
         return self._filename
 
     def get_build_info(self):
-        """Returns additional build information in subclasses if necessary"""
+        """Return additional build information in subclasses if necessary."""
         pass
 
     def build_filename(self, binary):
-        """Return the proposed filename with extension for the binary"""
-
+        """Return the proposed filename with extension for the binary."""
         raise errors.NotImplementedError(sys._getframe(0).f_code.co_name)
 
     def detect_platform(self):
-        """Detect the current platform"""
-
+        """Detect the current platform."""
         # For Mac and Linux 32bit we do not need the bits appended
         if mozinfo.os == 'mac' or \
                 (mozinfo.os == 'linux' and mozinfo.bits == 32):
@@ -245,8 +239,7 @@ class Scraper(object):
             return "%s%d" % (mozinfo.os, mozinfo.bits)
 
     def download(self):
-        """Download the specified file"""
-
+        """Download the specified file."""
         def total_seconds(td):
             # Keep backward compatibility with Python 2.6 which doesn't have
             # this method
@@ -323,7 +316,7 @@ class Scraper(object):
         return self.filename
 
     def show_matching_builds(self, builds):
-        """Output the matching builds"""
+        """Output the matching builds."""
         self.logger.info('Found %s build%s: %s' % (
             len(builds),
             len(builds) > 1 and 's' or '',
@@ -333,11 +326,11 @@ class Scraper(object):
 
 
 class DailyScraper(Scraper):
-    """Class to download a daily build from the Mozilla server"""
+    """Class to download a daily build from the Mozilla server."""
 
     def __init__(self, branch='mozilla-central', build_id=None, date=None,
                  build_number=None, *args, **kwargs):
-
+        """Create an instance of the daily scraper."""
         self.branch = branch
         self.build_id = build_id
         self.date = date
@@ -346,8 +339,7 @@ class DailyScraper(Scraper):
         Scraper.__init__(self, *args, **kwargs)
 
     def get_build_info(self):
-        """Defines additional build information"""
-
+        """Define additional build information."""
         # Internally we access builds via index
         if self.build_number is not None:
             self.build_index = int(self.build_number) - 1
@@ -377,7 +369,7 @@ class DailyScraper(Scraper):
             self.date, self.build_index)
 
     def get_latest_build_date(self):
-        """ Returns date of latest available nightly build."""
+        """Return date of latest available nightly build."""
         if self.application not in ('fennec'):
             url = urljoin(self.base_url, 'nightly', 'latest-%s/' % self.branch)
         else:
@@ -406,7 +398,6 @@ class DailyScraper(Scraper):
 
     def is_build_dir(self, folder_name):
         """Return whether or not the given dir contains a build."""
-
         # Cannot move up to base scraper due to parser.entries call in
         # get_build_info_for_date (see below)
 
@@ -428,6 +419,7 @@ class DailyScraper(Scraper):
         return False
 
     def get_build_info_for_date(self, date, build_index=None):
+        """Return the build information for a given date."""
         url = urljoin(self.base_url, self.monthly_build_list_regex)
         has_time = date and date.time()
 
@@ -473,8 +465,7 @@ class DailyScraper(Scraper):
 
     @property
     def binary_regex(self):
-        """Return the regex for the binary"""
-
+        """Return the regex for the binary."""
         regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.%(PLATFORM)s'
         regex_suffix = {'android-api-9': r'\.%(EXT)s$',
                         'android-api-11': r'\.%(EXT)s$',
@@ -494,8 +485,7 @@ class DailyScraper(Scraper):
                         'STUB': '-stub' if self.is_stub_installer else ''}
 
     def build_filename(self, binary):
-        """Return the proposed filename with extension for the binary"""
-
+        """Return the proposed filename with extension for the binary."""
         try:
             # Get exact timestamp of the build to build the local file name
             folder = self.builds[self.build_index]
@@ -512,7 +502,6 @@ class DailyScraper(Scraper):
     @property
     def monthly_build_list_regex(self):
         """Return the regex for the folder containing builds of a month."""
-
         # Regex for possible builds for the given date
         return r'nightly/%(YEAR)s/%(MONTH)s/' % {
             'YEAR': self.date.year,
@@ -520,8 +509,7 @@ class DailyScraper(Scraper):
 
     @property
     def path_regex(self):
-        """Return the regex for the path to the build folder"""
-
+        """Return the regex for the path to the build folder."""
         try:
             path = '%s/' % urljoin(self.monthly_build_list_regex,
                                    self.builds[self.build_index])
@@ -536,15 +524,17 @@ class DailyScraper(Scraper):
 
 
 class DirectScraper(Scraper):
-    """Class to download a file from a specified URL"""
+    """Class to download a file from a specified URL."""
 
     def __init__(self, url, *args, **kwargs):
+        """Create an instance of the direct scraper."""
         self._url = url
 
         Scraper.__init__(self, *args, **kwargs)
 
     @property
     def filename(self):
+        """File name of the downloaded file."""
         if os.path.splitext(self.destination)[1]:
             # If the filename has been given make use of it
             target_file = self.destination
@@ -559,21 +549,22 @@ class DirectScraper(Scraper):
 
     @property
     def url(self):
+        """Location of the file to be downloaded."""
         return self._url
 
 
 class ReleaseScraper(Scraper):
-    """Class to download a release build from the Mozilla server"""
+    """Class to download a release build of a Gecko based application."""
 
     def __init__(self, version, *args, **kwargs):
+        """Create instance of a release scraper."""
         self.version = version
 
         Scraper.__init__(self, *args, **kwargs)
 
     @property
     def binary_regex(self):
-        """Return the regex for the binary"""
-
+        """Return the regex for the binary."""
         regex = {'linux': r'^%(APP)s-%(VERSION)s\.%(EXT)s$',
                  'linux64': r'^%(APP)s-%(VERSION)s\.%(EXT)s$',
                  'mac': r'^%(APP)s %(VERSION)s\.%(EXT)s$',
@@ -590,8 +581,7 @@ class ReleaseScraper(Scraper):
 
     @property
     def path_regex(self):
-        """Return the regex for the path to the build folder"""
-
+        """Return the regex for the path to the build folder."""
         regex = r'releases/%(VERSION)s/%(PLATFORM)s/%(LOCALE)s/'
         return regex % {'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
@@ -599,16 +589,14 @@ class ReleaseScraper(Scraper):
 
     @property
     def platform_regex(self):
-        """Return the platform fragment of the URL"""
-
+        """Return the platform fragment of the URL."""
         if self.platform == 'win64':
             return self.platform
 
         return PLATFORM_FRAGMENTS[self.platform]
 
     def build_filename(self, binary):
-        """Return the proposed filename with extension for the binary"""
-
+        """Return the proposed filename with extension for the binary."""
         template = '%(APP)s-%(VERSION)s.%(LOCALE)s.%(PLATFORM)s%(STUB)s' \
                    '.%(EXT)s'
         return template % {'APP': self.application,
@@ -619,10 +607,11 @@ class ReleaseScraper(Scraper):
                            'EXT': self.extension}
 
     def get_build_info(self):
+        """Define additional build information."""
         self.version = self.query_versions(self.version)[0]
 
     def query_versions(self, version=None):
-        """Check specified version and resolve special values"""
+        """Check specified version and resolve special values."""
         if version not in RELEASE_AND_CANDIDATE_LATEST_VERSIONS:
             return [version]
 
@@ -638,16 +627,16 @@ class ReleaseScraper(Scraper):
 
 
 class ReleaseCandidateScraper(ReleaseScraper):
-    """Class to download a release candidate build from the Mozilla server"""
+    """Class to download a release candidate build of a Gecko based application."""
 
     def __init__(self, build_number=None, *args, **kwargs):
+        """Create an instance of a release candidate scraper."""
         self.build_number = build_number
 
         ReleaseScraper.__init__(self, *args, **kwargs)
 
     def get_build_info(self):
-        """Defines additional build information"""
-
+        """Define additional build information."""
         ReleaseScraper.get_build_info(self)
 
         # Internally we access builds via index
@@ -675,17 +664,14 @@ class ReleaseCandidateScraper(ReleaseScraper):
 
     @property
     def candidate_build_list_regex(self):
-        """Return the regex for the folder which contains the builds of
-           a candidate build."""
-
+        """Return the regex for the folder with the list of candidate builds."""
         # Regex for possible builds for the given date
         return r'candidates/%(VERSION)s-candidates/' % {
             'VERSION': self.version}
 
     @property
     def path_regex(self):
-        """Return the regex for the path to the build folder"""
-
+        """Return the regex for the path to the build folder."""
         regex = r'%(PREFIX)s%(BUILD)s/%(PLATFORM)s/%(LOCALE)s/'
         return regex % {'PREFIX': self.candidate_build_list_regex,
                         'BUILD': self.builds[self.build_index],
@@ -694,16 +680,14 @@ class ReleaseCandidateScraper(ReleaseScraper):
 
     @property
     def platform_regex(self):
-        """Return the platform fragment of the URL"""
-
+        """Return the platform fragment of the URL."""
         if self.platform == 'win64':
             return self.platform
 
         return PLATFORM_FRAGMENTS[self.platform]
 
     def build_filename(self, binary):
-        """Return the proposed filename with extension for the binary"""
-
+        """Return the proposed filename with extension for the binary."""
         template = '%(APP)s-%(VERSION)s-%(BUILD)s.%(LOCALE)s.' \
                    '%(PLATFORM)s%(STUB)s.%(EXT)s'
         return template % {'APP': self.application,
@@ -716,17 +700,11 @@ class ReleaseCandidateScraper(ReleaseScraper):
 
 
 class TinderboxScraper(Scraper):
-    """Class to download a tinderbox build from the Mozilla server.
-
-    There are two ways to specify a unique build:
-    1. If the date (%Y-%m-%d) is given and build_number is given where
-       the build_number is the index of the build on the date
-    2. If the build timestamp (UNIX) is given, and matches a specific build.
-    """
+    """Class to download a tinderbox build of a Gecko based application."""
 
     def __init__(self, branch='mozilla-central', build_number=None, date=None,
                  debug_build=False, *args, **kwargs):
-
+        """Create instance of a tinderbox scraper."""
         self.branch = branch
         self.build_number = build_number
         self.debug_build = debug_build
@@ -739,8 +717,7 @@ class TinderboxScraper(Scraper):
         Scraper.__init__(self, *args, **kwargs)
 
     def get_build_info(self):
-        "Defines additional build information"
-
+        """Define additional build information."""
         # Internally we access builds via index
         if self.build_number is not None:
             self.build_index = int(self.build_number) - 1
@@ -768,8 +745,7 @@ class TinderboxScraper(Scraper):
 
     @property
     def binary_regex(self):
-        """Return the regex for the binary"""
-
+        """Return the regex for the binary."""
         regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.%(PLATFORM)s'
         regex_suffix = {'linux': r'.*\.%(EXT)s$',
                         'linux64': r'.*\.%(EXT)s$',
@@ -787,8 +763,7 @@ class TinderboxScraper(Scraper):
                         'EXT': self.extension}
 
     def build_filename(self, binary):
-        """Return the proposed filename with extension for the binary"""
-
+        """Return the proposed filename with extension for the binary."""
         return '%(TIMESTAMP)s%(BRANCH)s%(DEBUG)s-%(NAME)s' % {
             'TIMESTAMP': self.timestamp + '-' if self.timestamp else '',
             'BRANCH': self.branch,
@@ -797,8 +772,7 @@ class TinderboxScraper(Scraper):
 
     @property
     def build_list_regex(self):
-        """Return the regex for the folder which contains the list of builds"""
-
+        """Return the regex for the folder which contains the list of builds."""
         regex = 'tinderbox-builds/%(BRANCH)s-%(PLATFORM)s%(L10N)s%(DEBUG)s/'
 
         return regex % {
@@ -808,10 +782,7 @@ class TinderboxScraper(Scraper):
             'DEBUG': '-debug' if self.debug_build else ''}
 
     def date_matches(self, timestamp):
-        """
-        Determines whether the timestamp date is equal to the argument date
-        """
-
+        """Determine whether the timestamp date is equal to the argument date."""
         if self.date is None:
             return False
 
@@ -822,8 +793,7 @@ class TinderboxScraper(Scraper):
         return False
 
     def detect_platform(self):
-        """Detect the current platform"""
-
+        """Detect the current platform."""
         platform = Scraper.detect_platform(self)
 
         # On OS X we have to special case the platform detection code and
@@ -836,7 +806,6 @@ class TinderboxScraper(Scraper):
 
     def is_build_dir(self, folder_name):
         """Return whether or not the given dir contains a build."""
-
         # Cannot move up to base scraper due to parser.entries call in
         # get_build_info_for_index (see below)
         url = '%s/' % urljoin(self.base_url, self.build_list_regex, folder_name)
@@ -858,6 +827,7 @@ class TinderboxScraper(Scraper):
         return False
 
     def get_build_info_for_index(self, build_index=None):
+        """Get additional information for the build at the given index."""
         url = urljoin(self.base_url, self.build_list_regex)
 
         self.logger.info('Retrieving list of builds from %s' % url)
@@ -895,8 +865,7 @@ class TinderboxScraper(Scraper):
 
     @property
     def path_regex(self):
-        """Return the regex for the path to the build folder"""
-
+        """Return the regex for the path to the build folder."""
         if self.locale_build:
             return self.build_list_regex
 
@@ -904,37 +873,34 @@ class TinderboxScraper(Scraper):
 
     @property
     def platform_regex(self):
-        """Return the platform fragment of the URL"""
-
-        PLATFORM_FRAGMENTS = {'linux': 'linux',
+        """Return the platform fragment of the URL."""
+        platform_fragments = {'linux': 'linux',
                               'linux64': 'linux64',
                               'mac': 'macosx64',
                               'mac64': 'macosx64',
                               'win32': 'win32',
                               'win64': 'win64'}
 
-        return PLATFORM_FRAGMENTS[self.platform]
+        return platform_fragments[self.platform]
 
 
 class TryScraper(Scraper):
-    "Class to download a try build from the Mozilla server."
+    """Class to download a try build of a Gecko based application."""
 
     def __init__(self, changeset=None, debug_build=False, *args, **kwargs):
-
+        """Create an instance of a try scraper."""
         self.debug_build = debug_build
         self.changeset = changeset
 
         Scraper.__init__(self, *args, **kwargs)
 
     def get_build_info(self):
-        "Defines additional build information"
-
+        """Define additional build information."""
         self.builds, self.build_index = self.get_build_info_for_index()
 
     @property
     def binary_regex(self):
-        """Return the regex for the binary"""
-
+        """Return the regex for the binary."""
         regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.%(PLATFORM)s'
         regex_suffix = {'linux': r'.*\.%(EXT)s$',
                         'linux64': r'.*\.%(EXT)s$',
@@ -952,8 +918,7 @@ class TryScraper(Scraper):
                         'EXT': self.extension}
 
     def build_filename(self, binary):
-        """Return the proposed filename with extension for the binary"""
-
+        """Return the proposed filename with extension for the binary."""
         return '%(CHANGESET)s%(DEBUG)s-%(NAME)s' % {
             'CHANGESET': self.changeset,
             'DEBUG': '-debug' if self.debug_build else '',
@@ -961,13 +926,11 @@ class TryScraper(Scraper):
 
     @property
     def build_list_regex(self):
-        """Return the regex for the folder which contains the list of builds"""
-
+        """Return the regex for the folder which contains the list of builds."""
         return 'try-builds/'
 
     def detect_platform(self):
-        """Detect the current platform"""
-
+        """Detect the current platform."""
         platform = Scraper.detect_platform(self)
 
         # On OS X we have to special case the platform detection code and
@@ -979,6 +942,7 @@ class TryScraper(Scraper):
         return platform
 
     def get_build_info_for_index(self, build_index=None):
+        """Get additional information for the build at the given index."""
         url = urljoin(self.base_url, self.build_list_regex)
 
         self.logger.info('Retrieving list of builds from %s' % url)
@@ -996,8 +960,7 @@ class TryScraper(Scraper):
 
     @property
     def path_regex(self):
-        """Return the regex for the path to the build folder"""
-
+        """Return the regex for the path to the build folder."""
         build_dir = 'try-%(PLATFORM)s%(DEBUG)s/' % {
             'PLATFORM': self.platform_regex,
             'DEBUG': '-debug' if self.debug_build else ''}
@@ -1007,13 +970,12 @@ class TryScraper(Scraper):
 
     @property
     def platform_regex(self):
-        """Return the platform fragment of the URL"""
-
-        PLATFORM_FRAGMENTS = {'linux': 'linux',
+        """Return the platform fragment of the URL."""
+        platform_fragments = {'linux': 'linux',
                               'linux64': 'linux64',
                               'mac': 'macosx64',
                               'mac64': 'macosx64',
                               'win32': 'win32',
                               'win64': 'win64'}
 
-        return PLATFORM_FRAGMENTS[self.platform]
+        return platform_fragments[self.platform]

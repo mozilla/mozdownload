@@ -2,8 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from . import errors
-from . import scraper
+"""Factory to ease the usage of different scrapers."""
+
+from __future__ import absolute_import, print_function, unicode_literals
+
+from mozdownload import scraper
+from mozdownload.errors import NotSupportedError
 
 
 # List of known download scrapers
@@ -17,9 +21,10 @@ scraper_types = {'candidate': scraper.ReleaseCandidateScraper,
 
 
 class FactoryScraper(scraper.Scraper):
+    """Factory class to instanciate a scraper of a given type."""
 
     def __init__(self, scraper_type, **kwargs):
-        """Creates an instance of a scraper class based on the given type.
+        """Create an instance of the expected scraper.
 
         :param scraper_type: The type of scraper to use.
 
@@ -60,11 +65,11 @@ class FactoryScraper(scraper.Scraper):
 
         if kwargs.get('application') == 'b2g' and scraper_type in ('candidate', 'release'):
             error_msg = '%s build is not yet supported for B2G' % scraper_type
-            raise errors.NotSupportedError(error_msg)
+            raise NotSupportedError(error_msg)
 
         if kwargs.get('application') == 'fennec' and scraper_type not in ('daily'):
             error_msg = '%s build is not yet supported for fennec' % scraper_type
-            raise errors.NotSupportedError(error_msg)
+            raise NotSupportedError(error_msg)
 
         # Instantiate scraper and download the build
         scraper_keywords = {'application': kwargs.get('application', 'firefox'),

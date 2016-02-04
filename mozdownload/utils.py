@@ -4,12 +4,13 @@
 
 """Module to store various helper functions used in mozdownload."""
 
+from __future__ import absolute_import, print_function, unicode_literals
+
 import hashlib
 
 
 def urljoin(*fragments):
-    """Concatenates multi part strings into urls"""
-
+    """Concatenate multi part strings into urls."""
     # Strip possible already existent final slashes of fragments except for the last one
     parts = [fragment.rstrip('/') for fragment in fragments[:len(fragments) - 1]]
     parts.append(fragments[-1])
@@ -18,8 +19,7 @@ def urljoin(*fragments):
 
 
 def create_md5(path):
-    """Creates the md5 hash of a file using the hashlib library"""
-
+    """Create the md5 hash of a file using the hashlib library."""
     m = hashlib.md5()
     # rb necessary to run correctly in windows.
     with open(path, "rb") as f:

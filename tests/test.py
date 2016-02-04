@@ -1,8 +1,11 @@
 #!/usr/bin/env python
-
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+"""Test runner for mozdownload unit tests."""
+
+from __future__ import absolute_import, print_function, unicode_literals
 
 import imp
 import os
@@ -16,8 +19,7 @@ here = os.path.dirname(os.path.abspath(__file__))
 
 
 def get_tests(path):
-    """return the unittests in a .py file"""
-
+    """Return the unittests in a .py file."""
     path = os.path.abspath(path)
     unittests = []
     assert os.path.exists(path)
@@ -31,9 +33,11 @@ def get_tests(path):
 
 
 def test_all(manifest):
-    print "\n#################"
-    print "# Running tests #"
-    print "#################\n"
+    """Run all tests."""
+    print('\n#################')
+    print('# Running tests #')
+    print('#################\n')
+
     # gather the tests
     tests = manifest.active_tests(disabled=False)
     unittestlist = []
@@ -49,7 +53,7 @@ def test_all(manifest):
 
 
 def main(args=sys.argv[1:]):
-
+    """Main method."""
     # read the manifest
     if args:
         manifests = args
