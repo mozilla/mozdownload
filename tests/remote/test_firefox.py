@@ -223,7 +223,7 @@ class FirefoxRemoteTests(unittest.TestCase):
     def test_release_scraper(self):
         for test in tests_release_scraper:
             scraper = mozdownload.ReleaseScraper(destination=self.temp_dir,
-                                                 log_level='ERROR',
+                                                 logger=self.logger,
                                                  **test['args'])
             if test.get('url'):
                 self.assertEqual(urllib.unquote(scraper.url),
@@ -232,7 +232,7 @@ class FirefoxRemoteTests(unittest.TestCase):
     def test_candidate_scraper(self):
         for test in tests_candidate_scraper:
             scraper = mozdownload.ReleaseCandidateScraper(destination=self.temp_dir,
-                                                          log_level='ERROR',
+                                                          logger=self.logger,
                                                           **test['args'])
             if test.get('url'):
                 self.assertEqual(urllib.unquote(scraper.url),
@@ -241,13 +241,13 @@ class FirefoxRemoteTests(unittest.TestCase):
     def test_daily_scraper(self):
         for test in tests_daily_scraper:
             mozdownload.DailyScraper(destination=self.temp_dir,
-                                     log_level='ERROR',
+                                     logger=self.logger,
                                      **test['args'])
 
     def test_tinderbox_scraper(self):
         for test in tests_tinderbox_scraper:
             mozdownload.TinderboxScraper(destination=self.temp_dir,
-                                         log_level='ERROR',
+                                         logger=self.logger,
                                          **test['args'])
 
     @unittest.skip('Not testable as long as we cannot grab a latest build')

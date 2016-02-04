@@ -85,7 +85,7 @@ class FennecRemoteTests(unittest.TestCase):
     def test_daily_scraper(self):
         for test in tests_daily_scraper:
             mozdownload.DailyScraper(destination=self.temp_dir,
-                                     log_level='ERROR',
+                                     logger=self.logger,
                                      **test['args'])
 
 

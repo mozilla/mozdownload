@@ -44,7 +44,7 @@ class TestDailyScraperInvalidParameters(mhttpd.MozHttpdBaseTest):
             self.assertRaises(ValueError, DailyScraper,
                               destination=self.temp_dir,
                               base_url=self.wdir,
-                              log_level='ERROR',
+                              logger=self.logger,
                               **entry['args'])
 
 

@@ -72,8 +72,10 @@ class Scraper(object):
                  username=None, password=None,
                  retry_attempts=0, retry_delay=10.,
                  is_stub_installer=False, timeout=None,
-                 log_level='INFO',
+                 logger=None,
                  base_url=BASE_URL):
+
+        self.logger = logger or logging.getLogger(self.__module__)
 
         # Private properties for caching
         self._filename = None
@@ -103,11 +105,6 @@ class Scraper(object):
         # it does not work if we attach it on the session, so we handle
         # it independently.
         self.timeout_network = 60.
-
-        logging.basicConfig(format=' %(levelname)s | %(message)s')
-        self.logger = logging.getLogger(self.__module__)
-        self.logger.setLevel(log_level)
-        logging.getLogger('redo').setLevel(logging.INFO)
 
         # build the base URL
         self.application = application

@@ -1,32 +1,20 @@
-#!/usr/bin/env python
+"""Tool to download different Gecko based applications (version {})."""
+# !/usr/bin/env python
 
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import argparse
+import logging
 import os
-import pkg_resources
-import sys
 
-from . import factory
-from . import scraper
+from mozdownload import __version__, factory, scraper
 
 
-version = pkg_resources.require("mozdownload")[0].version
-
-__doc__ = """
-Module to handle downloads for different types of archive.mozilla.org hosted
-applications.
-
-mozdownload version: %(version)s
-""" % {'version': version}
-
-
-def cli():
-    """Main function for the downloader"""
-
-    parser = argparse.ArgumentParser(description=__doc__)
+def parse_arguments():
+    """Setup argument parser for command line arguments."""
+    parser = argparse.ArgumentParser(description=__doc__.format(__version__))
     parser.add_argument('--application', '-a',
                         dest='application',
                         choices=scraper.APPLICATIONS,
@@ -61,9 +49,9 @@ def cli():
     parser.add_argument('--log-level',
                         action='store',
                         dest='log_level',
-                        default='INFO',
+                        default=logging.INFO,
                         metavar='LOG_LEVEL',
-                        help='Threshold for log output (default: %(default)s)')
+                        help='Threshold for log output (default: INFO')
     parser.add_argument('--password',
                         dest='password',
                         metavar='PASSWORD',
@@ -148,15 +136,23 @@ def cli():
                        dest='changeset',
                        help='Changeset of the try build to download')
 
-    kwargs = vars(parser.parse_args())
+    return vars(parser.parse_args())
 
-    # Gives instructions to user when no arguments were passed
-    if len(sys.argv) == 1:
-        print(__doc__)
-        parser.format_usage()
-        print('Specify --help for more information on args. '
-              'Please see the README for examples.')
-        return
+
+def cli():
+    """CLI entry point for mozdownload."""
+    kwargs = parse_arguments()
+
+    log_level = kwargs.pop('log_level')
+    logging.basicConfig(format=' %(levelname)s | %(message)s', level=log_level)
+    logger = logging.getLogger(__name__)
+
+    # Configure logging levels for sub modules. Set to ERROR by default.
+    sub_log_level = logging.ERROR
+    if log_level == logging.getLevelName(logging.DEBUG):
+        sub_log_level = logging.DEBUG
+    logging.getLogger('redo').setLevel(sub_log_level)
+    logging.getLogger('requests').setLevel(sub_log_level)
 
     try:
         scraper_type = kwargs.pop('scraper_type')
@@ -168,7 +164,7 @@ def cli():
         build = factory.FactoryScraper(scraper_type, **kwargs)
         build.download()
     except KeyboardInterrupt:
-        print('\nDownload interrupted by the user')
+        logger.error('Download interrupted by the user')
 
 
 if __name__ == '__main__':

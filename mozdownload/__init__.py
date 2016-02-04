@@ -2,26 +2,31 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
+__version__ = '1.19'
+
 from . import cli
 
 from .factory import FactoryScraper
 
-from .scraper import (Scraper,
-                      DailyScraper,
-                      DirectScraper,
-                      ReleaseScraper,
-                      ReleaseCandidateScraper,
-                      TinderboxScraper,
-                      TryScraper,
-                      )
+from .scraper import (
+    Scraper,
+    DailyScraper,
+    DirectScraper,
+    ReleaseScraper,
+    ReleaseCandidateScraper,
+    TinderboxScraper,
+    TryScraper,
+)
 
-__all__ = [cli,
-           FactoryScraper,
-           Scraper,
-           DailyScraper,
-           DirectScraper,
-           ReleaseScraper,
-           ReleaseCandidateScraper,
-           TinderboxScraper,
-           TryScraper,
-           ]
+__all__ = [
+    __version__,
+    cli,
+    FactoryScraper,
+    Scraper,
+    DailyScraper,
+    DirectScraper,
+    ReleaseScraper,
+    ReleaseCandidateScraper,
+    TinderboxScraper,
+    TryScraper,
+]

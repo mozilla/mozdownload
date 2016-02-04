@@ -64,7 +64,7 @@ class TryScraperTest(mhttpd.MozHttpdBaseTest):
         for entry in tests:
             scraper = TryScraper(destination=self.temp_dir,
                                  base_url=self.wdir,
-                                 log_level='ERROR',
+                                 logger=self.logger,
                                  **entry['args'])
             expected_filename = os.path.join(self.temp_dir, entry['filename'])
             self.assertEqual(scraper.filename, expected_filename)

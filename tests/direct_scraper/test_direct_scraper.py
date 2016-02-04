@@ -21,7 +21,7 @@ class TestDirectScraper(mhttpd.MozHttpdBaseTest):
         test_url = urljoin(self.wdir, filename)
         scraper = DirectScraper(url=test_url,
                                 destination=self.temp_dir,
-                                log_level='ERROR')
+                                logger=self.logger)
         self.assertEqual(scraper.url, test_url)
         self.assertEqual(scraper.filename,
                          os.path.join(self.temp_dir, filename))

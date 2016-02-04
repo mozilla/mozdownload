@@ -31,7 +31,7 @@ class FactoryScraper(scraper.Scraper):
         :param extension: File extension of the build (e.g. ".zip").
         :param is_stub_installer: Stub installer (Only applicable to Windows builds).
         :param locale: Locale of the application.
-        :param log_level: Threshold for log output.
+        :param logger: Logger instance to use.
         :param password: Password for basic HTTP authentication.
         :param platform: Platform of the application
         :param retry_attempts: Number of times the download will be attempted
@@ -73,7 +73,7 @@ class FactoryScraper(scraper.Scraper):
                             'extension': kwargs.get('extension'),
                             'is_stub_installer': kwargs.get('is_stub_installer'),
                             'locale': kwargs.get('locale'),
-                            'log_level': kwargs.get('log_level', 'INFO'),
+                            'logger': kwargs.get('logger', None),
                             'password': kwargs.get('password'),
                             'platform': kwargs.get('platform'),
                             'retry_attempts': kwargs.get('retry_attempts', 0),

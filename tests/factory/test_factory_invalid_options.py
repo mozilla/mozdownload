@@ -97,7 +97,7 @@ class TestFactoryMissingMandatoryOptions(mhttpd.MozHttpdBaseTest):
                           scraper_type='release',
                           destination=self.temp_dir,
                           base_url=self.wdir,
-                          log_level='ERROR')
+                          logger=self.logger)
 
     def test_candidate_without_version(self):
         """Test that missing mandatory options for candidate builds raise an exception"""
@@ -105,7 +105,7 @@ class TestFactoryMissingMandatoryOptions(mhttpd.MozHttpdBaseTest):
                           scraper_type='release',
                           destination=self.temp_dir,
                           base_url=self.wdir,
-                          log_level='ERROR')
+                          logger=self.logger)
 
 
 class TestFactoryUnusedOptions(mhttpd.MozHttpdBaseTest):
@@ -138,7 +138,7 @@ class TestFactoryUnusedOptions(mhttpd.MozHttpdBaseTest):
         scraper = FactoryScraper(scraper_type='direct',
                                  url=test_url,
                                  destination=self.temp_dir,
-                                 log_level='ERROR',
+                                 logger=self.logger,
 
                                  platform='win32',
                                  branch='mozilla-central',

@@ -48,7 +48,7 @@ class TestTinderboxScraperInvalidParameters(mhttpd.MozHttpdBaseTest):
             self.assertRaises(ValueError, TinderboxScraper,
                               destination=self.temp_dir,
                               base_url=self.wdir,
-                              log_level='ERROR',
+                              logger=self.logger,
                               **entry['args'])
 
 

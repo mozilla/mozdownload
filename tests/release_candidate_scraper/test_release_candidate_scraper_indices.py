@@ -53,7 +53,7 @@ class ReleaseCandidateScraperTest_build_indices(mhttpd.MozHttpdBaseTest):
         for entry in test_params:
             scraper = ReleaseCandidateScraper(destination=self.temp_dir,
                                               base_url=self.wdir,
-                                              log_level='ERROR',
+                                              logger=self.logger,
                                               **entry['args'])
             self.assertEqual(scraper.build_index, entry['build_index'])
             self.assertEqual(scraper.build_number, entry['build_number'])

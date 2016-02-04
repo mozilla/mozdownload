@@ -1,7 +1,7 @@
 import subprocess
 import unittest
 
-from mozdownload import cli
+from mozdownload import __version__, cli
 
 
 class TestCLIOutput(unittest.TestCase):
@@ -9,5 +9,5 @@ class TestCLIOutput(unittest.TestCase):
 
     def test_cli_executes(self):
         """Test that cli will start and print usage message"""
-        output = subprocess.check_output(['mozdownload'])
-        self.assertTrue(cli.__doc__ in output)
+        output = subprocess.check_output(['mozdownload', '--help'])
+        self.assertTrue(cli.__doc__.format(__version__) in output)

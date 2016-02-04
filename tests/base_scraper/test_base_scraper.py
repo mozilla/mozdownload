@@ -36,7 +36,7 @@ class TestBaseScraper(mhttpd.MozHttpdBaseTest):
         test_url = urljoin(self.wdir, filename)
         scraper = mozdownload.DirectScraper(url=test_url,
                                             destination=self.temp_dir,
-                                            log_level='ERROR')
+                                            logger=self.logger)
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     filename)))
@@ -51,7 +51,7 @@ class TestBaseScraper(mhttpd.MozHttpdBaseTest):
         test_url1 = urljoin(self.wdir, 'does_not_exist.html')
         scraper1 = mozdownload.DirectScraper(url=test_url1,
                                              destination=self.temp_dir,
-                                             log_level='ERROR')
+                                             logger=self.logger)
         self.assertRaises(requests.exceptions.RequestException,
                           scraper1.download)
 
@@ -61,13 +61,13 @@ class TestBaseScraper(mhttpd.MozHttpdBaseTest):
                                              destination=self.temp_dir,
                                              retry_attempts=3,
                                              retry_delay=1.0,
-                                             log_level='ERROR')
+                                             logger=self.logger)
         self.assertRaises(requests.exceptions.RequestException,
                           scraper2.download)
 
     def test_notimplementedexceptions(self):
         scraper = mozdownload.Scraper(destination=self.temp_dir,
-                                      log_level='ERROR')
+                                      logger=self.logger)
         for attr in ['binary', 'binary_regex', 'path_regex']:
             self.assertRaises(errors.NotImplementedError, getattr,
                               scraper, attr)
@@ -83,13 +83,13 @@ class TestBaseScraper(mhttpd.MozHttpdBaseTest):
         # test with invalid authentication
         scraper = mozdownload.DirectScraper(destination=self.temp_dir,
                                             url=basic_auth_url,
-                                            log_level='ERROR')
+                                            logger=self.logger)
         self.assertRaises(requests.exceptions.HTTPError, scraper.download)
 
         # testing with valid authentication
         scraper = mozdownload.DirectScraper(destination=self.temp_dir,
                                             url=basic_auth_url,
-                                            log_level='ERROR',
+                                            logger=self.logger,
                                             username=username,
                                             password=password)
         scraper.download()
@@ -103,7 +103,7 @@ class TestBaseScraper(mhttpd.MozHttpdBaseTest):
         # requires optional authentication with no data specified
         scraper = mozdownload.DirectScraper(destination=self.temp_dir,
                                             url=optional_auth_url,
-                                            log_level='ERROR')
+                                            logger=self.logger)
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     'webqa-ci.mozilla.com')))
@@ -117,34 +117,34 @@ class TestBaseScraper(mhttpd.MozHttpdBaseTest):
         # destination is directory
         scraper = mozdownload.DirectScraper(url=test_url,
                                             destination=self.temp_dir,
-                                            log_level='ERROR')
+                                            logger=self.logger)
         self.assertEqual(scraper.filename, os.path.join(self.temp_dir, filename))
 
         # destination has directory path with filename
         destination = os.path.join(self.temp_dir, filename)
         scraper = mozdownload.DirectScraper(url=test_url,
                                             destination=destination,
-                                            log_level='ERROR')
+                                            logger=self.logger)
         self.assertEqual(scraper.filename, destination)
 
         # destination only has filename
         scraper = mozdownload.DirectScraper(url=test_url,
                                             destination=filename,
-                                            log_level='ERROR')
+                                            logger=self.logger)
         self.assertEqual(scraper.filename, os.path.abspath(filename))
 
         # destination directory does not exist
         destination = os.path.join(self.temp_dir, 'temp_folder', filename)
         scraper = mozdownload.DirectScraper(url=test_url,
                                             destination=destination,
-                                            log_level='ERROR')
+                                            logger=self.logger)
         self.assertEqual(scraper.destination, destination)
 
         # ensure that multiple non existing directories are created
         destination = os.path.join(self.temp_dir, 'tmp1', 'tmp2', filename)
         scraper = mozdownload.DirectScraper(url=test_url,
                                             destination=destination,
-                                            log_level='ERROR')
+                                            logger=self.logger)
         self.assertEqual(scraper.destination, destination)
 
 
