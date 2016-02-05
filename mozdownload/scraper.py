@@ -41,6 +41,7 @@ CHUNK_SIZE = 16 * 1024
 
 DEFAULT_FILE_EXTENSIONS = {'android-api-9': 'apk',
                            'android-api-11': 'apk',
+                           'android-api-15': 'apk',
                            'android-x86': 'apk',
                            'linux': 'tar.bz2',
                            'linux64': 'tar.bz2',
@@ -51,6 +52,7 @@ DEFAULT_FILE_EXTENSIONS = {'android-api-9': 'apk',
 
 PLATFORM_FRAGMENTS = {'android-api-9': r'android-arm',
                       'android-api-11': r'android-arm',
+                      'android-api-15': r'android-arm',
                       'android-x86': r'android-i386',
                       'linux': r'linux-i686',
                       'linux64': r'linux-x86_64',
@@ -469,6 +471,7 @@ class DailyScraper(Scraper):
         regex_base_name = r'^%(APP)s-.*\.%(LOCALE)s\.%(PLATFORM)s'
         regex_suffix = {'android-api-9': r'\.%(EXT)s$',
                         'android-api-11': r'\.%(EXT)s$',
+                        'android-api-15': r'\.%(EXT)s$',
                         'android-x86': r'\.%(EXT)s$',
                         'linux': r'\.%(EXT)s$',
                         'linux64': r'\.%(EXT)s$',

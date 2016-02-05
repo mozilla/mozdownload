@@ -1,2 +1,0 @@
-20150612004006
-https://hg.mozilla.org/releases/mozilla-aurora/rev/ec4e2ed27521

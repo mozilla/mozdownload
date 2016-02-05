@@ -19,9 +19,16 @@ tests_daily_scraper = [
               'platform': 'android-api-9',
               'branch': 'mozilla-central'}},
 
+    # Support for API level 11 ended on Jan 28th 2016
     # -p android-api-11 --branch=mozilla-central
     {'args': {'application': 'fennec',
               'platform': 'android-api-11',
+              'branch': 'mozilla-central',
+              'date': '2016-01-28'}},
+
+    # -p android-api-15 --branch=mozilla-central
+    {'args': {'application': 'fennec',
+              'platform': 'android-api-15',
               'branch': 'mozilla-central'}},
 
     # -p android-x86 --branch=mozilla-central
@@ -29,43 +36,44 @@ tests_daily_scraper = [
               'platform': 'android-x86',
               'branch': 'mozilla-central'}},
 
-    # -p android-api-9 --branch=mozilla-central --date 2015-10-21
+    # -p android-api-15 --branch=mozilla-central --date 2016-01-29
     {'args': {'application': 'fennec',
-              'platform': 'android-api-9',
+              'platform': 'android-api-15',
               'branch': 'mozilla-central',
-              'date': '2015-10-21'}},
+              'date': '2016-01-29'}},
 
-    # -p android-api-9 --branch=mozilla-central --date 2015-10-21 --build-number=1
+    # -p android-api-15 --branch=mozilla-central --date 2016-01-29 --build-number=1
     {'args': {'application': 'fennec',
-              'platform': 'android-api-9',
+              'platform': 'android-api-15',
               'branch': 'mozilla-central',
-              'date': '2015-10-21',
+              'date': '2016-01-29',
               'build_number': 1}},
 
-    # -p android-api-9 --branch=mozilla-central --build-id=20151021065025
+    # -p android-api-15 --branch=mozilla-central --build-id=20160201030241
     {'args': {'application': 'fennec',
-              'platform': 'android-api-9',
+              'platform': 'android-api-15',
               'branch': 'mozilla-central',
-              'build_id': '20151021065025'}},
+              'build_id': '20160201030241'}},
 
-    # Broken due to: https://github.com/mozilla/mozdownload/issues/334
-    # -p android-api-9 --branch=mozilla-central --build-id=20151021065025 --locale=en-US
-    # {'args': {'application': 'fennec',
-    #           'platform': 'android-api-9',
-    #           'branch': 'mozilla-central',
-    #           'build_id': '20151021065025'}},
-
-    # -p android-api-9 --branch=mozilla-central --build-id=20151021065025 --extension=txt
+    # -p android-api-15 --branch=mozilla-central --build-id=20160201030241 --locale=en-US
     {'args': {'application': 'fennec',
-              'platform': 'android-api-9',
+              'locale': 'en-US',
+              'platform': 'android-api-15',
               'branch': 'mozilla-central',
-              'build_id': '20151021065025',
+              'build_id': '20160201030241'}},
+
+    # -p android-api-15 --branch=mozilla-central --build-id=20160201030241 --extension=txt
+    {'args': {'application': 'fennec',
+              'platform': 'android-api-15',
+              'branch': 'mozilla-central',
+              'build_id': '20160201030241',
               'extension': 'txt'}},
 
-    # -p android-api-11 --branch=mozilla-aurora
+    # -p android-api-11 --branch=mozilla-aurora --build_id=20160202004008
     {'args': {'application': 'fennec',
-              'platform': 'android-api-11',
-              'branch': 'mozilla-aurora'}},
+              'platform': 'android-api-15',
+              'branch': 'mozilla-aurora',
+              'build_id': '20160202004008'}},
 ]
 
 

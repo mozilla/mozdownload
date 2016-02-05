@@ -310,8 +310,8 @@ fennec_tests = [
     {'args': {'application': 'fennec',
               'platform': 'android-api-9',
               'branch': 'mozilla-central'},
-    'filename': '2015-06-12-03-02-05-mozilla-central-fennec-41.0a1.multi.android-arm.apk',
-    'url': 'mobile/nightly/2015/06/2015-06-12-03-02-05-mozilla-central-android-api-9/fennec-41.0a1.multi.android-arm.apk'
+    'filename': '2016-02-01-03-02-41-mozilla-central-fennec-47.0a1.multi.android-arm.apk',
+    'url': 'mobile/nightly/2016/02/2016-02-01-03-02-41-mozilla-central-android-api-9/fennec-47.0a1.multi.android-arm.apk'
     },
     # -p android-api-11 --branch=mozilla-central
     {'args': {'application': 'fennec',
@@ -320,19 +320,26 @@ fennec_tests = [
     'filename': '2015-06-11-03-02-08-mozilla-central-fennec-41.0a1.multi.android-arm.apk',
     'url': 'mobile/nightly/2015/06/2015-06-11-03-02-08-mozilla-central-android-api-11/fennec-41.0a1.multi.android-arm.apk'
     },
+    # -p android-api-15 --branch=mozilla-central
+    {'args': {'application': 'fennec',
+              'platform': 'android-api-15',
+              'branch': 'mozilla-central'},
+    'filename': '2016-02-01-03-02-41-mozilla-central-fennec-47.0a1.multi.android-arm.apk',
+    'url': 'mobile/nightly/2016/02/2016-02-01-03-02-41-mozilla-central-android-api-15/fennec-47.0a1.multi.android-arm.apk'
+    },
     # -p android-x86 --branch=mozilla-central
     {'args': {'application': 'fennec',
               'platform': 'android-x86',
               'branch': 'mozilla-central'},
-    'filename': '2015-06-12-03-02-05-mozilla-central-fennec-41.0a1.multi.android-i386.apk',
-    'url': 'mobile/nightly/2015/06/2015-06-12-03-02-05-mozilla-central-android-x86/fennec-41.0a1.multi.android-i386.apk'
+    'filename': '2016-02-01-03-02-41-mozilla-central-fennec-47.0a1.multi.android-i386.apk',
+    'url': 'mobile/nightly/2016/02/2016-02-01-03-02-41-mozilla-central-android-x86/fennec-47.0a1.multi.android-i386.apk'
      },
-    # -p android-api-11 --branch=mozilla-aurora
+    # -p android-api-15 --branch=mozilla-aurora
     {'args': {'application': 'fennec',
-              'platform': 'android-api-11',
+              'platform': 'android-api-15',
               'branch': 'mozilla-aurora'},
-    'filename': '2015-06-12-00-40-06-mozilla-aurora-fennec-40.0a2.multi.android-arm.apk',
-    'url': 'mobile/nightly/2015/06/2015-06-12-00-40-06-mozilla-aurora-android-api-11/fennec-40.0a2.multi.android-arm.apk'
+    'filename': '2016-02-02-00-40-08-mozilla-aurora-fennec-46.0a2.multi.android-arm.apk',
+    'url': 'mobile/nightly/2016/02/2016-02-02-00-40-08-mozilla-aurora-android-api-15/fennec-46.0a2.multi.android-arm.apk'
     },
 ]
 
