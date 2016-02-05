@@ -4,7 +4,7 @@
 
 """Module to parse directory listings on a remote FTP server."""
 
-from __future__ import absolute_import, print_function, unicode_literals
+from __future__ import absolute_import, unicode_literals
 
 import re
 import urllib

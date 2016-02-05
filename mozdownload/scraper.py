@@ -4,7 +4,7 @@
 
 """Scrapers for various kinds of build types."""
 
-from __future__ import absolute_import, print_function, unicode_literals
+from __future__ import absolute_import, unicode_literals
 
 import logging
 import os
@@ -288,7 +288,7 @@ class Scraper(object):
                                           maxval=max_value).start()
 
                 with open(tmp_file, 'wb') as f:
-                    for chunk in iter(lambda: r.raw.read(CHUNK_SIZE), ''):
+                    for chunk in r.iter_content(CHUNK_SIZE):
                         f.write(chunk)
                         bytes_downloaded += CHUNK_SIZE
 

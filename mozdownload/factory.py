@@ -4,7 +4,7 @@
 
 """Factory to ease the usage of different scrapers."""
 
-from __future__ import absolute_import, print_function, unicode_literals
+from __future__ import absolute_import, unicode_literals
 
 from mozdownload import scraper
 from mozdownload.errors import NotSupportedError

@@ -6,13 +6,15 @@
 
 """Tool to download different Gecko based applications (version {})."""
 
-from __future__ import absolute_import, print_function, unicode_literals
+from __future__ import absolute_import, unicode_literals
 
 import argparse
 import logging
 import os
 
-from mozdownload import __version__, factory, scraper
+from mozdownload import factory, scraper
+
+__version__ = '1.19'
 
 
 def parse_arguments():

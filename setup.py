@@ -13,13 +13,16 @@ THIS_DIR = os.path.dirname(os.path.realpath(__name__))
 
 
 def read(*parts):
-    with open(os.path.join(THIS_DIR, *parts)) as f:
-        return f.read()
+    try:
+        with open(os.path.join(THIS_DIR, *parts)) as f:
+            return f.read()
+    except IOError:
+        return None
 
 
 def get_version():
     return re.findall("__version__ = '([\d\.]+)'",
-                      read('mozdownload', '__init__.py'), re.M)[0]
+                      read('mozdownload', 'cli.py'), re.M)[0]
 
 deps = ['mozinfo >= 0.7',
         'progressbar == 2.2',

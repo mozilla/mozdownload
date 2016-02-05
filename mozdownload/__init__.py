@@ -2,9 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, print_function, unicode_literals
+from __future__ import absolute_import, unicode_literals
 
 from mozdownload import cli
+from mozdownload.cli import __version__
 from mozdownload.factory import FactoryScraper
 from mozdownload.scraper import (
     Scraper,
@@ -15,8 +16,6 @@ from mozdownload.scraper import (
     TinderboxScraper,
     TryScraper,
 )
-
-__version__ = '1.19'
 
 __all__ = [
     __version__,
