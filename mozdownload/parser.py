@@ -69,12 +69,7 @@ class DirectoryParser(HTMLParser):
                 # We have to trim the fragment down to the last item. Also to ensure we
                 # always get it, we remove a possible final slash first
                 url = urllib.unquote(attr[1])
-                has_final_slash = url[-1] == '/'
                 self.active_url = url.rstrip('/').split('/')[-1]
-
-                # Add back slash in case of sub folders
-                if has_final_slash:
-                    self.active_url = '%s/' % self.active_url
 
                 return
 
@@ -85,9 +80,10 @@ class DirectoryParser(HTMLParser):
 
     def handle_data(self, data):
         """Callback when the data of a tag has been collected."""
-        # Only process the data when we are in an active a tag and have an URL
+        # Only process the data when we are in an active a tag and have an URL.
         if not self.active_url:
             return
 
-        if self.active_url == data:
-            self.entries.append(self.active_url.strip('/'))
+        # The visible text can have a final slash so strip it off
+        if data.strip('/') == self.active_url:
+            self.entries.append(self.active_url)

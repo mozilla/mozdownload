@@ -20,14 +20,14 @@ class DirectoryParserTest(mhttpd.MozHttpdBaseTest):
         """Testing the basic functionality of the DirectoryParser Class"""
 
         # DirectoryParser returns output
-        parser = DirectoryParser(self.server_address)
+        parser = DirectoryParser(self.wdir)
 
         # relies on the presence of other files in the directory
         # Checks if DirectoryParser lists the server entries
         self.assertNotEqual(parser.entries, [], "parser.entries were not listed")
 
         # path_regex to mozdownload -t release -p win32 -v latest
-        testpath = urljoin(self.wdir, 'directoryparser')
+        testpath = urljoin(self.wdir, 'directoryparser/')
         parser1 = DirectoryParser(testpath)
         parser1.entries.sort()
         testdir = os.listdir(urljoin(mhttpd.HERE, 'data', 'directoryparser'))
@@ -36,7 +36,7 @@ class DirectoryParserTest(mhttpd.MozHttpdBaseTest):
 
     def test_filter(self):
         """Testing the DirectoryParser filter method"""
-        parser = DirectoryParser(urljoin(self.wdir, 'directoryparser', 'filter'))
+        parser = DirectoryParser(urljoin(self.wdir, 'directoryparser', 'filter/'))
 
         # Get the contents of the folder - dirs and files
         folder_path = urljoin(mhttpd.HERE, mhttpd.WDIR, 'directoryparser',
@@ -56,6 +56,17 @@ class DirectoryParserTest(mhttpd.MozHttpdBaseTest):
         # Test filter method with a function
         parser.entries = parser.filter(lambda x: x == dirs[0])
         self.assertEqual(parser.entries, [dirs[0]])
+
+    def test_names_with_spaces(self):
+        parser = DirectoryParser(urljoin(self.wdir, 'directoryparser', 'some spaces/'))
+
+        # Get the contents of the folder - dirs and files
+        folder_path = urljoin(mhttpd.HERE, mhttpd.WDIR, 'directoryparser',
+                              'some spaces')
+        contents = os.listdir(folder_path)
+        contents.sort()
+        self.assertEqual(parser.entries, contents)
+
 
 if __name__ == '__main__':
     unittest.main()
