@@ -4,11 +4,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import logging
 import tempfile
 import unittest
 
 import mozfile
-import mozlog
 
 import mozdownload
 
@@ -81,8 +81,8 @@ class FennecRemoteTests(unittest.TestCase):
     """Test all scraper classes for Fennec against the remote server"""
 
     def setUp(self):
-        self.logger = mozlog.unstructured.getLogger(self.__class__.__name__)
-        self.logger.setLevel('ERROR')
+        logging.basicConfig(format=' %(levelname)s | %(message)s', level=logging.ERROR)
+        self.logger = logging.getLogger(self.__class__.__name__)
 
         # Create a temporary directory for potential downloads
         self.temp_dir = tempfile.mkdtemp()

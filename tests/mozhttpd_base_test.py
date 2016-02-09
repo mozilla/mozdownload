@@ -6,12 +6,12 @@
 
 from __future__ import absolute_import, print_function, unicode_literals
 
+import logging
 import os
 import tempfile
 import unittest
 
 import mozfile
-import mozlog
 from wptserve import server
 
 WDIR = 'data'
@@ -23,8 +23,8 @@ class MozHttpdBaseTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.logger = mozlog.unstructured.getLogger(self.__class__.__name__)
-        cls.logger.setLevel('ERROR')
+        logging.basicConfig(format=' %(levelname)s | %(message)s', level=logging.ERROR)
+        cls.logger = logging.getLogger()
 
         cls.httpd = server.WebTestHttpd(port=8080,
                                         doc_root=os.path.join(HERE, WDIR),
