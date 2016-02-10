@@ -24,10 +24,10 @@ def get_version():
     return re.findall("__version__ = '([\d\.]+)'",
                       read('mozdownload', 'cli.py'), re.M)[0]
 
-deps = ['mozinfo >= 0.7',
+deps = ['mozinfo >= 0.9',
         'progressbar == 2.2',
         'redo == 1.5',
-        'requests == 2.7.0',
+        'requests == 2.9.1',
         'treeherder-client == 2.0.1',
         ]
 
