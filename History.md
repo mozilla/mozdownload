@@ -1,3 +1,20 @@
+1.20 / 2016-02-11
+=================
+
+ * Add support to get daily and tinderbox builds by revision (#354)
+ * Use wptserve for unit tests (#368)
+ * Add support for Fennec API level 15 (#362)
+ * Fix various PEP warnings (#363)
+ * Improve logging and arguments handling (#360)
+ * Make use of tox as test runner for unit tests (#352)
+ * Fix accidentally match for SDK builds for release and candidate builds (#353)
+ * Enhance --version to accept latest, latest-beta, and latest-esr (#355)
+ * Check that requests exception has a response (#314)
+ * Use webqa-ci in test_optional_authentication (#348)
+ * Refactoring of download with retry support (#146)
+ * Use a shared HTTP/HTTPS session for retrieving data (#328)
+ * Update BASE_URL to https://archive.mozilla.org/pub/ (#338)
+
 1.19 / 2015-10-23
 =================
 
