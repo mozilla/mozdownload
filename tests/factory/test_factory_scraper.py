@@ -12,8 +12,9 @@ tests = [
     # ReleaseScraper
     {
         'scraper_type': 'release',
-        'fname': 'firefox-23.0.1.en-US.linux64.tar.bz2',
+        'fname': 'firefox-23.0.1.en-US.win32.exe',
         'kwargs': {
+            'platform': 'win32',
             'version': '23.0.1',
         }
     },

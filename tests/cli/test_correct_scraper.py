@@ -15,8 +15,8 @@ import mozhttpd_base_test as mhttpd
 
 tests = {
     'release': {
-        'args': ['-v', '23.0.1'],
-        'fname': 'firefox-23.0.1.en-US.linux64.tar.bz2',
+        'args': ['-v', '23.0.1', '-p', 'win32'],
+        'fname': 'firefox-23.0.1.en-US.win32.exe',
     },
 
     'candidate': {
