@@ -1,3 +1,12 @@
+1.20.1 / 2016-02-11
+===================
+
+ * CLI command fails due to broken argv parsing (#378)
+ * Add Appveyor support for running unittests on Windows (#380)
+ * Make use of Travis' container based infrastructure (#382)
+ * Add Travis support for OS X (#376)
+ * Bump dependencies to mozinfo 0.9 and requests 2.9.1 (#371)
+
 1.20 / 2016-02-11
 =================
 
