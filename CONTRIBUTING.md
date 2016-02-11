@@ -16,3 +16,9 @@ Once a PR is in its final state it needs to be merged into the upstream master b
 In irregular intervals we are releasing new versions of mozdownload. Therefore we make use of milestones in the repository. For each implemented feature or fix the issue's milestone flag should be set to the next upcoming release. That way its easier to see what will be part of the next release.
 
 When releasing a new version of mozdownload please ensure to also update the history.md file with all the landed features and bug fixes. You are advised to use the [following issue](https://github.com/mozilla/mozdownload/issues/303) as template for the new release issue which needs to be filed. Please also check the associated PR for the code changes to be made.
+
+To build and upload the new package to PyPI follow the commands below. Keep in mind that you need [twine](https://pypi.python.org/pypi/twine) to be installed and the [~/.pypirc](https://docs.python.org/2/distutils/packageindex.html#the-pypirc-file) file updated.
+
+* rm -rf dist/
+* python setup.py sdist bdist_wheel
+* twine upload dist/*
