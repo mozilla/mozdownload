@@ -141,7 +141,7 @@ def parse_arguments(argv):
 
 def cli(argv=None):
     """CLI entry point for mozdownload."""
-    kwargs = parse_arguments(argv or sys.argv)
+    kwargs = parse_arguments(argv or sys.argv[1:])
 
     log_level = kwargs.pop('log_level')
     logging.basicConfig(format='%(levelname)s | %(message)s', level=log_level)
