@@ -10,6 +10,8 @@ import logging
 
 from thclient import TreeherderClient
 
+from mozdownload.errors import NotSupportedError
+
 
 PLATFORM_MAP = {
     'android-api-9': {'build_platform': 'android-2-3-armv7-api9'},
@@ -45,14 +47,17 @@ class Treeherder(object):
         self.client = TreeherderClient(host=host, protocol=protocol)
         self.application = application
         self.branch = branch
-        self.platform = self.get_treeherder_platform(platform)
+        self.platform = platform
 
     def get_treeherder_platform(self, platform):
         """Return the internal Treeherder platform identifier.
 
         :param platform: Platform of the application.
         """
-        return PLATFORM_MAP.get(platform, platform)
+        try:
+            return PLATFORM_MAP[platform]
+        except KeyError:
+            raise NotSupportedError('Platform "{}" is not supported.'.format(platform))
 
     def query_builds_by_revision(self, revision, job_type_name='Build', debug_build=False):
         """Retrieve build folders for a given revision with the help of Treeherder.
@@ -82,11 +87,11 @@ class Treeherder(object):
 
             # Set filters to speed-up querying jobs
             kwargs = {
-                'platform': self.platform,
                 'option_collection_hash': option_hash,
                 'job_type_name': job_type_name,
                 'exclusion_profile': False,
             }
+            kwargs.update(self.get_treeherder_platform(self.platform))
 
             for resultset in resultsets:
                 kwargs.update({'result_set_id': resultset['id']})

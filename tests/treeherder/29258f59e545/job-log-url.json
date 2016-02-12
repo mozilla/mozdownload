@@ -1,9 +1,0 @@
-[
-    {
-        "url": "http://archive.mozilla.org/pub/firefox/tinderbox-builds/mozilla-central-win32/1451991580/mozilla-central-win32-bm71-build1-build0.txt.gz",
-        "parse_status": "parsed",
-        "id": 3826060,
-        "name": "buildbot_text",
-        "job_id": 2999624
-    }
-]
