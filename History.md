@@ -1,3 +1,9 @@
+1.20.2 / 2016-02-12
+===================
+
+ * Fix platform filter value for querying Treeherder jobs (#388)
+ * Update docs for bdist-wheel releases (#379)
+
 1.20.1 / 2016-02-11
 ===================
 
