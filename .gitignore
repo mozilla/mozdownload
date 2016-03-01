@@ -1,3 +1,4 @@
+.cache/
 .tox/
 *.egg-info
 *.pyc
