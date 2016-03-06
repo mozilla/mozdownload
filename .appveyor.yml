@@ -13,10 +13,8 @@ install:
     - python -m pip install --upgrade pip
     # Latest tox 2.3.x is currently busted:
     # https://bitbucket.org/hpk42/tox/issues/314/tox-command-busted-on-windows
-    - pip install pylama tox==2.2.0
+    - pip install tox==2.2.0
 
-before_test:
-    - pylama mozdownload
 
 test_script:
     - tox

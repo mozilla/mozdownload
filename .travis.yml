@@ -23,13 +23,11 @@ install:
         curl -O -s https://bootstrap.pypa.io/get-pip.py;
         python get-pip.py --user;
         export PATH=$PATH:~/Library/Python/2.7/bin;
-        pip install --user pylama tox virtualenv;
+        pip install --user tox virtualenv;
       else
-        pip install pylama tox virtualenv;
+        pip install tox virtualenv;
       fi
 
-before_script:
-    - pylama mozdownload
 
 script:
     - tox
