@@ -86,25 +86,25 @@ the FactoryScraper class can be used. Here some examples:
 
     # Create a release scraper for the German locale of Firefox 40.0.3
     from mozdownload import FactoryScraper
-    scraper = mozdownload.FactoryScraper('release', version='40.0.3', locale='de')
+    scraper = FactoryScraper('release', version='40.0.3', locale='de')
 
     # Create a candidate scraper for Windows 32bit of Firefox 41.0b9
     from mozdownload import FactoryScraper
-    scraper = mozdownload.FactoryScraper('candidate', version='41.0b9', platform='win32')
+    scraper = FactoryScraper('candidate', version='41.0b9', platform='win32')
 
     # Create a daily scraper for the latest Dev Edition build on the current platform
     from mozdownload import FactoryScraper
-    scraper = mozdownload.FactoryScraper('daily', branch='mozilla-aurora')
+    scraper = FactoryScraper('daily', branch='mozilla-aurora')
 
 All those scraper instances allow you to retrieve the url which is used to download the files, and the filename for the local destination:
 
     from mozdownload import FactoryScraper
-    scraper = mozdownload.FactoryScraper('daily')
+    scraper = FactoryScraper('daily')
     print scraper.url
     print scraper.filename
 
 To actually download the remote file the download() method has to be called:
 
     from mozdownload import FactoryScraper
-    scraper = mozdownload.FactoryScraper('daily')
+    scraper = FactoryScraper('daily')
     filename = scraper.download()
