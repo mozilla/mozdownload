@@ -26,25 +26,23 @@ PLATFORM_MAP = {
     'win64': {'build_os': 'win', 'build_architecture': 'x86_64'},
 }
 
-TREEHERDER_HOST = 'treeherder.mozilla.org'
+TREEHERDER_URL = 'https://treeherder.mozilla.org'
 
 
 class Treeherder(object):
     """Wrapper class for TreeherderClient to ease the use of its API."""
 
-    def __init__(self, application, branch, platform,
-                 host=TREEHERDER_HOST, protocol='https'):
+    def __init__(self, application, branch, platform, server_url=TREEHERDER_URL):
         """Create a new instance of the Treeherder class.
 
         :param application: The name of the application to download.
         :param branch: Name of the branch.
         :param platform: Platform of the application.
-        :param host: The Treeherder host to make use of.
-        :param protocol: The protocol for the Treeherder host.
+        :param server_url: The URL of the Treeherder instance to access.
         """
         self.logger = logging.getLogger(__name__)
 
-        self.client = TreeherderClient(host=host, protocol=protocol)
+        self.client = TreeherderClient(server_url=server_url)
         self.application = application
         self.branch = branch
         self.platform = platform
@@ -70,8 +68,8 @@ class Treeherder(object):
         builds = set()
 
         try:
-            self.logger.info('Querying {host} for list of builds for revision: {revision}'.format(
-                             host=self.client.host, revision=revision))
+            self.logger.info('Querying {url} for list of builds for revision: {revision}'.format(
+                             url=self.client.server_url, revision=revision))
 
             # Retrieve the option hash to filter for type of build (opt, and debug for now)
             option_hash = None

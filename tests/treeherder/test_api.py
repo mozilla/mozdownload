@@ -67,8 +67,7 @@ class TestAPI(mhttpd.MozHttpdBaseTest):
 
             application = 'firefox' if not platform.startswith('android') else 'mobile'
             th = Treeherder(application, 'mozilla-beta', platform,
-                            host='{}:{}'.format(self.httpd.host, self.httpd.port),
-                            protocol='http')
+                            server_url='http://{}:{}'.format(self.httpd.host, self.httpd.port))
             builds = th.query_builds_by_revision('29258f59e545')
 
             self.assertEqual(len(builds), 1)
@@ -81,8 +80,7 @@ class TestAPIInvalidUsage(mhttpd.MozHttpdBaseTest):
 
     def test_invalid_query_does_not_raise(self):
         th = Treeherder('firefox', 'mozilla-beta', 'invalid_platform',
-                        host='{}:{}'.format(self.httpd.host, self.httpd.port),
-                        protocol='http')
+                        server_url='http://{}:{}'.format(self.httpd.host, self.httpd.port))
         builds = th.query_builds_by_revision('29258f59e545')
 
         self.assertEqual(builds, [])
