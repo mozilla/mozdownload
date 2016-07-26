@@ -14,6 +14,7 @@ import mozdownload
 
 
 tests_daily_scraper = [
+    # Support for API level 9 ended on Mar 11th 2016
     # -p android-api-9 --branch=mozilla-central
     {'args': {'application': 'fennec',
               'platform': 'android-api-9',
