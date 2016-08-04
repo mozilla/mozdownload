@@ -5,7 +5,7 @@
 ### Tinderbox
 
 ```
-mozdownload -a thunderbird -t tinderbox -p linux --branch=mozilla-central --extension=txt
+mozdownload -a thunderbird -t tinderbox -p linux --branch=comm-central --extension=txt
 ```
 
 ## B2G
