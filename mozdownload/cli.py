@@ -15,7 +15,7 @@ import sys
 
 from mozdownload import factory, scraper
 
-__version__ = '1.20.2'
+__version__ = '1.21'
 
 
 def parse_arguments(argv):

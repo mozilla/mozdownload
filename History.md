@@ -1,3 +1,12 @@
+1.21 / 2016-09-20
+=================
+  * Change default branch for Thunderbird in manual tests to comm-central (#402)
+  * Add date parameter to api-9 test in test_fennec.py (#404) (#405)
+  * Update to treeherder-client 3.0.0 (#401)
+  * Update README.md to fix syntax error (#399)
+  * Add pylama call to tox config file (#395)
+  * Use pytest as testrunner for unit tests #359
+
 1.20.2 / 2016-02-12
 ===================
 
