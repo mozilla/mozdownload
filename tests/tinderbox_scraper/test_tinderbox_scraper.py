@@ -79,7 +79,7 @@ firefox_tests = [
               'branch': 'mozilla-central',
               'platform': 'win64',
               'date': '2013-07-23'},
-     'filename': 'mozilla-central-firefox-25.0a1.en-US.win64-x86_64.installer.exe',
+     'filename': '2013-07-23-mozilla-central-firefox-25.0a1.en-US.win64-x86_64.installer.exe',
      'url': 'firefox/tinderbox-builds/mozilla-central-win64/'
             '1374583608/firefox-25.0a1.en-US.win64-x86_64.installer.exe'},
     # -a firefox -p mac64 --branch=mozilla-central
@@ -118,7 +118,7 @@ firefox_tests = [
               'branch': 'mozilla-central',
               'date': '2013-07-23',
               'platform': 'win32'},
-     'filename': 'mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
+     'filename': '2013-07-23-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'url': 'firefox/tinderbox-builds/mozilla-central-win32/'
             '1374583608/firefox-25.0a1.en-US.win32.installer.exe'},
     # -a firefox -p win32 --branch=mozilla-central --date=2013-07-23 --build-number=1
@@ -127,7 +127,7 @@ firefox_tests = [
               'build_number': '1',
               'date': '2013-07-23',
               'platform': 'win32'},
-     'filename': 'mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
+     'filename': '2013-07-23-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'url': 'firefox/tinderbox-builds/mozilla-central-win32/'
             '1374568307/firefox-25.0a1.en-US.win32.installer.exe'},
     # -a firefox -p win32 --branch=mozilla-central --date=1374573725
@@ -234,7 +234,7 @@ thunderbird_tests = [
               'branch': 'comm-central',
               'date': '2013-09-28',
               'platform': 'win32'},
-     'filename': 'comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
+     'filename': '2013-09-28-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
      'url': 'thunderbird/tinderbox-builds/comm-central-win32/'
             '1380362686/thunderbird-27.0a1.en-US.win32.installer.exe'},
     # -a thunderbird -p win32 --branch=comm-central --date=2013-07-24 --build-number=1
@@ -243,7 +243,7 @@ thunderbird_tests = [
               'build_number': '1',
               'date': '2013-09-28',
               'platform': 'win32'},
-     'filename': 'comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
+     'filename': '2013-09-28-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
      'url': 'thunderbird/tinderbox-builds/comm-central-win32/'
             '1380362527/thunderbird-27.0a1.en-US.win32.installer.exe'},
     # -a thunderbird -p win32 --branch=comm-central --date=1380362527
