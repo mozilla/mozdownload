@@ -68,41 +68,41 @@ tests_release_scraper = [
 ]
 
 tests_candidate_scraper = [
-    # -p win32 -v 31.8.0esr --build-number=1
+    # -p win32 -v 45.4.0esr --build-number=1
     {'args': {'application': 'firefox',
               'platform': 'win32',
-              'version': '31.8.0esr',
+              'version': '45.4.0esr',
               'build_number': 1},
-     'url': 'firefox/candidates/31.8.0esr-candidates/build1/win32/en-US/Firefox Setup 31.8.0esr.exe'},
+     'url': 'firefox/candidates/45.4.0esr-candidates/build1/win32/en-US/Firefox Setup 45.4.0esr.exe'},
 
-    # -a firefox -p linux -v 31.8.0esr --build-number=1
+    # -a firefox -p linux -v 45.4.0esr --build-number=1
     {'args': {'application': 'firefox',
               'platform': 'linux',
-              'version': '31.8.0esr',
+              'version': '45.4.0esr',
               'build_number': 1},
-     'url': 'firefox/candidates/31.8.0esr-candidates/build1/linux-i686/en-US/firefox-31.8.0esr.tar.bz2'},
+     'url': 'firefox/candidates/45.4.0esr-candidates/build1/linux-i686/en-US/firefox-45.4.0esr.tar.bz2'},
 
-    # -a firefox -p linux64 -v 31.8.0esr --build-number=1
+    # -a firefox -p linux64 -v 45.4.0esr --build-number=1
     {'args': {'application': 'firefox',
               'platform': 'linux64',
-              'version': '31.8.0esr',
+              'version': '45.4.0esr',
               'build_number': 1},
-     'url': 'firefox/candidates/31.8.0esr-candidates/build1/linux-x86_64/en-US/firefox-31.8.0esr.tar.bz2'},
+     'url': 'firefox/candidates/45.4.0esr-candidates/build1/linux-x86_64/en-US/firefox-45.4.0esr.tar.bz2'},
 
-    # -a firefox -p mac -v 31.8.0esr --build-number=1
+    # -a firefox -p mac -v 45.4.0esr --build-number=1
     {'args': {'application': 'firefox',
               'platform': 'mac',
-              'version': '31.8.0esr',
+              'version': '45.4.0esr',
               'build_number': 1},
-     'url': 'firefox/candidates/31.8.0esr-candidates/build1/mac/en-US/Firefox 31.8.0esr.dmg'},
+     'url': 'firefox/candidates/45.4.0esr-candidates/build1/mac/en-US/Firefox 45.4.0esr.dmg'},
 
-    # -a firefox -p win32 -v 31.8.0esr -l de --build-number=1
+    # -a firefox -p win32 -v 45.4.0esr -l de --build-number=1
     {'args': {'application': 'firefox',
               'locale': 'de',
               'platform': 'win32',
-              'version': '31.8.0esr',
+              'version': '45.4.0esr',
               'build_number': 1},
-     'url': 'firefox/candidates/31.8.0esr-candidates/build1/win32/de/Firefox Setup 31.8.0esr.exe'},
+     'url': 'firefox/candidates/45.4.0esr-candidates/build1/win32/de/Firefox Setup 45.4.0esr.exe'},
 ]
 
 tests_daily_scraper = [

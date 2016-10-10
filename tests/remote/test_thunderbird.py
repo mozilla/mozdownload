@@ -55,50 +55,50 @@ tests_release_scraper = [
 ]
 
 tests_candidate_scraper = [
-    # -a thunderbird -p linux -v 31.8.0
+    # -a thunderbird -p linux -v 45.4.0
     {'args': {'application': 'thunderbird',
               'platform': 'linux',
-              'version': '31.8.0'},
-     'url': 'thunderbird/candidates/31.8.0-candidates/build1/linux-i686/en-US/thunderbird-31.8.0.tar.bz2'},
+              'version': '45.4.0'},
+     'url': 'thunderbird/candidates/45.4.0-candidates/build1/linux-i686/en-US/thunderbird-45.4.0.tar.bz2'},
 
-    # -a thunderbird -p linux64 -v 31.8.0
+    # -a thunderbird -p linux64 -v 45.4.0
     {'args': {'application': 'thunderbird',
               'platform': 'linux64',
-              'version': '31.8.0'},
-     'url': 'thunderbird/candidates/31.8.0-candidates/build1/linux-x86_64/en-US/thunderbird-31.8.0.tar.bz2'},
+              'version': '45.4.0'},
+     'url': 'thunderbird/candidates/45.4.0-candidates/build1/linux-x86_64/en-US/thunderbird-45.4.0.tar.bz2'},
 
-    # -a thunderbird -p mac -v 31.8.0
+    # -a thunderbird -p mac -v 45.4.0
     {'args': {'application': 'thunderbird',
               'platform': 'mac',
-              'version': '31.8.0'},
-     'url': 'thunderbird/candidates/31.8.0-candidates/build1/mac/en-US/Thunderbird 31.8.0.dmg'},
+              'version': '45.4.0'},
+     'url': 'thunderbird/candidates/45.4.0-candidates/build1/mac/en-US/Thunderbird 45.4.0.dmg'},
 
-    # -a thunderbird -p win32 -v 31.8.0
+    # -a thunderbird -p win32 -v 45.4.0
     {'args': {'application': 'thunderbird',
               'platform': 'win32',
-              'version': '31.8.0'},
-     'url': 'thunderbird/candidates/31.8.0-candidates/build1/win32/en-US/Thunderbird Setup 31.8.0.exe'},
+              'version': '45.4.0'},
+     'url': 'thunderbird/candidates/45.4.0-candidates/build1/win32/en-US/Thunderbird Setup 45.4.0.exe'},
 
-    # -a thunderbird -p win32 -v 31.8.0 -l cs
+    # -a thunderbird -p win32 -v 45.4.0 -l cs
     {'args': {'application': 'thunderbird',
               'locale': 'cs',
               'platform': 'win32',
-              'version': '31.8.0'},
-     'url': 'thunderbird/candidates/31.8.0-candidates/build1/win32/cs/Thunderbird Setup 31.8.0.exe'},
+              'version': '45.4.0'},
+     'url': 'thunderbird/candidates/45.4.0-candidates/build1/win32/cs/Thunderbird Setup 45.4.0.exe'},
 
-    # -a thunderbird -p win32 -v 31.8.0 -l en-GB
+    # -a thunderbird -p win32 -v 45.4.0 -l en-GB
     {'args': {'application': 'thunderbird',
               'locale': 'en-GB',
               'platform': 'win32',
-              'version': '31.8.0'},
-     'url': 'thunderbird/candidates/31.8.0-candidates/build1/win32/en-GB/Thunderbird Setup 31.8.0.exe'},
+              'version': '45.4.0'},
+     'url': 'thunderbird/candidates/45.4.0-candidates/build1/win32/en-GB/Thunderbird Setup 45.4.0.exe'},
 
-    # -a thunderbird -p win32 -v 31.8.0
+    # -a thunderbird -p win32 -v 45.4.0
     {'args': {'application': 'thunderbird',
               'build_number': '1',
               'platform': 'win32',
-              'version': '31.8.0'},
-     'url': 'thunderbird/candidates/31.8.0-candidates/build1/win32/en-US/Thunderbird Setup 31.8.0.exe'},
+              'version': '45.4.0'},
+     'url': 'thunderbird/candidates/45.4.0-candidates/build1/win32/en-US/Thunderbird Setup 45.4.0.exe'},
 ]
 
 tests_daily_scraper = [
