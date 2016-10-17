@@ -71,6 +71,10 @@ def parse_arguments(argv):
                         choices=scraper.PLATFORM_FRAGMENTS.keys(),
                         metavar='PLATFORM',
                         help='Platform of the application')
+    parser.add_argument('--print-url',
+                        dest='print_url',
+                        action='store_true',
+                        help='Print final URL instead of downloading the file.')
     parser.add_argument('--retry-attempts',
                         dest='retry_attempts',
                         default=0,
@@ -163,7 +167,10 @@ def cli(argv=None):
             scraper_type = 'direct'
 
         build = factory.FactoryScraper(scraper_type, **kwargs)
-        build.download()
+        if kwargs.get('print_url'):
+            logger.info(build.url)
+        else:
+            build.download()
     except KeyboardInterrupt:
         logger.error('Download interrupted by the user')
 
