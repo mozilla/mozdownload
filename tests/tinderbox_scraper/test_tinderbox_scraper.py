@@ -17,19 +17,19 @@ import mozhttpd_base_test as mhttpd
 firefox_tests = [
     # -p win32
     {'args': {'platform': 'win32'},
-     'filename': 'mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
+     'filename': '1374583608-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'url': 'firefox/tinderbox-builds/mozilla-central-win32/'
             '1374583608/firefox-25.0a1.en-US.win32.installer.exe'},
     # -p win32 --branch=mozilla-central
     {'args': {'branch': 'mozilla-central',
               'platform': 'win32'},
-     'filename': 'mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
+     'filename': '1374583608-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'url': 'firefox/tinderbox-builds/mozilla-central-win32/'
             '1374583608/firefox-25.0a1.en-US.win32.installer.exe'},
     # -a firefox -p win32
     {'args': {'application': 'firefox',
               'platform': 'win32'},
-     'filename': 'mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
+     'filename': '1374583608-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'url': 'firefox/tinderbox-builds/mozilla-central-win32/'
             '1374583608/firefox-25.0a1.en-US.win32.installer.exe'},
     # -a firefox -p win32 --date 1374573725 --stub (old format)
@@ -51,27 +51,27 @@ firefox_tests = [
     # -a firefox -p linux --branch=mozilla-central
     {'args': {'branch': 'mozilla-central',
               'platform': 'linux'},
-     'filename': 'mozilla-central-firefox-25.0a1.en-US.linux-i686.tar.bz2',
+     'filename': '1374583608-mozilla-central-firefox-25.0a1.en-US.linux-i686.tar.bz2',
      'url': 'firefox/tinderbox-builds/mozilla-central-linux/'
             '1374583608/firefox-25.0a1.en-US.linux-i686.tar.bz2'},
     # -a firefox -p linux64 --branch=mozilla-central
     {'args': {'branch': 'mozilla-central',
               'platform': 'linux64'},
-     'filename': 'mozilla-central-firefox-25.0a1.en-US.linux-x86_64.tar.bz2',
+     'filename': '1374583608-mozilla-central-firefox-25.0a1.en-US.linux-x86_64.tar.bz2',
      'url': 'firefox/tinderbox-builds/mozilla-central-linux64/'
             '1374583608/firefox-25.0a1.en-US.linux-x86_64.tar.bz2'},
     # -a firefox -p win32 --branch=mozilla-central
     {'args': {'application': 'firefox',
               'branch': 'mozilla-central',
               'platform': 'win32'},
-     'filename': 'mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
+     'filename': '1374583608-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'url': 'firefox/tinderbox-builds/mozilla-central-win32/'
             '1374583608/firefox-25.0a1.en-US.win32.installer.exe'},
     # -a firefox -p win64 --branch=mozilla-central
     {'args': {'application': 'firefox',
               'branch': 'mozilla-central',
               'platform': 'win64'},
-     'filename': 'mozilla-central-firefox-38.0a1.en-US.win64.installer.exe',
+     'filename': '1423517445-mozilla-central-firefox-38.0a1.en-US.win64.installer.exe',
      'url': 'firefox/tinderbox-builds/mozilla-central-win64/'
             '1423517445/firefox-38.0a1.en-US.win64.installer.exe'},
     # -a firefox -p win64 --branch=mozilla-central --date=2013-07-23 (old filename format)
@@ -79,14 +79,14 @@ firefox_tests = [
               'branch': 'mozilla-central',
               'platform': 'win64',
               'date': '2013-07-23'},
-     'filename': '2013-07-23-mozilla-central-firefox-25.0a1.en-US.win64-x86_64.installer.exe',
+     'filename': '1374583608-mozilla-central-firefox-25.0a1.en-US.win64-x86_64.installer.exe',
      'url': 'firefox/tinderbox-builds/mozilla-central-win64/'
             '1374583608/firefox-25.0a1.en-US.win64-x86_64.installer.exe'},
     # -a firefox -p mac64 --branch=mozilla-central
     {'args': {'application': 'firefox',
               'branch': 'mozilla-central',
               'platform': 'mac64'},
-     'filename': 'mozilla-central-firefox-25.0a1.en-US.mac.dmg',
+     'filename': '1374583608-mozilla-central-firefox-25.0a1.en-US.mac.dmg',
      'url': 'firefox/tinderbox-builds/mozilla-central-macosx64/'
             '1374583608/firefox-25.0a1.en-US.mac.dmg'},
     # -a firefox -p win32 --branch=mozilla-central --debug-build
@@ -94,7 +94,7 @@ firefox_tests = [
               'branch': 'mozilla-central',
               'debug_build': True,
               'platform': 'win32'},
-     'filename': 'mozilla-central-debug-firefox-25.0a1.en-US.win32.installer.exe',
+     'filename': '1374583608-mozilla-central-debug-firefox-25.0a1.en-US.win32.installer.exe',
      'url': 'firefox/tinderbox-builds/mozilla-central-win32-debug/'
             '1374583608/firefox-25.0a1.en-US.win32.installer.exe'},
     # -a firefox -p win32 --branch=mozilla-central -l de
@@ -118,7 +118,7 @@ firefox_tests = [
               'branch': 'mozilla-central',
               'date': '2013-07-23',
               'platform': 'win32'},
-     'filename': '2013-07-23-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
+     'filename': '1374583608-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'url': 'firefox/tinderbox-builds/mozilla-central-win32/'
             '1374583608/firefox-25.0a1.en-US.win32.installer.exe'},
     # -a firefox -p win32 --branch=mozilla-central --date=2013-07-23 --build-number=1
@@ -127,7 +127,7 @@ firefox_tests = [
               'build_number': '1',
               'date': '2013-07-23',
               'platform': 'win32'},
-     'filename': '2013-07-23-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
+     'filename': '1374568307-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'url': 'firefox/tinderbox-builds/mozilla-central-win32/'
             '1374568307/firefox-25.0a1.en-US.win32.installer.exe'},
     # -a firefox -p win32 --branch=mozilla-central --date=1374573725
@@ -142,7 +142,7 @@ firefox_tests = [
     {'args': {'application': 'firefox',
               'branch': 'mozilla-inbound',
               'platform': 'win32'},
-     'filename': 'mozilla-inbound-firefox-25.0a1.en-US.win32.installer.exe',
+     'filename': '1374583608-mozilla-inbound-firefox-25.0a1.en-US.win32.installer.exe',
      'url': 'firefox/tinderbox-builds/mozilla-inbound-win32/'
             '1374583608/firefox-25.0a1.en-US.win32.installer.exe'},
     # -a firefox -t tinderbox -p linux --branch=mozilla-central --extension=txt
@@ -150,21 +150,21 @@ firefox_tests = [
               'branch': 'mozilla-central',
               'extension': 'txt',
               'platform': 'linux'},
-     'filename': 'mozilla-central-firefox-25.0a1.en-US.linux-i686.txt',
+     'filename': '1374583608-mozilla-central-firefox-25.0a1.en-US.linux-i686.txt',
      'url': 'firefox/tinderbox-builds/mozilla-central-linux/'
             '1374583608/firefox-25.0a1.en-US.linux-i686.txt'},
     # -a firefox -t tinderbox -p win32 --extension=txt
     {'args': {'application': 'firefox',
               'extension': 'txt',
               'platform': 'win32'},
-     'filename': 'mozilla-central-firefox-25.0a1.en-US.win32.txt',
+     'filename': '1374568307-mozilla-central-firefox-25.0a1.en-US.win32.txt',
      'url': 'firefox/tinderbox-builds/mozilla-central-win32/'
             '1374568307/firefox-25.0a1.en-US.win32.txt'},
     # -a firefox -t tinderbox -p mac --extension=txt
     {'args': {'application': 'firefox',
               'extension': 'txt',
               'platform': 'mac'},
-     'filename': 'mozilla-central-firefox-25.0a1.en-US.mac.txt',
+     'filename': '1374568307-mozilla-central-firefox-25.0a1.en-US.mac.txt',
      'url': 'firefox/tinderbox-builds/mozilla-central-macosx64/'
             '1374568307/firefox-25.0a1.en-US.mac.txt'},
 ]
@@ -174,35 +174,35 @@ thunderbird_tests = [
     {'args': {'application': 'thunderbird',
               'branch': 'comm-central',
               'platform': 'linux'},
-     'filename': 'comm-central-thunderbird-27.0a1.en-US.linux-i686.tar.bz2',
+     'filename': '1380362686-comm-central-thunderbird-27.0a1.en-US.linux-i686.tar.bz2',
      'url': 'thunderbird/tinderbox-builds/comm-central-linux/'
             '1380362686/thunderbird-27.0a1.en-US.linux-i686.tar.bz2'},
     # -a thunderbird -p linux64 --branch=comm-central
     {'args': {'application': 'thunderbird',
               'branch': 'comm-central',
               'platform': 'linux64'},
-     'filename': 'comm-central-thunderbird-27.0a1.en-US.linux-x86_64.tar.bz2',
+     'filename': '1380362686-comm-central-thunderbird-27.0a1.en-US.linux-x86_64.tar.bz2',
      'url': 'thunderbird/tinderbox-builds/comm-central-linux64/'
             '1380362686/thunderbird-27.0a1.en-US.linux-x86_64.tar.bz2'},
     # -a thunderbird -p mac64 --branch=comm-central
     {'args': {'application': 'thunderbird',
               'branch': 'comm-central',
               'platform': 'mac64'},
-     'filename': 'comm-central-thunderbird-27.0a1.en-US.mac.dmg',
+     'filename': '1380362686-comm-central-thunderbird-27.0a1.en-US.mac.dmg',
      'url': 'thunderbird/tinderbox-builds/comm-central-macosx64/'
             '1380362686/thunderbird-27.0a1.en-US.mac.dmg'},
     # -a thunderbird -p win32 --branch=comm-central
     {'args': {'application': 'thunderbird',
               'branch': 'comm-central',
               'platform': 'win32'},
-     'filename': 'comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
+     'filename': '1380362686-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
      'url': 'thunderbird/tinderbox-builds/comm-central-win32/'
             '1380362686/thunderbird-27.0a1.en-US.win32.installer.exe'},
     # -a thunderbird -p win64 --branch=comm-central
     {'args': {'application': 'thunderbird',
               'branch': 'comm-central',
               'platform': 'win64'},
-     'filename': 'comm-central-thunderbird-27.0a1.en-US.win64-x86_64.installer.exe',
+     'filename': '1380362686-comm-central-thunderbird-27.0a1.en-US.win64-x86_64.installer.exe',
      'url': 'thunderbird/tinderbox-builds/comm-central-win64/'
             '1380362686/thunderbird-27.0a1.en-US.win64-x86_64.installer.exe'},
     # -a thunderbird -p win32 --branch=comm-central --debug-build
@@ -210,7 +210,7 @@ thunderbird_tests = [
               'branch': 'comm-central',
               'debug_build': True,
               'platform': 'win32'},
-     'filename': 'comm-central-debug-thunderbird-27.0a1.en-US.win32.installer.exe',
+     'filename': '1380362686-comm-central-debug-thunderbird-27.0a1.en-US.win32.installer.exe',
      'url': 'thunderbird/tinderbox-builds/comm-central-win32-debug/'
             '1380362686/thunderbird-27.0a1.en-US.win32.installer.exe'},
     # -a thunderbird -p win32 --branch=comm-central -l de
@@ -234,7 +234,7 @@ thunderbird_tests = [
               'branch': 'comm-central',
               'date': '2013-09-28',
               'platform': 'win32'},
-     'filename': '2013-09-28-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
+     'filename': '1380362686-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
      'url': 'thunderbird/tinderbox-builds/comm-central-win32/'
             '1380362686/thunderbird-27.0a1.en-US.win32.installer.exe'},
     # -a thunderbird -p win32 --branch=comm-central --date=2013-07-24 --build-number=1
@@ -243,7 +243,7 @@ thunderbird_tests = [
               'build_number': '1',
               'date': '2013-09-28',
               'platform': 'win32'},
-     'filename': '2013-09-28-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
+     'filename': '1380362527-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
      'url': 'thunderbird/tinderbox-builds/comm-central-win32/'
             '1380362527/thunderbird-27.0a1.en-US.win32.installer.exe'},
     # -a thunderbird -p win32 --branch=comm-central --date=1380362527
@@ -258,7 +258,7 @@ thunderbird_tests = [
     {'args': {'application': 'thunderbird',
               'branch': 'comm-aurora',
               'platform': 'win32'},
-     'filename': 'comm-aurora-thunderbird-27.0a1.en-US.win32.installer.exe',
+     'filename': '1380362686-comm-aurora-thunderbird-27.0a1.en-US.win32.installer.exe',
      'url': 'thunderbird/tinderbox-builds/comm-aurora-win32/'
             '1380362686/thunderbird-27.0a1.en-US.win32.installer.exe'}
 ]

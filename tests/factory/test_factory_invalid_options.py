@@ -62,7 +62,7 @@ tests = [
     # TinderboxScraper
     {
         'scraper_type': 'tinderbox',
-        'fname': 'mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
+        'fname': '1374583608-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
         'kwargs': {
             'platform': 'win32',
 

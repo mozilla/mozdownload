@@ -823,16 +823,14 @@ class TinderboxScraper(Scraper):
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary."""
-        if not self.timestamp and self.date:
-            date = self.date.strftime('%Y-%m-%d-')
-        else:
-            date = ''
-        # str(...) necessary to create str type else unicode --> test_tinderbox fail
-        return str('%(TIMESTAMP)s%(BRANCH)s%(DEBUG)s-%(NAME)s' % {
-            'TIMESTAMP': self.timestamp + '-' if self.timestamp else str(date),
+        if hasattr(self, 'builds'):
+            self.timestamp = self.builds[self.build_index]
+
+        return '%(TIMESTAMP)s%(BRANCH)s%(DEBUG)s-%(NAME)s' % {
+            'TIMESTAMP': self.timestamp + '-' if self.timestamp else '',
             'BRANCH': self.branch,
             'DEBUG': '-debug' if self.debug_build else '',
-            'NAME': binary})
+            'NAME': binary}
 
     @property
     def build_list_regex(self):
