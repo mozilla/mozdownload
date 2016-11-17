@@ -108,3 +108,11 @@ To actually download the remote file the download() method has to be called:
     from mozdownload import FactoryScraper
     scraper = FactoryScraper('daily')
     filename = scraper.download()
+
+## Testing
+
+To run the entire test suite to check if your changes create any errors, run `tox`.
+
+If you only run very specific tests, please specify it via `tox -- -k <keyword>`.
+For example, if you are only interested in tests that look at tinderbox builds, run `tox -- -k tinderbox`.
+The `-k <keyword>` works for folders, filenames and even names of test methods.
