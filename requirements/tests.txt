@@ -2,5 +2,5 @@ mock
 mozfile >= 1.1
 mozprocess >= 0.22
 pylama
-pytest
+pytest==3.0.5
 wptserve >= 1.4.0
