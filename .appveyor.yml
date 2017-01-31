@@ -1,8 +1,6 @@
 build: false
 
 environment:
-    COVERALLS_REPO_TOKEN:
-        secure: KwCuD+wQ3WCmI+so2IPAnmGYZCk6P50WM0uE318n2jbqxUn1BoXRG1JwqUpHOa9z
     PYTHON: "C:\\Python27"
     TOXENV: "py27"
 
