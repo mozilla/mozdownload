@@ -11,6 +11,9 @@ matrix:
         - python: 2.7
           os: linux
           env: TOXENV=py27
+        - python: 2.7
+          os: linux
+          env: TOXENV=pylama
         - language: generic
           os: osx
           # 7.2 is OS X 10.11.x
