@@ -600,10 +600,10 @@ class ReleaseScraper(Scraper):
         """Return the regex for the binary."""
         regex = {'linux': r'^%(APP)s-%(VERSION)s\.%(EXT)s$',
                  'linux64': r'^%(APP)s-%(VERSION)s\.%(EXT)s$',
-                 'mac': r'^%(APP)s %(VERSION)s\.%(EXT)s$',
-                 'mac64': r'^%(APP)s %(VERSION)s\.%(EXT)s$',
-                 'win32': r'^%(APP)s Setup %(STUB)s%(VERSION)s\.%(EXT)s$',
-                 'win64': r'^%(APP)s Setup %(STUB)s%(VERSION)s\.%(EXT)s$',
+                 'mac': r'^%(APP)s(?:\s|-)%(VERSION)s\.%(EXT)s$',
+                 'mac64': r'^%(APP)s(?:\s|-)%(VERSION)s\.%(EXT)s$',
+                 'win32': r'^%(APP)s(?:\sSetup\s|-)%(STUB)s%(VERSION)s\.%(EXT)s$',
+                 'win64': r'^%(APP)s(?:\sSetup\s|-)%(STUB)s%(VERSION)s\.%(EXT)s$',
                  }
         return regex[self.platform] % {
             'APP': self.application,
