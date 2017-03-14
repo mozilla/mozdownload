@@ -75,12 +75,28 @@ tests_candidate_scraper = [
               'build_number': 1},
      'url': 'firefox/candidates/45.4.0esr-candidates/build1/win32/en-US/Firefox Setup 45.4.0esr.exe'},
 
+    # -a firefox -p win32 -v 45.4.0esr --build-number=1 --extension json
+    {'args': {'application': 'firefox',
+              'extension': 'json',
+              'platform': 'win32',
+              'version': '45.4.0esr',
+              'build_number': 1},
+     'url': 'firefox/candidates/45.4.0esr-candidates/build1/win32/en-US/firefox-45.4.0esr.json'},
+
     # -a firefox -p linux -v 45.4.0esr --build-number=1
     {'args': {'application': 'firefox',
               'platform': 'linux',
               'version': '45.4.0esr',
               'build_number': 1},
      'url': 'firefox/candidates/45.4.0esr-candidates/build1/linux-i686/en-US/firefox-45.4.0esr.tar.bz2'},
+
+    # -a firefox -p linux -v 45.4.0esr --build-number=1 --extension json
+    {'args': {'application': 'firefox',
+              'extension': 'json',
+              'platform': 'linux',
+              'version': '45.4.0esr',
+              'build_number': 1},
+     'url': 'firefox/candidates/45.4.0esr-candidates/build1/linux-i686/en-US/firefox-45.4.0esr.json'},
 
     # -a firefox -p linux64 -v 45.4.0esr --build-number=1
     {'args': {'application': 'firefox',
@@ -89,12 +105,28 @@ tests_candidate_scraper = [
               'build_number': 1},
      'url': 'firefox/candidates/45.4.0esr-candidates/build1/linux-x86_64/en-US/firefox-45.4.0esr.tar.bz2'},
 
+    # -a firefox -p linux64 -v 45.4.0esr --build-number=1 --extension json
+    {'args': {'application': 'firefox',
+              'extension': 'json',
+              'platform': 'linux64',
+              'version': '45.4.0esr',
+              'build_number': 1},
+     'url': 'firefox/candidates/45.4.0esr-candidates/build1/linux-x86_64/en-US/firefox-45.4.0esr.json'},
+
     # -a firefox -p mac -v 45.4.0esr --build-number=1
     {'args': {'application': 'firefox',
               'platform': 'mac',
               'version': '45.4.0esr',
               'build_number': 1},
      'url': 'firefox/candidates/45.4.0esr-candidates/build1/mac/en-US/Firefox 45.4.0esr.dmg'},
+
+    # -a firefox -p mac -v 45.4.0esr --build-number=1 --extension json
+    {'args': {'application': 'firefox',
+              'extension': 'json',
+              'platform': 'mac',
+              'version': '45.4.0esr',
+              'build_number': 1},
+     'url': 'firefox/candidates/45.4.0esr-candidates/build1/mac/en-US/firefox-45.4.0esr.json'},
 
     # -a firefox -p win32 -v 45.4.0esr -l de --build-number=1
     {'args': {'application': 'firefox',
