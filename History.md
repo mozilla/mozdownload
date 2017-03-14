@@ -1,3 +1,17 @@
+1.22 / 2017-03-15
+=================
+  * Remove left-over comment for exclusion of pycodestyle warnings of bare excepts (#426)
+  * Bump package dependencies for more relaxed version requirements (#430)
+  * Add unit tests for candidate scraper and --extension (#429)
+  * Update tox config for pylama package changes (#429)
+  * Fix uses of bare exceptions in scraper.py (#429)
+  * Fix binary_regex for candidate/release scraper to support different file naming schemes (#429)
+  * Add coverage support for py.test (#425)
+  * Add {posargs} to tox.ini (#398)
+  * Add max_line_length parameters for pylama to setup.cfg (#418)
+  * Remove test for optional authentication (#420)
+  * Fix remote tests due to non-existent candidate builds (#413)
+
 1.21 / 2016-09-20
 =================
   * Change default branch for Thunderbird in manual tests to comm-central (#402)
