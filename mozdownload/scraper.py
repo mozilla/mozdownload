@@ -172,7 +172,7 @@ class Scraper(object):
                 try:
                     self._binary = pattern.match(entry).group()
                     break
-                except:
+                except Exception:
                     # No match, continue with next entry
                     continue
             else:
@@ -306,7 +306,7 @@ class Scraper(object):
 
                 if log_level <= logging.INFO and content_length:
                     pbar.finish()
-            except:
+            except Exception:
                 if os.path.isfile(tmp_file):
                     os.remove(tmp_file)
                 raise
@@ -389,7 +389,7 @@ class DailyScraper(Scraper):
             # build index to find the requested build for that day.
             try:
                 self.date = datetime.strptime(self.date, '%Y-%m-%d')
-            except:
+            except Exception:
                 raise ValueError('%s is not a valid date' % self.date)
         else:
             # If no querying option has been specified the latest available
@@ -445,7 +445,7 @@ class DailyScraper(Scraper):
             try:
                 pattern.match(entry).group()
                 return True
-            except:
+            except Exception:
                 # No match, continue with next entry
                 continue
         return False
@@ -523,7 +523,7 @@ class DailyScraper(Scraper):
             # Get exact timestamp of the build to build the local file name
             folder = self.builds[self.build_index]
             timestamp = re.search('([\d\-]+)-\D.*', folder).group(1)
-        except:
+        except Exception:
             # If it's not available use the build's date
             timestamp = self.date.strftime('%Y-%m-%d')
 
@@ -550,7 +550,7 @@ class DailyScraper(Scraper):
                     and self.locale != 'multi':
                 path = '%s/' % urljoin(path, self.locale)
             return path
-        except:
+        except Exception:
             folder = urljoin(self.base_url, self.monthly_build_list_regex)
             raise errors.NotFoundError("Specified sub folder cannot be found",
                                        folder)
@@ -784,12 +784,12 @@ class TinderboxScraper(Scraper):
             try:
                 # date is provided in the format 2013-07-23
                 self.date = datetime.strptime(self.date, '%Y-%m-%d')
-            except:
+            except Exception:
                 try:
                     # date is provided as a unix timestamp
                     datetime.fromtimestamp(float(self.date))
                     self.timestamp = self.date
-                except:
+                except Exception:
                     raise ValueError('%s is not a valid date' % self.date)
 
         # For localized builds we do not have to retrieve the list of builds
@@ -876,7 +876,7 @@ class TinderboxScraper(Scraper):
             try:
                 pattern.match(entry).group()
                 return True
-            except:
+            except Exception:
                 # No match, continue with next entry
                 continue
         return False
