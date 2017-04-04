@@ -51,6 +51,9 @@ DEFAULT_FILE_EXTENSIONS = {'android-api-9': 'apk',
                            'win32': 'exe',
                            'win64': 'exe'}
 
+DEFAULT_BRANCHES = {'thunderbird': 'comm-central'
+                    }
+
 PLATFORM_FRAGMENTS = {'android-api-9': r'android-arm',
                       'android-api-11': r'android-arm',
                       'android-api-15': r'android-arm',
@@ -332,10 +335,15 @@ class Scraper(object):
 class DailyScraper(Scraper):
     """Class to download a daily build from the Mozilla server."""
 
-    def __init__(self, branch='mozilla-central', build_id=None, date=None,
+    def __init__(self, branch=None, build_id=None, date=None,
                  build_number=None, revision=None, *args, **kwargs):
         """Create an instance of the daily scraper."""
-        self.branch = branch
+        if not branch:
+            application = kwargs.get('application', None)
+            self.branch = DEFAULT_BRANCHES.get(application,
+                                               'mozilla-central')
+        else:
+            self.branch = branch
         self.build_id = build_id
         self.date = date
         self.build_number = build_number
