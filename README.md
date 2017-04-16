@@ -5,6 +5,9 @@
 
 # mozdownload
 
+[![Latest Version](https://pypip.in/version/mozdownload/badge.png)](https://pypi.python.org/pypi/mozdownload/)
+[![Build Status](https://travis-ci.org/mozilla/mozdownload.svg?branch=master)](https://travis-ci.org/mozilla/mozdownload)
+
 [mozdownload](https://github.com/mozilla/mozdownload)
 is a [python package](http://pypi.python.org/pypi/mozdownload)
 which handles downloading of Mozilla applications.
