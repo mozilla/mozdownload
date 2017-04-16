@@ -328,6 +328,20 @@ class Scraper(object):
             ' ... '.join([', '.join(builds[:5]), ', '.join(builds[-5:])]) or
             ', '.join(builds)))
 
+    def is_build_in_range(self, build_number, builds):
+        """ Class to check if the build number is in range of the
+        builds found"""
+
+        if isinstance(build_number, str):
+            build_number = int(build_number)
+
+        if build_number is not None and 1 < build_number > len(builds):
+
+            raise NotFoundError(
+                'Specified build number is out of range',
+                '1-%i' % len(builds)
+            )
+
 
 class DailyScraper(Scraper):
     """Class to download a daily build from the Mozilla server."""
@@ -399,6 +413,8 @@ class DailyScraper(Scraper):
 
         self.builds, self.build_index = self.get_build_info_for_date(
             self.date, self.build_index)
+
+        self.is_build_in_range(self.build_number, self.builds)
 
     def get_latest_build_date(self):
         """Return date of latest available nightly build."""
@@ -682,6 +698,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
                 'been found' % url
             raise errors.NotFoundError(message, url)
 
+        self.is_build_in_range(self.build_number, parser.entries)
+
         self.show_matching_builds(parser.entries)
         self.builds = parser.entries
         self.build_index = len(parser.entries) - 1
@@ -797,6 +815,8 @@ class TinderboxScraper(Scraper):
         if not self.locale_build:
             self.builds, self.build_index = self.get_build_info_for_index(
                 self.build_index)
+
+            self.is_build_in_range(self.build_number, self.builds)
 
     @property
     def binary_regex(self):
