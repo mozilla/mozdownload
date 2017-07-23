@@ -26,10 +26,10 @@ from mozdownload import treeherder
 from mozdownload.utils import urljoin
 
 
-APPLICATIONS = ('b2g', 'firefox', 'fennec', 'thunderbird')
+APPLICATIONS = ('firefox', 'fennec', 'thunderbird')
 
 # Some applications contain all locales in a single build
-APPLICATIONS_MULTI_LOCALE = ('b2g', 'fennec')
+APPLICATIONS_MULTI_LOCALE = ('fennec')
 
 # Used if the application is named differently than the subfolder on the server
 APPLICATIONS_TO_FTP_DIRECTORY = {'fennec': 'mobile'}
