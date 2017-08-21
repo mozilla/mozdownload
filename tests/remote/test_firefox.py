@@ -190,11 +190,7 @@ tests_daily_scraper = [
     {'args': {'platform': 'win32',
               'branch': 'mozilla-central',
               'build_id': '20151021030212',
-              'is_stub_installer': True}},
-
-    # -p win32 --branch=mozilla-aurora
-    {'args': {'platform': 'win32',
-              'branch': 'mozilla-aurora'}},
+              'is_stub_installer': True}}
 ]
 
 tests_tinderbox_scraper = [
