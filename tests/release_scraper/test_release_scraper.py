@@ -57,13 +57,27 @@ firefox_tests = [
               'version': '23.0.1'},
      'filename': 'firefox-23.0.1.de.win32.exe',
      'url': 'firefox/releases/23.0.1/win32/de/Firefox Setup 23.0.1.exe'},
-    # -a firefox -p win32 -v 23.0.1 --stub
+    # -a firefox -p win32 -v 23.0.1 --stub (old format)
+    {'args': {'application': 'firefox',
+              'platform': 'win32',
+              'is_stub_installer': True,
+              'version': '21.0'},
+     'filename': 'firefox-21.0.en-US.win32-stub.exe',
+     'url': 'firefox/releases/21.0/win32/en-US/Firefox Setup Stub 21.0.exe'},
+    # -a firefox -p win32 -v 23.0.1 --stub (new format)
     {'args': {'application': 'firefox',
               'platform': 'win32',
               'is_stub_installer': True,
               'version': '23.0.1'},
      'filename': 'firefox-23.0.1.en-US.win32-stub.exe',
-     'url': 'firefox/releases/23.0.1/win32/en-US/Firefox Setup Stub 23.0.1.exe'},
+     'url': 'firefox/releases/23.0.1/win32/en-US/Firefox Installer.exe'},
+    # -a firefox -p win64 -v 23.0.1 --stub (new format)
+    {'args': {'application': 'firefox',
+              'platform': 'win64',
+              'is_stub_installer': True,
+              'version': '23.0.1'},
+     'filename': 'firefox-23.0.1.en-US.win64-stub.exe',
+     'url': 'firefox/releases/23.0.1/win64/en-US/Firefox Installer.exe'},
 ]
 
 thunderbird_tests = [

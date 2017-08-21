@@ -113,12 +113,21 @@ firefox_tests = [
     'url': 'firefox/nightly/2013/07/2013-07-02-03-12-13-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'
     },
 
-    # -p win32 --branch=mozilla-central --stub
+    # -p win32 --branch=mozilla-central --stub (old format)
+    {'args': {'platform': 'win32',
+              'branch': 'mozilla-central',
+              'date': '2013-09-30',
+              'is_stub_installer': True},
+    'filename': '2013-09-30-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer-stub.exe',
+    'url': 'firefox/nightly/2013/09/2013-09-30-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.installer-stub.exe'
+    },
+
+    # -p win32 --branch=mozilla-central --stub (new format)
     {'args': {'platform': 'win32',
               'branch': 'mozilla-central',
               'is_stub_installer': True},
-    'filename': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer-stub.exe',
-    'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.installer-stub.exe'
+    'filename': '2013-10-01-03-02-04-mozilla-central-Firefox Installer.en-US.exe',
+    'url': 'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/Firefox Installer.en-US.exe'
     },
 
     # -p win32 --branch=mozilla-aurora
