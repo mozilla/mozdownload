@@ -743,6 +743,7 @@ class TinderboxScraper(Scraper):
         """Create instance of a tinderbox scraper."""
         self.branch = branch
         self.build_number = build_number
+        self.builds = []
         self.debug_build = debug_build
         self.date = date
         self.revision = revision
@@ -823,7 +824,7 @@ class TinderboxScraper(Scraper):
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary."""
-        if hasattr(self, 'builds'):
+        if not self.locale_build:
             self.timestamp = self.builds[self.build_index]
 
         return '%(TIMESTAMP)s%(BRANCH)s%(DEBUG)s-%(NAME)s' % {
