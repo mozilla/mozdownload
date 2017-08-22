@@ -32,13 +32,22 @@ firefox_tests = [
      'filename': 'mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'url': 'firefox/tinderbox-builds/mozilla-central-win32/'
             '1374583608/firefox-25.0a1.en-US.win32.installer.exe'},
-    # -a firefox -p win32 --stub
+    # -a firefox -p win32 --date 1374573725 --stub (old format)
     {'args': {'application': 'firefox',
               'platform': 'win32',
+              'date': '1374573725',
               'is_stub_installer': True},
-     'filename': 'mozilla-central-firefox-25.0a1.en-US.win32.installer-stub.exe',
+     'filename': '1374573725-mozilla-central-firefox-25.0a1.en-US.win32.installer-stub.exe',
      'url': 'firefox/tinderbox-builds/mozilla-central-win32/'
-            '1374583608/firefox-25.0a1.en-US.win32.installer-stub.exe'},
+            '1374573725/firefox-25.0a1.en-US.win32.installer-stub.exe'},
+    # -a firefox -p win32 --stub (new format)
+    {'args': {'application': 'firefox',
+              'platform': 'win32',
+              'date': '1374583608',
+              'is_stub_installer': True},
+     'filename': '1374583608-mozilla-central-setup.exe',
+     'url': 'firefox/tinderbox-builds/mozilla-central-win32/'
+            '1374583608/setup.exe'},
     # -a firefox -p linux --branch=mozilla-central
     {'args': {'branch': 'mozilla-central',
               'platform': 'linux'},

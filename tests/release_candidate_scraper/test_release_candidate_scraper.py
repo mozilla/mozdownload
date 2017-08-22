@@ -58,13 +58,27 @@ firefox_tests = [
               'version': '23.0.1'},
      'filename': 'firefox-23.0.1-build1.en-US.win32.exe',
      'url': 'firefox/candidates/23.0.1-candidates/build1/win32/en-US/Firefox Setup 23.0.1.exe'},
-    # -a firefox -p win32 -v 23.0.1 --stub
+    # -a firefox -p win32 -v 21.0 --stub (old format)
+    {'args': {'application': 'firefox',
+              'is_stub_installer': True,
+              'platform': 'win32',
+              'version': '21.0'},
+     'filename': 'firefox-21.0-build1.en-US.win32-stub.exe',
+     'url': 'firefox/candidates/21.0-candidates/build1/win32/en-US/Firefox Setup Stub 21.0.exe'},
+    # -a firefox -p win32 -v 23.0.1 --stub (new format)
     {'args': {'application': 'firefox',
               'is_stub_installer': True,
               'platform': 'win32',
               'version': '23.0.1'},
      'filename': 'firefox-23.0.1-build3.en-US.win32-stub.exe',
-     'url': 'firefox/candidates/23.0.1-candidates/build3/win32/en-US/Firefox Setup Stub 23.0.1.exe'},
+     'url': 'firefox/candidates/23.0.1-candidates/build3/win32/en-US/Firefox Installer.exe'},
+    # -a firefox -p win64 -v 23.0.1 --stub (new format)
+    {'args': {'application': 'firefox',
+              'is_stub_installer': True,
+              'platform': 'win64',
+              'version': '23.0.1'},
+     'filename': 'firefox-23.0.1-build3.en-US.win64-stub.exe',
+     'url': 'firefox/candidates/23.0.1-candidates/build3/win64/en-US/Firefox Installer.exe'},
 ]
 
 thunderbird_tests = [

@@ -59,12 +59,19 @@ tests_release_scraper = [
               'version': '42.0b2'},
      'url': 'firefox/releases/42.0b2/win32/de/Firefox Setup 42.0b2.exe'},
 
-    # -a firefox -p win32 -v 42.0b2 --stub
+    # -a firefox -p win32 -v 42.0b2 --stub (old format)
     {'args': {'application': 'firefox',
               'platform': 'win32',
               'is_stub_installer': True,
               'version': '42.0b2'},
      'url': 'firefox/releases/42.0b2/win32/en-US/Firefox Setup Stub 42.0b2.exe'},
+
+    # -a firefox -p win32 -v 55.0 --stub (new format)
+    {'args': {'application': 'firefox',
+              'platform': 'win32',
+              'is_stub_installer': True,
+              'version': '55.0'},
+     'url': 'firefox/releases/55.0/win32/en-US/Firefox Installer.exe'},
 ]
 
 tests_candidate_scraper = [
@@ -135,6 +142,22 @@ tests_candidate_scraper = [
               'version': '45.4.0esr',
               'build_number': 1},
      'url': 'firefox/candidates/45.4.0esr-candidates/build1/win32/de/Firefox Setup 45.4.0esr.exe'},
+
+    # -a firefox -p win32 -v 52.0 --build-number=1 --stub (old format)
+    {'args': {'application': 'firefox',
+              'platform': 'win32',
+              'is_stub_installer': True,
+              'version': '52.0',
+              'build_number': 1},
+     'url': 'firefox/candidates/52.0-candidates/build1/win32/en-US/Firefox Setup Stub 52.0.exe'},
+
+    # -a firefox -p win32 -v 55.0 --build-number=1 --stub (new format)
+    {'args': {'application': 'firefox',
+              'platform': 'win32',
+              'is_stub_installer': True,
+              'version': '55.0',
+              'build_number': 1},
+     'url': 'firefox/candidates/55.0-candidates/build1/win32/en-US/Firefox Installer.exe'},
 ]
 
 tests_daily_scraper = [
@@ -186,15 +209,23 @@ tests_daily_scraper = [
               'build_id': '20151021030212',
               'extension': 'txt'}},
 
-    # -p win32 --branch=mozilla-central --build-id=20151021030212 --stub
+    # -p win32 --branch=mozilla-central --build-id=20151021030212 --stub (old format)
     {'args': {'platform': 'win32',
               'branch': 'mozilla-central',
               'build_id': '20151021030212',
               'is_stub_installer': True}},
 
-    # -p win32 --branch=mozilla-aurora
+    # -p win32 --branch=mozilla-central --build-id=20170821100350 --stub (new format)
     {'args': {'platform': 'win32',
-              'branch': 'mozilla-aurora'}},
+              'branch': 'mozilla-central',
+              'build_id': '20170821100350',
+              'is_stub_installer': True}},
+
+    # -p win64 --branch=mozilla-central --build-id=20170821100350 --stub (new format)
+    {'args': {'platform': 'win64',
+              'branch': 'mozilla-central',
+              'build_id': '20170821100350',
+              'is_stub_installer': True}},
 ]
 
 tests_tinderbox_scraper = [
@@ -233,8 +264,8 @@ tests_tinderbox_scraper = [
               'platform': 'linux',
               'extension': 'txt'}},
 
-    # -p win32 --branch=mozilla-inbound
-    {'args': {'branch': 'mozilla-inbound',
+    # -p win32 --branch=mozilla-beta
+    {'args': {'branch': 'mozilla-beta',
               'platform': 'win32'}},
 ]
 
