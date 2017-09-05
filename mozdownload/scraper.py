@@ -695,8 +695,8 @@ class ReleaseCandidateScraper(ReleaseScraper):
             self.build_index = 0
             self.logger.info('Selected build: build%s' % self.build_number)
         else:
-            self.logger.info('Selected build: build%d' %
-                             (self.build_index + 1))
+            self.logger.info('Selected build: %s' %
+                             (parser.entries[self.build_index]))
 
     @property
     def candidate_build_list_regex(self):
