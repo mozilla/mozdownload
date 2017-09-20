@@ -1,7 +1,7 @@
-coveralls==1.1
-mock
+coveralls==1.2.0
+mock==2.0.0
 mozfile >= 1.1
 mozprocess >= 0.22
-pytest==3.0.5
-pytest-cov==2.4.0
+pytest==3.2.2
+pytest-cov==2.5.1
 wptserve >= 1.4.0
