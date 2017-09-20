@@ -28,7 +28,7 @@ deps = ['mozinfo >= 0.9',
         'progressbar == 2.3',
         'redo == 1.6',
         'requests >= 2.9.1, <3.0.0',
-        'treeherder-client >= 3.0.0, <4.0.0',
+        'treeherder-client >= 4.0.0, <5.0.0',
         ]
 
 setup(name='mozdownload',
