@@ -81,7 +81,7 @@ class Treeherder(object):
                 if option_hash:
                     break
 
-            resultsets = self.client.get_resultsets(self.branch, revision=revision)
+            resultsets = self.client.get_pushes(self.branch, revision=revision)
 
             # Set filters to speed-up querying jobs
             kwargs = {
