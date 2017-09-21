@@ -1,3 +1,12 @@
+1.23 / 2017-09-21
+=================
+  * Update to treeherder-client 4.0.0 (#447)
+  * Update coveralls, mock, pytest, and pytest-cov to latest version (#448)
+  * Display correct build number for candidate build (#437)
+  * Remove B2G related code and tests (#439)
+  * Add support for new stub installer file names (#442)
+  * Add option to only print the final url (#344)
+
 1.22 / 2017-03-15
 =================
   * Remove left-over comment for exclusion of pycodestyle warnings of bare excepts (#426)
