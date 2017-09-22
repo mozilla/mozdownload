@@ -800,6 +800,7 @@ class TinderboxScraper(Scraper):
         if not self.locale_build:
             self.builds, self.build_index = self.get_build_info_for_index(
                 self.build_index)
+            self.timestamp = self.builds[self.build_index]
 
     @property
     def binary_regex(self):
@@ -823,8 +824,6 @@ class TinderboxScraper(Scraper):
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary."""
-        if hasattr(self, 'builds'):
-            self.timestamp = self.builds[self.build_index]
 
         return '%(TIMESTAMP)s%(BRANCH)s%(DEBUG)s-%(NAME)s' % {
             'TIMESTAMP': self.timestamp + '-' if self.timestamp else '',
