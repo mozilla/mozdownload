@@ -800,6 +800,7 @@ class TinderboxScraper(Scraper):
         if not self.locale_build:
             self.builds, self.build_index = self.get_build_info_for_index(
                 self.build_index)
+            # Assigned to provide unique timestamp in filename for each file
             self.timestamp = self.builds[self.build_index]
 
     @property
