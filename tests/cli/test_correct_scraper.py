@@ -31,7 +31,7 @@ tests = {
 
     'tinderbox': {
         'args': ['-t', 'tinderbox', '-p', 'win32'],
-        'fname': 'mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
+        'fname': '1374583608-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
     },
 
     'try': {
