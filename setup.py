@@ -24,13 +24,6 @@ def get_version():
     return re.findall("__version__ = '([\d\.]+)'",
                       read('mozdownload', 'cli.py'), re.M)[0]
 
-deps = ['mozinfo >= 0.9',
-        'progressbar == 2.3',
-        'redo == 1.6',
-        'requests >= 2.9.1, <3.0.0',
-        'treeherder-client >= 4.0.0, <5.0.0',
-        ]
-
 setup(name='mozdownload',
       version=get_version(),
       description='Script to download builds for Firefox and Thunderbird '
@@ -45,7 +38,7 @@ setup(name='mozdownload',
       license='Mozilla Public License 2.0 (MPL 2.0)',
       packages=['mozdownload'],
       zip_safe=False,
-      install_requires=deps,
+      install_requires=read('requirements.txt').splitlines(),
       entry_points="""
       # -*- Entry points: -*-
       [console_scripts]
