@@ -13,11 +13,8 @@ THIS_DIR = os.path.dirname(os.path.realpath(__name__))
 
 
 def read(*parts):
-    try:
-        with open(os.path.join(THIS_DIR, *parts)) as f:
-            return f.read()
-    except IOError:
-        return None
+    with open(os.path.join(THIS_DIR, *parts)) as f:
+        return f.read()
 
 
 def get_version():
