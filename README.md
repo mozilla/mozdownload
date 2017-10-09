@@ -1,4 +1,5 @@
 [![PyPI version](https://badge.fury.io/py/mozdownload.svg)](http://badge.fury.io/py/mozdownload)
+[![Updates](https://pyup.io/repos/github/mozilla/mozdownload/shield.svg)](https://pyup.io/repos/github/mozilla/mozdownload/)
 [![Coverage Status](https://coveralls.io/repos/github/mozilla/mozdownload/badge.svg)](https://coveralls.io/github/mozilla/mozdownload)
 [![Build Status](https://travis-ci.org/mozilla/mozdownload.svg?branch=master)](https://travis-ci.org/mozilla/mozdownload)
 [![Stories in Ready](https://badge.waffle.io/mozilla/mozdownload.png?label=ready&title=Ready)](https://waffle.io/mozilla/mozdownload)
