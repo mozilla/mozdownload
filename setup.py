@@ -21,6 +21,7 @@ def get_version():
     return re.findall("__version__ = '([\d\.]+)'",
                       read('mozdownload', 'cli.py'), re.M)[0]
 
+  
 setup(name='mozdownload',
       version=get_version(),
       description='Script to download builds for Firefox and Thunderbird '
