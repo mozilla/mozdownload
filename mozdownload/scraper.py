@@ -6,12 +6,13 @@
 
 from __future__ import absolute_import, unicode_literals
 
+import hashlib
+import io
 import logging
 import os
 import re
 import sys
 import urllib
-import hashlib
 from datetime import datetime
 from urlparse import urlparse
 
@@ -19,7 +20,6 @@ import mozinfo
 import progressbar as pb
 import redo
 import requests
-import io
 
 from mozdownload import errors
 from mozdownload.parser import DirectoryParser
