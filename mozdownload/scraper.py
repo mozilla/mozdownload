@@ -376,7 +376,6 @@ class Scraper(object):
             for chunk in r.iter_content(CHUNK_SIZE):
                 stream.write(chunk)
                 bytes_downloaded += CHUNK_SIZE
-                hash.update(str(chunk))
 
                 if log_level <= logging.INFO and content_length:
                     pbar.update(bytes_downloaded)
@@ -385,6 +384,9 @@ class Scraper(object):
                 if self.timeout_download and \
                         t1 >= self.timeout_download:
                     raise errors.TimeoutError
+                
+            stream.seek(0)
+            hash.update(str(stream.read()))
 
             self.hashdata = hash.hexdigest()
 
