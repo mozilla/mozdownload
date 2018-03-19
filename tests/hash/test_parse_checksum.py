@@ -9,9 +9,9 @@ import tempfile
 import unittest
 import urllib
 
+import mozdownload
 import mozfile
 
-import mozdownload
 from mozdownload.scraper import BASE_URL
 from mozdownload.utils import urljoin
 
