@@ -407,10 +407,13 @@ class Scraper(object):
         self.logger.info('Saving as: %s' % self.filename)
 
         tmp_file = self.filename + ".part"
-
-        self._retry(self._download, args=(open(tmp_file, 'wb'), self.url),
+        f = open(tmp_file, 'wb')
+        self._retry(self._download, args=(f, self.url),
                     retry_exceptions=(requests.exceptions.RequestException,
                                       errors.TimeoutError))
+        f.seek(0)
+        self.content_length = os.fstat(f.fileno()).st_size
+        f.close()
         self.source_hash = self.hashdata
         checksum_url = self.get_checksum_url()
         checksum_code = self.has_checksum(checksum_url)
