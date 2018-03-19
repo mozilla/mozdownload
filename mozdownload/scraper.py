@@ -335,8 +335,8 @@ class Scraper(object):
                 return checksum
         return ''
 
-    def download(self):
-        """Download the specified file."""
+    def _download(self, stream, url):
+
         def total_seconds(td):
             # Keep backward compatibility with Python 2.6 which doesn't have
             # this method
@@ -345,6 +345,53 @@ class Scraper(object):
             else:
                 return (td.microseconds +
                         (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10 ** 6
+
+        try:
+            start_time = datetime.now()
+
+            # Enable streaming mode so we can download content in chunks
+            r = self.session.get(url, stream=True)
+            r.raise_for_status()
+
+            content_length = r.headers.get('Content-length')
+            # ValueError: Value out of range if only total_size given
+            if content_length:
+                total_size = int(content_length.strip())
+                max_value = ((total_size / CHUNK_SIZE) + 1) * CHUNK_SIZE
+
+            bytes_downloaded = 0
+
+            log_level = self.logger.getEffectiveLevel()
+            if log_level <= logging.INFO and content_length:
+                widgets = [pb.Percentage(), ' ', pb.Bar(), ' ', pb.ETA(),
+                           ' ', pb.FileTransferSpeed()]
+                pbar = pb.ProgressBar(widgets=widgets,
+                                      maxval=max_value).start()
+
+            hash = hashlib.sha512()
+            for chunk in r.iter_content(CHUNK_SIZE):
+                stream.write(chunk)
+                bytes_downloaded += CHUNK_SIZE
+                hash.update(str(chunk))
+
+                if log_level <= logging.INFO and content_length:
+                    pbar.update(bytes_downloaded)
+
+                t1 = total_seconds(datetime.now() - start_time)
+                if self.timeout_download and \
+                        t1 >= self.timeout_download:
+                    raise errors.TimeoutError
+
+            self.hashdata = hash.hexdigest()
+
+            if log_level <= logging.INFO and content_length:
+                pbar.finish()
+        except Exception:
+            stream.truncate(0)
+            raise
+
+    def download(self):
+        """Download the specified file."""
 
         # Don't re-download the file
         if os.path.isfile(os.path.abspath(self.filename)):
@@ -361,55 +408,7 @@ class Scraper(object):
 
         tmp_file = self.filename + ".part"
 
-        def _download(stream, url):
-            try:
-                start_time = datetime.now()
-
-                # Enable streaming mode so we can download content in chunks
-                r = self.session.get(url, stream=True)
-                r.raise_for_status()
-
-                content_length = r.headers.get('Content-length')
-                # ValueError: Value out of range if only total_size given
-                if content_length:
-                    total_size = int(content_length.strip())
-                    max_value = ((total_size / CHUNK_SIZE) + 1) * CHUNK_SIZE
-
-                bytes_downloaded = 0
-
-                log_level = self.logger.getEffectiveLevel()
-                if log_level <= logging.INFO and content_length:
-                    widgets = [pb.Percentage(), ' ', pb.Bar(), ' ', pb.ETA(),
-                               ' ', pb.FileTransferSpeed()]
-                    pbar = pb.ProgressBar(widgets=widgets,
-                                          maxval=max_value).start()
-
-                hash = hashlib.sha512()
-                # with open(tmp_file, 'wb') as f:
-                for chunk in r.iter_content(CHUNK_SIZE):
-                    stream.write(chunk)
-                    bytes_downloaded += CHUNK_SIZE
-                    hash.update(str(chunk))
-
-                    if log_level <= logging.INFO and content_length:
-                        pbar.update(bytes_downloaded)
-
-                    t1 = total_seconds(datetime.now() - start_time)
-                    if self.timeout_download and \
-                            t1 >= self.timeout_download:
-                        raise errors.TimeoutError
-
-                self.hashdata = hash.hexdigest()
-
-                if log_level <= logging.INFO and content_length:
-                    pbar.finish()
-            except Exception:
-                if os.path.isfile(tmp_file):
-                    stream.close()
-                    os.remove(tmp_file)
-                raise
-
-        self._retry(_download, args=(open(tmp_file, 'wb'), self.url),
+        self._retry(self._download, args=(open(tmp_file, 'wb'), self.url),
                     retry_exceptions=(requests.exceptions.RequestException,
                                       errors.TimeoutError))
         self.source_hash = self.hashdata
