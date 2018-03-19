@@ -300,40 +300,44 @@ class Scraper(object):
         """Return the binary name inside the checksums file."""
         return self.binary
 
-    def get_checksum_url(self):
-        """Get the checksum url for current version."""
-        filename = self.binary
-        filename = re.sub('\.%s$' % DEFAULT_FILE_EXTENSIONS[self.platform], '', filename)
-        filename = re.sub('\.installer$', '', filename)
-        url = urljoin(self.path, filename + '.checksums')
-        return url
+    def get_checksums(self):
+        """Return the SHA512 checksums"""
+        try:
+            checksums_file = io.BytesIO()
 
-    def has_checksum(self, url):
-        """Check if the specified checksum file exists."""
-        self.logger.info('Checking checksum at url: %s' % url)
-        r = self.session.get(url, stream=True)
-        code = r.status_code
-        return code == 200
+            self.logger.info('Downloading checksums from: %s' % self.checksums_url)
 
-    def download_checksum(self, url):
-        """Download the checksum."""
-        r = self.session.get(url, stream=True)
-        r.raise_for_status()
+            self._retry(self._download, args=(checksums_file, self.checksums_url),
+                        retry_exceptions=(requests.exceptions.RequestException,
+                                          errors.TimeoutError))
 
-        return r.content
+            checksums_file.seek(0)
+            if not checksums_file.read(64):
+                checksums_file.close()
+                return {}
 
-    def parse_checksum_file(self, file):
-        """Search for the corresponding checksum data in the checksum file."""
-        name = self.binary
-        for line in file:
-            try:
-                checksum = re.search('[a-f0-9]{128}', line).group(0)
-                filename = re.search(name, line).group(0)
-            except Exception:
-                checksum = ''
-            if checksum and filename:
-                return checksum
-        return ''
+            checksums_file.seek(0)
+            result = {}
+            self.logger.info('Checksums binary: {}'.format(self.checksums_binary))
+            for line in checksums_file:
+                try:
+                    match = re.search(self.checksums_parse_regex, line)
+                    checksums = match.group(1)
+                    size = match.group(2)
+                    checksums_binary = match.group(3)
+                    if checksums_binary == self.checksums_binary_name:
+                        result['checksums'] = checksums
+                        try:
+                            result['size'] = int(size)
+                        except ValueError:
+                            result['size'] = ''
+                        break
+                except Exception:
+                    continue
+            checksums_file.close()
+            return result
+        except Exception:
+            return {}
 
     def _download(self, stream, url):
 
@@ -415,38 +419,22 @@ class Scraper(object):
         self.content_length = os.fstat(f.fileno()).st_size
         f.close()
         self.source_hash = self.hashdata
-        checksum_url = self.get_checksum_url()
-        checksum_code = self.has_checksum(checksum_url)
 
-        def check_hash():
-            try:
-                checksum_file = io.BytesIO()
-                _download(checksum_file, checksum_url)
-                checksum_file.seek(0)
-                # checksum_file = self.download_checksum(checksum_url)
-                checksum = self.parse_checksum_file(checksum_file)
-                # print checksum
-                # print self.source_hash
-                if checksum and checksum == self.source_hash:
-                    # self.logger.info(checksum)
-                    self.logger.info('Checksum verified')
-                elif checksum:
-                    self.logger.info('Checksum ERROR')
-                    raise errors.HashError(checksum_url, self.source_hash, checksum)
-            except Exception:
-                if os.path.isfile(tmp_file):
-                    os.remove(tmp_file)
-                raise
-
-        if not checksum_code:
-            # Don't download checksum if it doesn't exist
-            self.logger.info('No checksum found')
-        else:
-            self._retry(check_hash,
-                        retry_exceptions=(requests.exceptions.RequestException,
-                                          errors.TimeoutError, errors.HashError(
-                                                        checksum_url,
-                                                        self.source_hash, '')))
+        try:
+            checksums_dict = self.get_checksums()
+            checksums = checksums_dict['checksums']
+            size = checksums_dict['size']
+            if checksums == self.source_hash and (not size or size == self.content_length):
+                self.logger.info('Checksum verified')
+            else:
+                self.logger.info('Checksum ERROR')
+                raise errors.HashError(self.checksums_url, self.source_hash, checksums)
+        except KeyError:
+            self.logger.info('No checksums found')
+        except Exception:
+            if os.path.isfile(tmp_file):
+                os.remove(tmp_file)
+            raise
 
         os.rename(tmp_file, self.filename)
 
@@ -737,13 +725,6 @@ class DirectScraper(Scraper):
         """Location of the file to be downloaded."""
         return self._url
 
-    def has_checksum(self, url):
-        return False
-
-    def get_checksum_url(self):
-        """Get the checksum url for current version."""
-        return ''
-
 
 class ReleaseScraper(Scraper):
     """Class to download a release build of a Gecko based application."""
@@ -840,28 +821,6 @@ class ReleaseScraper(Scraper):
     @property
     def checksums_parse_regex(self):
         return r"(.+)\s()(.+)"
-
-    def get_checksum_url(self):
-        """Get the checksum url for current version."""
-        path = re.sub(self.locale + '/', '', self.path)
-        path = re.sub(PLATFORM_FRAGMENTS[self.platform] + '/', '', path)
-        filename = 'SHA512SUMS'
-        url = urljoin(path, filename)
-        return url
-
-    def parse_checksum_file(self, file):
-        """Search for the corresponding checksum data in the checksum file."""
-        name = PLATFORM_FRAGMENTS[self.platform] + '/' + self.locale + '/'
-        name += self.binary
-        for line in file:
-            try:
-                checksum = re.search('[a-f0-9]{128}', line).group(0)
-                filename = re.search(name, line).group(0)
-            except Exception:
-                checksum = ''
-            if checksum and filename:
-                return checksum
-        return ''
 
 
 class ReleaseCandidateScraper(ReleaseScraper):
