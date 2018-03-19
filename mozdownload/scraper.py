@@ -244,6 +244,62 @@ class Scraper(object):
         else:
             return "%s%d" % (mozinfo.os, mozinfo.bits)
 
+    @property
+    def checksums_binary(self):
+        """Return the name of the checksums file."""
+        def _get_binary():
+            # Retrieve all entries from the remote virtual folder
+            parser = self._create_directory_parser(self.checksums_path)
+            if not parser.entries:
+                raise errors.NotFoundError('No entries found', self.checksums_path)
+
+            # Download the first matched directory entry
+            pattern = re.compile(self.checksums_binary_regex, re.IGNORECASE)
+            for entry in parser.entries:
+                try:
+                    self._checksums_binary = pattern.match(entry).group()
+                    break
+                except Exception:
+                    # No match, continue with next entry
+                    continue
+            else:
+                raise errors.NotFoundError("Checksums binary not found in folder",
+                                           self.checksums_path)
+
+        self._retry_check_404(_get_binary)
+
+        return self._checksums_binary
+
+    @property
+    def checksums_binary_regex(self):
+        """Return the regex for the checksums filename."""
+        raise errors.NotImplementedError(sys._getframe(0).f_code.co_name)
+
+    @property
+    def checksums_url(self):
+        """Return the URL of the checksums."""
+        return urllib.quote(urljoin(self.checksums_path, self.checksums_binary),
+                            safe='%/:=&?~#+!$,;\'@()*[]|')
+
+    @property
+    def checksums_path(self):
+        """Return the path to the checksums folder."""
+        return urljoin(self.base_url, self.checksums_path_regex)
+
+    @property
+    def checksums_path_regex(self):
+        """Return the regex for the path to the checksums folder."""
+        raise errors.NotImplementedError(sys._getframe(0).f_code.co_name)
+
+    @property
+    def checksums_parse_regex(self):
+        return r"(.+)\s.+\s(.+)\s(.+)"
+
+    @property
+    def checksums_binary_name(self):
+        """Return the binary name inside the checksums file."""
+        return self.binary
+
     def get_checksum_url(self):
         """Get the checksum url for current version."""
         filename = self.binary
@@ -632,6 +688,23 @@ class DailyScraper(Scraper):
             raise errors.NotFoundError("Specified sub folder cannot be found",
                                        folder)
 
+    @property
+    def checksums_binary_regex(self):
+        """Return the regex for the checksums filename."""
+        regex_base_name = (r'^%(APP)s(\s%(STUB_NEW)s\.%(LOCALE)s|' +
+                           r'-.*\.%(LOCALE)s\.%(PLATFORM)s)')
+        regex = regex_base_name + '\.checksums$'
+
+        return regex % {'APP': self.application,
+                        'LOCALE': self.locale,
+                        'PLATFORM': self.platform_regex,
+                        'STUB_NEW': 'Installer' if self.is_stub_installer else ''}
+
+    @property
+    def checksums_path_regex(self):
+        """Return the regex for the path to the checksums folder."""
+        return self.path_regex
+
 
 class DirectScraper(Scraper):
     """Class to download a file from a specified URL."""
@@ -742,6 +815,29 @@ class ReleaseScraper(Scraper):
             return [versions[-1]]
         else:
             return parser.entries
+
+    @property
+    def checksums_binary_regex(self):
+        """Return the regex for the checksums filename."""
+        return 'SHA512SUMS'
+
+    @property
+    def checksums_path_regex(self):
+        """Return the regex for the path to the checksums folder."""
+        regex = r'releases/%(VERSION)s/'
+        return regex % {'VERSION': self.version}
+
+    @property
+    def checksums_binary_name(self):
+        """Return the binary name inside the checksums file."""
+        name = '%(PLATFORM)s/%(LOCALE)s/%(BINARY)s'
+        return name % {'BINARY': self.binary,
+                       'LOCALE': self.locale,
+                       'PLATFORM': self.platform_regex}
+
+    @property
+    def checksums_parse_regex(self):
+        return r"(.+)\s()(.+)"
 
     def get_checksum_url(self):
         """Get the checksum url for current version."""
