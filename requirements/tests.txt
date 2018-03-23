@@ -2,6 +2,6 @@ coveralls==1.2.0
 mock==2.0.0
 mozfile >= 1.1
 mozprocess >= 0.22
-pytest==3.2.5
+pytest==3.5.0
 pytest-cov==2.5.1
 wptserve >= 1.4.0
