@@ -22,83 +22,83 @@ tests_release_scraper = [
               'platform': 'win32',
               'version': 'latest'}},
 
-    # -p win32 -v 42.0b2
+    # -p win32 -v 52.0
     {'args': {'application': 'thunderbird',
               'platform': 'win32',
-              'version': '42.0b2'},
-     'url': 'thunderbird/releases/42.0b2/win32/en-US/Thunderbird Setup 42.0b2.exe'},
+              'version': '52.0'},
+     'url': 'thunderbird/releases/52.0/win32/en-US/Thunderbird Setup 52.0.exe'},
 
-    # -p linux -v 42.0b2
+    # -p linux -v 52.0
     {'args': {'application': 'thunderbird',
               'platform': 'linux',
-              'version': '42.0b2'},
-     'url': 'thunderbird/releases/42.0b2/linux-i686/en-US/thunderbird-42.0b2.tar.bz2'},
+              'version': '52.0'},
+     'url': 'thunderbird/releases/52.0/linux-i686/en-US/thunderbird-52.0.tar.bz2'},
 
-    # -a thunderbird -p linux64 -v 42.0b2
+    # -a thunderbird -p linux64 -v 52.0
     {'args': {'application': 'thunderbird',
               'platform': 'linux64',
-              'version': '42.0b2'},
-     'url': 'thunderbird/releases/42.0b2/linux-x86_64/en-US/thunderbird-42.0b2.tar.bz2'},
+              'version': '52.0'},
+     'url': 'thunderbird/releases/52.0/linux-x86_64/en-US/thunderbird-52.0.tar.bz2'},
 
-    # -a thunderbird -p mac -v 42.0b2
+    # -a thunderbird -p mac -v 52.0
     {'args': {'application': 'thunderbird',
               'platform': 'mac',
-              'version': '42.0b2'},
-     'url': 'thunderbird/releases/42.0b2/mac/en-US/Thunderbird 42.0b2.dmg'},
+              'version': '52.0'},
+     'url': 'thunderbird/releases/52.0/mac/en-US/Thunderbird 52.0.dmg'},
 
-    # -a thunderbird -p win32 -v 42.0b2 -l de
+    # -a thunderbird -p win32 -v 52.0 -l de
     {'args': {'application': 'thunderbird',
               'locale': 'de',
               'platform': 'win32',
-              'version': '42.0b2'},
-     'url': 'thunderbird/releases/42.0b2/win32/de/Thunderbird Setup 42.0b2.exe'},
+              'version': '52.0'},
+     'url': 'thunderbird/releases/52.0/win32/de/Thunderbird Setup 52.0.exe'},
 ]
 
 tests_candidate_scraper = [
-    # -a thunderbird -p linux -v 45.4.0
+    # -a thunderbird -p linux -v 52.7.0
     {'args': {'application': 'thunderbird',
               'platform': 'linux',
-              'version': '45.4.0'},
-     'url': 'thunderbird/candidates/45.4.0-candidates/build1/linux-i686/en-US/thunderbird-45.4.0.tar.bz2'},
+              'version': '52.7.0'},
+     'url': 'thunderbird/candidates/52.7.0-candidates/build1/linux-i686/en-US/thunderbird-52.7.0.tar.bz2'},
 
-    # -a thunderbird -p linux64 -v 45.4.0
+    # -a thunderbird -p linux64 -v 52.7.0
     {'args': {'application': 'thunderbird',
               'platform': 'linux64',
-              'version': '45.4.0'},
-     'url': 'thunderbird/candidates/45.4.0-candidates/build1/linux-x86_64/en-US/thunderbird-45.4.0.tar.bz2'},
+              'version': '52.7.0'},
+     'url': 'thunderbird/candidates/52.7.0-candidates/build1/linux-x86_64/en-US/thunderbird-52.7.0.tar.bz2'},
 
-    # -a thunderbird -p mac -v 45.4.0
+    # -a thunderbird -p mac -v 52.7.0
     {'args': {'application': 'thunderbird',
               'platform': 'mac',
-              'version': '45.4.0'},
-     'url': 'thunderbird/candidates/45.4.0-candidates/build1/mac/en-US/Thunderbird 45.4.0.dmg'},
+              'version': '52.7.0'},
+     'url': 'thunderbird/candidates/52.7.0-candidates/build1/mac/en-US/Thunderbird 52.7.0.dmg'},
 
-    # -a thunderbird -p win32 -v 45.4.0
+    # -a thunderbird -p win32 -v 52.7.0
     {'args': {'application': 'thunderbird',
               'platform': 'win32',
-              'version': '45.4.0'},
-     'url': 'thunderbird/candidates/45.4.0-candidates/build1/win32/en-US/Thunderbird Setup 45.4.0.exe'},
+              'version': '52.7.0'},
+     'url': 'thunderbird/candidates/52.7.0-candidates/build1/win32/en-US/Thunderbird Setup 52.7.0.exe'},
 
-    # -a thunderbird -p win32 -v 45.4.0 -l cs
+    # -a thunderbird -p win32 -v 52.7.0 -l cs
     {'args': {'application': 'thunderbird',
               'locale': 'cs',
               'platform': 'win32',
-              'version': '45.4.0'},
-     'url': 'thunderbird/candidates/45.4.0-candidates/build1/win32/cs/Thunderbird Setup 45.4.0.exe'},
+              'version': '52.7.0'},
+     'url': 'thunderbird/candidates/52.7.0-candidates/build1/win32/cs/Thunderbird Setup 52.7.0.exe'},
 
-    # -a thunderbird -p win32 -v 45.4.0 -l en-GB
+    # -a thunderbird -p win32 -v 52.7.0 -l en-GB
     {'args': {'application': 'thunderbird',
               'locale': 'en-GB',
               'platform': 'win32',
-              'version': '45.4.0'},
-     'url': 'thunderbird/candidates/45.4.0-candidates/build1/win32/en-GB/Thunderbird Setup 45.4.0.exe'},
+              'version': '52.7.0'},
+     'url': 'thunderbird/candidates/52.7.0-candidates/build1/win32/en-GB/Thunderbird Setup 52.7.0.exe'},
 
-    # -a thunderbird -p win32 -v 45.4.0
+    # -a thunderbird -p win32 -v 52.7.0
     {'args': {'application': 'thunderbird',
               'build_number': '1',
               'platform': 'win32',
-              'version': '45.4.0'},
-     'url': 'thunderbird/candidates/45.4.0-candidates/build1/win32/en-US/Thunderbird Setup 45.4.0.exe'},
+              'version': '52.7.0'},
+     'url': 'thunderbird/candidates/52.7.0-candidates/build1/win32/en-US/Thunderbird Setup 52.7.0.exe'},
 ]
 
 tests_daily_scraper = [
@@ -127,43 +127,38 @@ tests_daily_scraper = [
               'platform': 'win64',
               'branch': 'comm-central'}},
 
-    # -p win32 --branch=comm-central --date=2015-10-01
+    # -p win64 --branch=comm-central --date=2018-03-01
     {'args': {'application': 'thunderbird',
-              'platform': 'win32',
+              'platform': 'win64',
               'branch': 'comm-central',
-              'date': '2015-10-01'}},
+              'date': '2018-03-01'}},
 
-    # -p win32 --branch=comm-central --date=2015-10-01 --build-number=1
+    # -p win32 --branch=comm-central --date=2018-03-01 --build-number=1
     {'args': {'application': 'thunderbird',
-              'platform': 'win32',
+              'platform': 'win64',
               'branch': 'comm-central',
-              'date': '2015-10-01',
+              'date': '2018-03-01',
               'build_number': 1}},
 
-    # -p win32 --branch=comm-central --build-id=20151001030233
+    # -p win64 --branch=comm-central --build-id=20180301030201
     {'args': {'application': 'thunderbird',
-              'platform': 'win32',
+              'platform': 'win64',
               'branch': 'comm-central',
-              'build_id': '20151001030233'}},
+              'build_id': '20180301030201'}},
 
-    # -p linux --branch=comm-central --build-id=20151001030233 --extension=txt
+    # -p linux --branch=comm-central --build-id=20180301030201 --extension=txt
     {'args': {'application': 'thunderbird',
               'platform': 'linux',
               'branch': 'comm-central',
-              'build_id': '20151001030233',
+              'build_id': '20180301030201',
               'extension': 'txt'}},
 
-    # -p win32 --branch=comm-central --build-id=20151001030233 --locale=de
+    # -p linux --branch=comm-central --build-id=20180301030201 --locale=de
     {'args': {'application': 'thunderbird',
-              'platform': 'win32',
+              'platform': 'linux',
               'branch': 'comm-central',
-              'build_id': '20151001030233',
-              'locale': 'it'}},
-
-    # -p win32 --branch=comm-aurora
-    {'args': {'application': 'thunderbird',
-              'platform': 'win32',
-              'branch': 'comm-aurora'}},
+              'build_id': '20180301030201',
+              'locale': 'de'}},
 ]
 
 tests_tinderbox_scraper = [
@@ -243,7 +238,6 @@ class ThunderbirdRemoteTests(unittest.TestCase):
                 self.assertEqual(urllib.unquote(scraper.url),
                                  urljoin(BASE_URL, test['url']))
 
-    @unittest.skip('Not testable due to all builds are busted')
     def test_daily_scraper(self):
         for test in tests_daily_scraper:
             mozdownload.DailyScraper(destination=self.temp_dir,
