@@ -5,7 +5,6 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-import unittest
 import urllib
 
 from mozdownload import ReleaseScraper
@@ -204,7 +203,3 @@ class ReleaseScraperTest(mhttpd.MozHttpdBaseTest):
             self.assertEqual(scraper.filename, expected_filename)
             self.assertEqual(urllib.unquote(scraper.url),
                              urljoin(self.wdir, entry['url']))
-
-
-if __name__ == '__main__':
-    unittest.main()

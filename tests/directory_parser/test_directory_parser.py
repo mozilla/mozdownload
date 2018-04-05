@@ -5,7 +5,6 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-import unittest
 
 from mozdownload.parser import DirectoryParser
 from mozdownload.utils import urljoin
@@ -66,7 +65,3 @@ class DirectoryParserTest(mhttpd.MozHttpdBaseTest):
         contents = os.listdir(folder_path)
         contents.sort()
         self.assertEqual(parser.entries, contents)
-
-
-if __name__ == '__main__':
-    unittest.main()

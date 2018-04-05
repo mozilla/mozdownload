@@ -4,8 +4,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import unittest
-
 from mozdownload import DailyScraper
 
 import mozhttpd_base_test as mhttpd
@@ -46,7 +44,3 @@ class TestDailyScraperInvalidParameters(mhttpd.MozHttpdBaseTest):
                               base_url=self.wdir,
                               logger=self.logger,
                               **entry['args'])
-
-
-if __name__ == '__main__':
-    unittest.main()

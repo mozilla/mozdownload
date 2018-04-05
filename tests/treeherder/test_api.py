@@ -6,7 +6,6 @@
 
 import json
 import os
-import unittest
 import urlparse
 
 from wptserve.handlers import json_handler
@@ -84,7 +83,3 @@ class TestAPIInvalidUsage(mhttpd.MozHttpdBaseTest):
         builds = th.query_builds_by_revision('29258f59e545')
 
         self.assertEqual(builds, [])
-
-
-if __name__ == '__main__':
-    unittest.main()

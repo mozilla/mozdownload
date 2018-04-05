@@ -15,13 +15,10 @@ class TestPrintUrlArgument(unittest.TestCase):
         url = r'https://raw.github.com/mozilla/mozdownload/master/README.md'
         try:
             args = ['mozdownload',
-                '--url={url}'.format(url=url),
-                '--print-url']
+                    '--url={url}'.format(url=url),
+                    '--print-url']
             output = subprocess.check_output(args, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             output = e.output
 
         self.assertRegexpMatches(output, url)
-
-if __name__ == '__main__':
-    unittest.main()

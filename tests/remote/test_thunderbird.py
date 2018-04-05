@@ -249,7 +249,3 @@ class ThunderbirdRemoteTests(unittest.TestCase):
             mozdownload.TinderboxScraper(destination=self.temp_dir,
                                          logger=self.logger,
                                          **test['args'])
-
-
-if __name__ == '__main__':
-    unittest.main()

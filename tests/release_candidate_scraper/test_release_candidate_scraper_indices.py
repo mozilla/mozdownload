@@ -4,8 +4,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import unittest
-
 from mozdownload import ReleaseCandidateScraper
 
 import mozhttpd_base_test as mhttpd
@@ -58,6 +56,3 @@ class ReleaseCandidateScraperTest_build_indices(mhttpd.MozHttpdBaseTest):
             self.assertEqual(scraper.build_index, entry['build_index'])
             self.assertEqual(scraper.build_number, entry['build_number'])
             self.assertEqual(scraper.builds, entry['builds'])
-
-if __name__ == '__main__':
-    unittest.main()
