@@ -5,7 +5,6 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-import unittest
 
 import mozhttpd_base_test as mhttpd
 import requests
@@ -134,7 +133,3 @@ class TestBaseScraper(mhttpd.MozHttpdBaseTest):
                                             destination=destination,
                                             logger=self.logger)
         self.assertEqual(scraper.destination, destination)
-
-
-if __name__ == '__main__':
-    unittest.main()

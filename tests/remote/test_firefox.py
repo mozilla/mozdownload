@@ -6,7 +6,6 @@
 
 """Test all scraper classes for Firefox against the remote server"""
 
-import unittest
 import urllib
 
 import pytest
@@ -116,10 +115,6 @@ def test_tinderbox_scraper(tmpdir, args):
     mozdownload.TinderboxScraper(destination=tmpdir, **args)
 
 
-@unittest.skip('Not testable as long as we cannot grab a latest build')
+@pytest.mark.skip(reason='Not testable as long as we cannot grab a latest build')
 def test_try_scraper():
     pass
-
-
-if __name__ == '__main__':
-    unittest.main()

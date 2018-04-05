@@ -97,7 +97,3 @@ class FennecRemoteTests(unittest.TestCase):
             mozdownload.DailyScraper(destination=self.temp_dir,
                                      logger=self.logger,
                                      **test['args'])
-
-
-if __name__ == '__main__':
-    unittest.main()

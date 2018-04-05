@@ -5,7 +5,6 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-import unittest
 
 from mozdownload import DirectScraper
 import mozdownload.errors as errors
@@ -32,7 +31,3 @@ class TestDirectScraper(mhttpd.MozHttpdBaseTest):
         scraper.download()
         self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
                                                     scraper.filename)))
-
-
-if __name__ == '__main__':
-    unittest.main()
