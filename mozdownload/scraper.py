@@ -524,7 +524,7 @@ class DailyScraper(Scraper):
         try:
             # Get exact timestamp of the build to build the local file name
             folder = self.builds[self.build_index]
-            timestamp = re.search('([\d\-]+)-\D.*', folder).group(1)
+            timestamp = re.search(r'([\d\-]+)-\D.*', folder).group(1)
         except Exception:
             # If it's not available use the build's date
             timestamp = self.date.strftime('%Y-%m-%d')
