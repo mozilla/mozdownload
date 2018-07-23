@@ -1,3 +1,16 @@
+1.24 / 2018-07-23
+=================
+  * Update pytest from 3.2.2 to 3.6.2 (#451, #456, #373, #374, #475)
+  * Fix pylama linter failures for invalid escape characters for timestamp regex (#472)
+  * Remove call to unittest.main() from all test modules (#470)
+  * Enable remote tests for Thunderbird daily builds and update versions and dates (#406)
+  * Update coveralls from 1.2.0 to 1.3.0 (#463)
+  * Convert remote/test_firefox.py from unittest to pytest (#467)
+  * Switch pytest to verbose test output (#467)
+  * Move dependencies to requirements.txt to support pyup.io (#424)
+  * Replace progressbar with progressbar2 (#453)
+  * Use timestamp prefix for filename of tinderbox builds when human readable date supplied (#181)
+
 1.23 / 2017-09-21
 =================
   * Update to treeherder-client 4.0.0 (#447)
