@@ -4,96 +4,33 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import logging
-import tempfile
-import unittest
-
-import mozfile
+import pytest
 
 import mozdownload
 
 
-tests_daily_scraper = [
+@pytest.mark.parametrize("args", [
     # Support for API level 9 ended on Mar 11th 2016
-    # -p android-api-9 --branch=mozilla-central
-    {'args': {'application': 'fennec',
-              'platform': 'android-api-9',
-              'branch': 'mozilla-central',
-              'date': '2016-03-11'}},
-
+    {'application': 'fennec', 'platform': 'android-api-9',
+     'branch': 'mozilla-central', 'date': '2016-03-11'},
     # Support for API level 11 ended on Jan 28th 2016
-    # -p android-api-11 --branch=mozilla-central
-    {'args': {'application': 'fennec',
-              'platform': 'android-api-11',
-              'branch': 'mozilla-central',
-              'date': '2016-01-28'}},
-
-    # -p android-api-15 --branch=mozilla-central
-    {'args': {'application': 'fennec',
-              'platform': 'android-api-15',
-              'branch': 'mozilla-central'}},
-
-    # -p android-x86 --branch=mozilla-central
-    {'args': {'application': 'fennec',
-              'platform': 'android-x86',
-              'branch': 'mozilla-central'}},
-
-    # -p android-api-15 --branch=mozilla-central --date 2016-01-29
-    {'args': {'application': 'fennec',
-              'platform': 'android-api-15',
-              'branch': 'mozilla-central',
-              'date': '2016-01-29'}},
-
-    # -p android-api-15 --branch=mozilla-central --date 2016-01-29 --build-number=1
-    {'args': {'application': 'fennec',
-              'platform': 'android-api-15',
-              'branch': 'mozilla-central',
-              'date': '2016-01-29',
-              'build_number': 1}},
-
-    # -p android-api-15 --branch=mozilla-central --build-id=20160201030241
-    {'args': {'application': 'fennec',
-              'platform': 'android-api-15',
-              'branch': 'mozilla-central',
-              'build_id': '20160201030241'}},
-
-    # -p android-api-15 --branch=mozilla-central --build-id=20160201030241 --locale=en-US
-    {'args': {'application': 'fennec',
-              'locale': 'en-US',
-              'platform': 'android-api-15',
-              'branch': 'mozilla-central',
-              'build_id': '20160201030241'}},
-
-    # -p android-api-15 --branch=mozilla-central --build-id=20160201030241 --extension=txt
-    {'args': {'application': 'fennec',
-              'platform': 'android-api-15',
-              'branch': 'mozilla-central',
-              'build_id': '20160201030241',
-              'extension': 'txt'}},
-
-    # -p android-api-11 --branch=mozilla-aurora --build_id=20160202004008
-    {'args': {'application': 'fennec',
-              'platform': 'android-api-15',
-              'branch': 'mozilla-aurora',
-              'build_id': '20160202004008'}},
-]
-
-
-class FennecRemoteTests(unittest.TestCase):
-    """Test all scraper classes for Fennec against the remote server"""
-
-    def setUp(self):
-        logging.basicConfig(format=' %(levelname)s | %(message)s', level=logging.ERROR)
-        self.logger = logging.getLogger(self.__class__.__name__)
-
-        # Create a temporary directory for potential downloads
-        self.temp_dir = tempfile.mkdtemp()
-
-    def tearDown(self):
-        mozfile.rmtree(self.temp_dir)
-
-    def test_daily_scraper(self):
-        for test in tests_daily_scraper:
-            mozdownload.DailyScraper(destination=self.temp_dir,
-                                     logger=self.logger,
-                                     **test['args'])
+    {'application': 'fennec', 'platform': 'android-api-11',
+     'branch': 'mozilla-central', 'date': '2016-01-28'},
+    # Support for API level 15 ended on Aug 29th 2017
+    {'application': 'fennec', 'platform': 'android-api-15',
+     'branch': 'mozilla-central', 'date': '2017-08-29'},
+    {'application': 'fennec', 'platform': 'android-api-16', 'branch': 'mozilla-central'},
+    {'application': 'fennec', 'platform': 'android-x86', 'branch': 'mozilla-central'},
+    {'application': 'fennec', 'platform': 'android-api-16',
+     'branch': 'mozilla-central', 'date': '2017-08-30'},
+    {'application': 'fennec', 'platform': 'android-api-16',
+     'branch': 'mozilla-central', 'date': '2017-08-30', 'build_number': 1},
+    {'application': 'fennec', 'platform': 'android-api-16',
+     'branch': 'mozilla-central', 'build_id': '20170830100224'},
+    {'application': 'fennec', 'platform': 'android-api-16',
+     'branch': 'mozilla-central', 'build_id': '20170830100224', 'locale': 'en-US'},
+    {'application': 'fennec', 'platform': 'android-api-16',
+     'branch': 'mozilla-central', 'build_id': '20170830100224', 'extension': 'txt'},
+])
+def test_daily_scraper(tmpdir, args):
+    mozdownload.DailyScraper(destination=tmpdir, **args)
