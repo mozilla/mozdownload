@@ -14,18 +14,20 @@ which handles downloading of Mozilla applications.
 
 If the tool should only be used for downloading applications we propose to
 install it via pip. The following command will install the latest release:
-
-    pip install mozdownload
+```bash
+pip install mozdownload
+```
 
 Otherwise follow the steps below to setup a development environment. It is
 recommended that [virtualenv](http://virtualenv.readthedocs.org/en/latest/installation.html)
 and [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/)
 be used in conjunction with mozdownload. Start by installing these. Then first fork
 our repository into your own github account, and run:
-
-    git clone https://github.com/%your_account%/mozdownload.git
-    cd mozdownload
-    python setup.py develop
+```bash
+git clone https://github.com/%your_account%/mozdownload.git
+cd mozdownload
+python setup.py develop
+```
 
 More detailed developer documentation can be found in the [wiki](https://github.com/mozilla/mozdownload/wiki).
 
@@ -37,40 +39,49 @@ command line options.
 ### Examples
 
 Download the latest official Firefox release for your platform:
-
-    mozdownload --version=latest
+```bash
+mozdownload --version=latest
+```
 
 Download the latest official Firefox beta release for your platform:
-
-    mozdownload --version=latest-beta
+```bash
+mozdownload --version=latest-beta
+```
 
 Download the latest official Firefox esr release for your platform:
-
-    mozdownload --version=latest-esr
+```bash
+mozdownload --version=latest-esr
+```
 
 Download the latest Firefox release candidate for your platform:
-
-    mozdownload --type candidate --version=latest
+```bash
+mozdownload --type candidate --version=latest
+```
 
 Download the latest Firefox Aurora build for Windows (32bit):
-
-    mozdownload --type=daily --branch=mozilla-aurora --platform=win32
+```bash
+mozdownload --type=daily --branch=mozilla-aurora --platform=win32
+```
 
 Download the latest official Thunderbird release for your platform:
-
-    mozdownload --application=thunderbird --version=latest
+```bash
+mozdownload --application=thunderbird --version=latest
+```
 
 Download the latest Earlybird build for Linux (64bit):
-
-    mozdownload --application=thunderbird --type=daily --branch=comm-aurora --platform=linux64
+```bash
+mozdownload --application=thunderbird --type=daily --branch=comm-aurora --platform=linux64
+```
 
 Download this README file:
-
-    mozdownload --url=https://raw.github.com/mozilla/mozdownload/master/README.md
+```bash
+mozdownload --url=https://raw.github.com/mozilla/mozdownload/master/README.md
+```
 
 Download a file from a URL protected with basic authentication:
-
-    mozdownload --url=http://example.com/secrets.txt --username=admin --password=password
+```bash
+mozdownload --url=http://example.com/secrets.txt --username=admin --password=password
+```
 
 Run `mozdownload --help` for detailed information on the command line options.
 
@@ -78,38 +89,42 @@ Run `mozdownload --help` for detailed information on the command line options.
 
 To see the full list of command line options, execute the command below and check the list
 of options for the build type to download:
-
-    mozdownload --help
+```bash
+mozdownload --help
+```
 
 ## API
 
 Beside the CLI mozdownload also offers an API to be used. To create specific instances of scrapers
 the FactoryScraper class can be used. Here some examples:
+```python
+# Create a release scraper for the German locale of Firefox 40.0.3
+from mozdownload import FactoryScraper
+scraper = FactoryScraper('release', version='40.0.3', locale='de')
 
-    # Create a release scraper for the German locale of Firefox 40.0.3
-    from mozdownload import FactoryScraper
-    scraper = FactoryScraper('release', version='40.0.3', locale='de')
+# Create a candidate scraper for Windows 32bit of Firefox 41.0b9
+from mozdownload import FactoryScraper
+scraper = FactoryScraper('candidate', version='41.0b9', platform='win32')
 
-    # Create a candidate scraper for Windows 32bit of Firefox 41.0b9
-    from mozdownload import FactoryScraper
-    scraper = FactoryScraper('candidate', version='41.0b9', platform='win32')
-
-    # Create a daily scraper for the latest Dev Edition build on the current platform
-    from mozdownload import FactoryScraper
-    scraper = FactoryScraper('daily', branch='mozilla-aurora')
+# Create a daily scraper for the latest Dev Edition build on the current platform
+from mozdownload import FactoryScraper
+scraper = FactoryScraper('daily', branch='mozilla-aurora')
+```
 
 All those scraper instances allow you to retrieve the url which is used to download the files, and the filename for the local destination:
-
-    from mozdownload import FactoryScraper
-    scraper = FactoryScraper('daily')
-    print scraper.url
-    print scraper.filename
+```python
+from mozdownload import FactoryScraper
+scraper = FactoryScraper('daily')
+print scraper.url
+print scraper.filename
+```
 
 To actually download the remote file the download() method has to be called:
-
-    from mozdownload import FactoryScraper
-    scraper = FactoryScraper('daily')
-    filename = scraper.download()
+```python
+from mozdownload import FactoryScraper
+scraper = FactoryScraper('daily')
+filename = scraper.download()
+```
 
 ## Testing
 
