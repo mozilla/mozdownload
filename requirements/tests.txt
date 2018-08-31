@@ -1,4 +1,4 @@
-coveralls==1.4.0
+coveralls==1.5.0
 mock==2.0.0
 mozfile >= 1.1
 mozprocess >= 0.22
