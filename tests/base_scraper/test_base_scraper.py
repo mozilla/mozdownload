@@ -5,6 +5,7 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
+import unittest
 
 import mozhttpd_base_test as mhttpd
 import requests
@@ -73,6 +74,7 @@ class TestBaseScraper(mhttpd.MozHttpdBaseTest):
         self.assertRaises(errors.NotImplementedError,
                           scraper.build_filename, 'invalid binary')
 
+    @unittest.skip("Perma failure due to mozqa.com not available anymore (#492)")
     def test_authentication(self):
         """testing with basic authentication"""
         username = 'mozilla'
