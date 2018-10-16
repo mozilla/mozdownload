@@ -39,3 +39,14 @@ class TimeoutError(Exception):
         """Create an instance of an exception."""
         self.message = 'The download exceeded the allocated timeout'
         Exception.__init__(self, self.message)
+
+
+class HashError(Exception):
+    """Exception for a corrupted download."""
+
+    def __init__(self, url, correct_hash, wrong_hash):
+        """Create an instance of an exception."""
+        self.message = 'There was an error checking the hash file for this url: {}\n' \
+                       'Correct hash: {}\n' \
+                       'Wrong hash :  {}\n'.format(url, correct_hash, wrong_hash)
+        Exception.__init__(self, self.message)
