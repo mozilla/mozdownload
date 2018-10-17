@@ -26,13 +26,15 @@ from mozdownload import treeherder
 from mozdownload.utils import urljoin
 
 
-APPLICATIONS = ('firefox', 'fennec', 'thunderbird')
+APPLICATIONS = ('devedition', 'firefox', 'fennec', 'thunderbird')
 
 # Some applications contain all locales in a single build
 APPLICATIONS_MULTI_LOCALE = ('fennec')
 
 # Used if the application is named differently than the subfolder on the server
 APPLICATIONS_TO_FTP_DIRECTORY = {'fennec': 'mobile'}
+# Used if the application is named differently then the binary on the server
+APPLICATIONS_TO_BINARY_NAME = {'devedition': 'firefox'}
 
 # Base URL for the path to all builds
 BASE_URL = 'https://archive.mozilla.org/pub/'
@@ -611,7 +613,7 @@ class ReleaseScraper(Scraper):
                  'win64': r'^%(APP)s(%(STUB_NEW)s|(?:\sSetup\s|-)%(STUB)s%(VERSION)s)\.%(EXT)s$',
                  }
         return regex[self.platform] % {
-            'APP': self.application,
+            'APP': APPLICATIONS_TO_BINARY_NAME.get(self.application, self.application),
             'EXT': self.extension,
             'STUB': 'Stub ' if self.is_stub_installer else '',
             'STUB_NEW': ' Installer' if self.is_stub_installer else '',
