@@ -67,6 +67,10 @@ class FactoryScraper(scraper.Scraper):
             error_msg = '%s build is not yet supported for fennec' % scraper_type
             raise NotSupportedError(error_msg)
 
+        if kwargs.get('application') == 'devedition' and scraper_type not in ('release', 'candidate'):
+            error_msg = '%s build is not yet supported for Firefox Developer Edition' % scraper_type
+            raise NotSupportedError(error_msg)
+
         # Instantiate scraper and download the build
         scraper_keywords = {'application': kwargs.get('application', 'firefox'),
                             'base_url': kwargs.get('base_url', scraper.BASE_URL),
