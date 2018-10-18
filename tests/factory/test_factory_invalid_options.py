@@ -116,7 +116,7 @@ class TestFactoryMissingMandatoryOptions(mhttpd.MozHttpdBaseTest):
                           base_url=self.wdir,
                           logger=self.logger)
 
-    def test_non_daily_fennic(self):
+    def test_non_daily_fennec(self):
         """Test that non-daily scrapper_type for fennec raises exception"""
         self.assertRaises(NotSupportedError, FactoryScraper,
                           scraper_type='candidate',
