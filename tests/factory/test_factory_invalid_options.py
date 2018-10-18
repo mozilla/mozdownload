@@ -6,6 +6,7 @@ from mock import patch
 
 from mozdownload import FactoryScraper
 from mozdownload.utils import urljoin
+from mozdownload.errors import NotSupportedError
 
 import mozhttpd_base_test as mhttpd
 
@@ -114,6 +115,26 @@ class TestFactoryMissingMandatoryOptions(mhttpd.MozHttpdBaseTest):
                           destination=self.temp_dir,
                           base_url=self.wdir,
                           logger=self.logger)
+
+    def test_non_daily_fennic(self):
+        """Test that non-daily scrapper_type for fennec raises exception"""
+        self.assertRaises(NotSupportedError, FactoryScraper,
+                          scraper_type='candidate',
+                          destination=self.temp_dir,
+                          base_url=self.wdir,
+                          logger=self.logger,
+                          application='fennec',
+                          version='60.0b1')
+
+    def test_non_release_non_candidate_devedition(self):
+        """Test that non-relase and non-candidate scrapper type for devedition raises exception"""
+        self.assertRaises(NotSupportedError, FactoryScraper,
+                          scraper_type='daily',
+                          destination=self.temp_dir,
+                          base_url=self.wdir,
+                          logger=self.logger,
+                          application='devedition',
+                          version='60.0b1')
 
 
 class TestFactoryUnusedOptions(mhttpd.MozHttpdBaseTest):
