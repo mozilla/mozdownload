@@ -502,7 +502,7 @@ class DailyScraper(Scraper):
     @property
     def binary_regex(self):
         """Return the regex for the binary."""
-        regex_base_name = (r'^%(APP)s(\s%(STUB_NEW)s\.%(LOCALE)s|' +
+        regex_base_name = (r'^%(BINARY_NAME)s(\s%(STUB_NEW)s\.%(LOCALE)s|' +
                            r'-.*\.%(LOCALE)s\.%(PLATFORM)s)')
         regex_suffix = {'android-api-9': r'\.%(EXT)s$',
                         'android-api-11': r'\.%(EXT)s$',
@@ -517,7 +517,8 @@ class DailyScraper(Scraper):
                         'win64': r'(\.installer%(STUB)s)?\.%(EXT)s$'}
         regex = regex_base_name + regex_suffix[self.platform]
 
-        return regex % {'APP': APPLICATIONS_TO_BINARY_NAME.get(self.application, self.application),
+        return regex % {'BINARY_NAME': APPLICATIONS_TO_BINARY_NAME.get(self.application,
+                                                                       self.application),
                         'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
                         'EXT': self.extension,
@@ -605,15 +606,17 @@ class ReleaseScraper(Scraper):
     @property
     def binary_regex(self):
         """Return the regex for the binary."""
-        regex = {'linux': r'^%(APP)s-%(VERSION)s\.%(EXT)s$',
-                 'linux64': r'^%(APP)s-%(VERSION)s\.%(EXT)s$',
-                 'mac': r'^%(APP)s(?:\s|-)%(VERSION)s\.%(EXT)s$',
-                 'mac64': r'^%(APP)s(?:\s|-)%(VERSION)s\.%(EXT)s$',
-                 'win32': r'^%(APP)s(%(STUB_NEW)s|(?:\sSetup\s|-)%(STUB)s%(VERSION)s)\.%(EXT)s$',
-                 'win64': r'^%(APP)s(%(STUB_NEW)s|(?:\sSetup\s|-)%(STUB)s%(VERSION)s)\.%(EXT)s$',
+        regex = {'linux': r'^%(BINARY_NAME)s-%(VERSION)s\.%(EXT)s$',
+                 'linux64': r'^%(BINARY_NAME)s-%(VERSION)s\.%(EXT)s$',
+                 'mac': r'^%(BINARY_NAME)s(?:\s|-)%(VERSION)s\.%(EXT)s$',
+                 'mac64': r'^%(BINARY_NAME)s(?:\s|-)%(VERSION)s\.%(EXT)s$',
+                 'win32':
+                     r'^%(BINARY_NAME)s(%(STUB_NEW)s|(?:\sSetup\s|-)%(STUB)s%(VERSION)s)\.%(EXT)s$',
+                 'win64':
+                     r'^%(BINARY_NAME)s(%(STUB_NEW)s|(?:\sSetup\s|-)%(STUB)s%(VERSION)s)\.%(EXT)s$',
                  }
         return regex[self.platform] % {
-            'APP': APPLICATIONS_TO_BINARY_NAME.get(self.application, self.application),
+            'BINARY_NAME': APPLICATIONS_TO_BINARY_NAME.get(self.application, self.application),
             'EXT': self.extension,
             'STUB': 'Stub ' if self.is_stub_installer else '',
             'STUB_NEW': ' Installer' if self.is_stub_installer else '',
@@ -811,7 +814,7 @@ class TinderboxScraper(Scraper):
     @property
     def binary_regex(self):
         """Return the regex for the binary."""
-        regex_base_name = (r'^(%(STUB_NEW)s|%(APP)s-.*\.%(LOCALE)s\.%(PLATFORM)s)')
+        regex_base_name = (r'^(%(STUB_NEW)s|%(BINARY_NAME)s-.*\.%(LOCALE)s\.%(PLATFORM)s)')
         regex_suffix = {'linux': r'.*\.%(EXT)s$',
                         'linux64': r'.*\.%(EXT)s$',
                         'mac': r'.*\.%(EXT)s$',
@@ -821,7 +824,8 @@ class TinderboxScraper(Scraper):
 
         regex = regex_base_name + regex_suffix[self.platform]
 
-        return regex % {'APP': APPLICATIONS_TO_BINARY_NAME.get(self.application, self.application),
+        return regex % {'BINARY_NAME': APPLICATIONS_TO_BINARY_NAME.get(self.application,
+                                                                       self.application),
                         'LOCALE': self.locale,
                         'PLATFORM': PLATFORM_FRAGMENTS[self.platform],
                         'STUB': '-stub' if self.is_stub_installer else '',
@@ -985,7 +989,7 @@ class TryScraper(Scraper):
     @property
     def binary_regex(self):
         """Return the regex for the binary."""
-        regex_base_name = (r'^(%(STUB_NEW)s|%(APP)s-.*\.%(LOCALE)s\.%(PLATFORM)s)')
+        regex_base_name = (r'^(%(STUB_NEW)s|%(BINARY_NAME)s-.*\.%(LOCALE)s\.%(PLATFORM)s)')
         regex_suffix = {'linux': r'.*\.%(EXT)s$',
                         'linux64': r'.*\.%(EXT)s$',
                         'mac': r'.*\.%(EXT)s$',
@@ -995,7 +999,8 @@ class TryScraper(Scraper):
 
         regex = regex_base_name + regex_suffix[self.platform]
 
-        return regex % {'APP': APPLICATIONS_TO_BINARY_NAME.get(self.application, self.application),
+        return regex % {'BINARY_NAME': APPLICATIONS_TO_BINARY_NAME.get(self.application,
+                                                                       self.application),
                         'LOCALE': self.locale,
                         'PLATFORM': PLATFORM_FRAGMENTS[self.platform],
                         'STUB': '-stub' if self.is_stub_installer else '',
