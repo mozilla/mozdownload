@@ -517,7 +517,7 @@ class DailyScraper(Scraper):
                         'win64': r'(\.installer%(STUB)s)?\.%(EXT)s$'}
         regex = regex_base_name + regex_suffix[self.platform]
 
-        return regex % {'APP': self.application,
+        return regex % {'APP': APPLICATIONS_TO_BINARY_NAME.get(self.application, self.application),
                         'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
                         'EXT': self.extension,
@@ -821,7 +821,7 @@ class TinderboxScraper(Scraper):
 
         regex = regex_base_name + regex_suffix[self.platform]
 
-        return regex % {'APP': self.application,
+        return regex % {'APP': APPLICATIONS_TO_BINARY_NAME.get(self.application, self.application),
                         'LOCALE': self.locale,
                         'PLATFORM': PLATFORM_FRAGMENTS[self.platform],
                         'STUB': '-stub' if self.is_stub_installer else '',
@@ -995,7 +995,7 @@ class TryScraper(Scraper):
 
         regex = regex_base_name + regex_suffix[self.platform]
 
-        return regex % {'APP': self.application,
+        return regex % {'APP': APPLICATIONS_TO_BINARY_NAME.get(self.application, self.application),
                         'LOCALE': self.locale,
                         'PLATFORM': PLATFORM_FRAGMENTS[self.platform],
                         'STUB': '-stub' if self.is_stub_installer else '',
