@@ -1,3 +1,15 @@
+1.25 / 2018-10-22
+=================
+  * Added Support for Firefox Developer Edition (#504)
+  * Added syntax highlighting to readme (#483)
+  * Create pyup.io config file (#498)
+  * Update redo from 1.7 to 2.0 (#485, #496)
+  * Update pytest-cov from 2.5.1 to 2.6.0 (#494)
+  * Update coveralls from 1.5.0 to 1.5.1 (#489, #493, #501)
+  * Update pytest from 3.6.2 to 3.8.1 (#482, #484, #488, #490, $491, #495, #500)
+  * Update pytest-cov from 2.5.1 to 2.6.0 (#494)
+  * Skip test_authentication because mozqa.com doesn't exist anymore (#492). (#499)
+
 1.24 / 2018-07-23
 =================
   * Update pytest from 3.2.2 to 3.6.2 (#451, #456, #373, #374, #475)
