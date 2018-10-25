@@ -21,12 +21,13 @@ def get_version():
     return re.findall("__version__ = '([\d\.]+)'",
                       read('mozdownload', 'cli.py'), re.M)[0]
 
-  
+
 setup(name='mozdownload',
       version=get_version(),
       description='Script to download builds for Firefox and Thunderbird '
                   'from the Mozilla server.',
       long_description=read('README.md'),
+      long_description_content_type='text/markdown',
       # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[],
       keywords='mozilla',
