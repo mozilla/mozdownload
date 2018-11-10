@@ -696,14 +696,17 @@ class ReleaseCandidateScraper(ReleaseScraper):
         self.show_matching_builds(parser.entries)
         self.builds = parser.entries
         self.build_index = len(parser.entries) - 1
-        if self.build_number and \
-                ('build%s' % self.build_number) in self.builds:
-            self.builds = ['build%s' % self.build_number]
-            self.build_index = 0
-            self.logger.info('Selected build: build%s' % self.build_number)
+        
+        if (self.build_number):
+            if ('build%s' % self.build_number) in self.builds:
+                self.builds = ['build%s' % self.build_number]
+                self.build_index = 0
+                self.logger.info('Selected build: build%s' % self.build_number)
+            else:
+                raise errors.NotFoundError('Selected build does not exist', (u'build%s' % self.build_number))
         else:
-            raise errors.NotFoundError('Selected build does not exist', (u'build%s' % self.build_number))
-
+            self.logger.info('Selected build: %s' % (parser.entries[self.build_index]))
+            
     @property
     def candidate_build_list_regex(self):
         """Return the regex for the folder with the list of candidate builds."""
