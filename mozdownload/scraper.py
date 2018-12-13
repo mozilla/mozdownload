@@ -124,6 +124,10 @@ class Scraper(object):
             base_url,
             APPLICATIONS_TO_FTP_DIRECTORY.get(self.application, self.application)
         )
+        #sha512
+        self.checksum_url = '%s/+' % urljoin(
+            base_url,
+            APPLICATIONS_TO_FTP_DIRECTORY.get(self.application, self.application)
 
         if extension:
             self.extension = extension
@@ -308,6 +312,8 @@ class Scraper(object):
                         if self.timeout_download and \
                                 t1 >= self.timeout_download:
                             raise errors.TimeoutError
+
+                            #sha512 hash function
 
                 if log_level <= logging.INFO and content_length:
                     pbar.finish()

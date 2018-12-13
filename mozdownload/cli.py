@@ -117,6 +117,10 @@ def parse_arguments(argv):
                         dest='username',
                         metavar='USERNAME',
                         help='Username for basic HTTP authentication.')
+    #sha512
+    parser.add_argument('--verify',
+                        dest='checksum',
+                        help='Method to check integrity of downloaded files.')
     parser.add_argument('--version', '-v',
                         dest='version',
                         metavar='VERSION',
