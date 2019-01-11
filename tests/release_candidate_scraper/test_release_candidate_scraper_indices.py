@@ -5,10 +5,7 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 import pytest
 
-from wptserve import server
-
 from mozdownload import ReleaseCandidateScraper
-import conftest
 
 
 
