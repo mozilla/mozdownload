@@ -24,11 +24,7 @@ import conftest
 def test_build_indices(httpd, tmpdir, args, build_index, build_number, builds):
     """Testing indices in choosing builds for ReleaseCandidateScraper"""
 
-    return httpd.start(block=False)
-
     scraper = ReleaseCandidateScraper(destination=tmpdir, base_url=httpd.get_url(), **args)
     assert scraper.build_index == int(build_index)
     assert scraper.build_number == build_number
     assert scraper.builds == builds
-
-    httpd.stop()
