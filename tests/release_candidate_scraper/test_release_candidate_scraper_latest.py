@@ -100,7 +100,7 @@ from mozdownload.utils import urljoin
 def test_latest_build(httpd, tmpdir, args, filename, url):
     """Testing various download scenarios for latest release candidate builds"""
 
-    scraper = ReleaseCandidateScraper(destination=tmpdir, base_url=httpd.get_url(), **args)
+    scraper = ReleaseCandidateScraper(destination=str(tmpdir), base_url=httpd.get_url(), **args)
     expected_filename = urljoin(str(tmpdir), filename)
-    assert scraper.filename == expected_filename
     assert urllib.unquote(scraper.url) == urljoin(httpd.get_url(), url)
+    assert scraper.filename == expected_filename
