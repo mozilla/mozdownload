@@ -3,6 +3,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
+import os
 import urllib
 
 import pytest
@@ -101,6 +102,6 @@ def test_latest_build(httpd, tmpdir, args, filename, url):
     """Testing various download scenarios for latest release candidate builds"""
 
     scraper = ReleaseCandidateScraper(destination=str(tmpdir), base_url=httpd.get_url(), **args)
-    expected_filename = urljoin(str(tmpdir), filename)
+    expected_filename = os.path.join(str(tmpdir), filename)
     assert urllib.unquote(scraper.url) == urljoin(httpd.get_url(), url)
     assert scraper.filename == expected_filename
