@@ -3,6 +3,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
+
 import os
 import urllib
 
@@ -94,7 +95,6 @@ from mozdownload.utils import urljoin
     ({'application': 'thunderbird', 'platform': 'win32', 'version': 'latest-esr'},
      'thunderbird-17.0.1esr-build1.en-US.win32.exe',
      'thunderbird/candidates/17.0.1esr-candidates/build1/win32/en-US/Thunderbird Setup 17.0.1esr.exe'),
-
 ])
 
 
@@ -103,5 +103,5 @@ def test_latest_build(httpd, tmpdir, args, filename, url):
 
     scraper = ReleaseCandidateScraper(destination=str(tmpdir), base_url=httpd.get_url(), **args)
     expected_filename = os.path.join(str(tmpdir), filename)
-    assert urllib.unquote(scraper.url) == urljoin(httpd.get_url(), url)
     assert scraper.filename == expected_filename
+    assert urllib.unquote(scraper.url) == urljoin(httpd.get_url(), url)
