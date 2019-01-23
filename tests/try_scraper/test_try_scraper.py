@@ -30,7 +30,7 @@ from mozdownload.utils import urljoin
      '8fcac92cfcad-firefox-38.0a1.en-US.win64.installer.exe',
      'firefox/try-builds/test-user@mozilla.com-8fcac92cfcad/try-win64/firefox-38.0a1.en-US.win64.installer.exe')
 ])
-def test_scraper(mocker, httpd, tmpdir, args, filename, url):
+def test_scraper(httpd, tmpdir, args, filename, url, mocker):
     """Testing various download scenarios for TryScraper"""
     query_builds_by_revision = mocker.patch('mozdownload.treeherder.Treeherder.query_builds_by_revision')
     query_builds_by_revision.return_value = [
