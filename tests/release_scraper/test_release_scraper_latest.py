@@ -97,7 +97,7 @@ from mozdownload.utils import urljoin
      'thunderbird/releases/17.0.1esr/win32/en-US/Thunderbird Setup 17.0.1esr.exe'),
 ])
 
-def test_scraper(httpd, tmpdir, args, filename, url):
+def test_latest_build(httpd, tmpdir, args, filename, url):
     """Testing various download scenarios for latest release builds"""
 
     scraper = ReleaseScraper(destination=str(tmpdir), base_url=httpd.get_url(), **args)
