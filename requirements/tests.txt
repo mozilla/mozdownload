@@ -1,8 +1,8 @@
 coveralls==1.5.1
 mock==2.0.0
-mozfile >= 1.1
-mozprocess >= 0.22
+mozfile == 1.1
+mozprocess = 0.22
 pytest==4.1.0
 pytest-cov==2.6.1
 pytest-mock==1.10.0
-wptserve >= 1.4.0
+wptserve == 1.4.0
