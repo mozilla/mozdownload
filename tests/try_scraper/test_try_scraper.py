@@ -7,6 +7,7 @@
 import os
 import urllib
 import pytest
+
 from mozdownload import TryScraper
 from mozdownload.utils import urljoin
 
