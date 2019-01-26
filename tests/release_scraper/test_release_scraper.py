@@ -35,12 +35,15 @@ from mozdownload.utils import urljoin
     ({'application': 'firefox', 'locale': 'de', 'platform': 'win32', 'version': '23.0.1'},
      'firefox-23.0.1.de.win32.exe',
      'firefox/releases/23.0.1/win32/de/Firefox Setup 23.0.1.exe'),
+    # stub-installer (old format)
     ({'application': 'firefox', 'platform': 'win32', 'is_stub_installer': True, 'version': '21.0'},
      'firefox-21.0.en-US.win32-stub.exe',
      'firefox/releases/21.0/win32/en-US/Firefox Setup Stub 21.0.exe'),
+    # stub-installer (new format)
     ({'application': 'firefox', 'platform': 'win32', 'is_stub_installer': True, 'version': '23.0.1'},
      'firefox-23.0.1.en-US.win32-stub.exe',
      'firefox/releases/23.0.1/win32/en-US/Firefox Installer.exe'),
+    # stub-installer (new format)
     ({'application': 'firefox', 'platform': 'win64', 'is_stub_installer': True, 'version': '23.0.1'},
      'firefox-23.0.1.en-US.win64-stub.exe',
      'firefox/releases/23.0.1/win64/en-US/Firefox Installer.exe'),
@@ -61,7 +64,7 @@ from mozdownload.utils import urljoin
      'thunderbird/releases/17.0/win32/de/Thunderbird Setup 17.0.exe'),
 ])
 
-def test_scraper(httpd, tmpdir, args, filename, url):
+def test_release_scraper(httpd, tmpdir, args, filename, url):
     """Testing various download scenarios for ReleaseScraper"""
 
     scraper = ReleaseScraper(destination=str(tmpdir), base_url=httpd.get_url(), **args)
