@@ -17,11 +17,11 @@ def test_url_download(httpd, tmpdir):
     test_url = urljoin(httpd.get_url(), filename)
     scraper = DirectScraper(url=test_url, destination=str(tmpdir))
     assert scraper.url == test_url
-
     assert scraper.filename == os.path.join(str(tmpdir), filename)
 
     scraper.download()
     assert os.path.isfile(os.path.join(str(tmpdir), scraper.filename))
+
 
 @pytest.mark.parametrize('attr', ['binary', 'binary_regex', 'path', 'path_regex'])
 def test_implementation_error(httpd, tmpdir, attr):
