@@ -428,7 +428,7 @@ class DailyScraper(Scraper):
         try:
             r.raise_for_status()
 
-            return datetime.strptime(r.text.split('\n')[0], '%Y%m%d%H%M%S')
+            return datetime.strptime(r.text.replace('\r\n', '\n').split('\n')[0], '%Y%m%d%H%M%S')
         finally:
             r.close()
 
