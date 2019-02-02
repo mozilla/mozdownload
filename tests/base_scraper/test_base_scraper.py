@@ -13,41 +13,42 @@ import mozdownload.errors as errors
 from mozdownload.scraper import PLATFORM_FRAGMENTS
 from mozdownload.utils import create_md5, urljoin
 
-@pytest.mark.parametrize('platform', PLATFORM_FRAGMENTS.items())
-def test_platform_regex(tmpdir, platform):
+@pytest.mark.parametrize('platform_key,platform_value', PLATFORM_FRAGMENTS.items())
+def test_platform_regex(tmpdir, platform_key, platform_value):
     """Test for correct platform_regex output"""
-    tmpdir = str(tmpdir)
-    scraper = mozdownload.Scraper(destination=tmpdir,
-                                  platform=platform[0])
-    assert scraper.platform_regex == platform[1]
+    scraper = mozdownload.Scraper(destination=str(tmpdir), platform=platform_key)
+    assert scraper.platform_regex == platform_value
 
-def test_download(httpd, tmpdir):
-    """Test download method"""
-    tmpdir = str(tmpdir)
+def test_standard_download(httpd, tmpdir):
+    """Test standard download method"""
     filename = 'download_test.txt'
-    # standard download
     test_url = urljoin(httpd.get_url(), filename)
-    scraper = mozdownload.DirectScraper(url=test_url,
-                                        destination=tmpdir)
+    scraper = mozdownload.DirectScraper(url=test_url, destination=str(tmpdir))
     scraper.download()
-    assert os.path.isfile(os.path.join(tmpdir, filename))
-    # Compare original and downloaded file via md5 hash
-    md5_original = create_md5(os.path.join(httpd.router.doc_root,
-                                           filename))
-    md5_downloaded = create_md5(os.path.join(tmpdir, filename))
+    assert os.path.isfile(os.path.join(str(tmpdir), filename))
+
+def test_compare_download(httpd, tmpdir):
+    """Compare original and downloaded file via md5 hash"""
+    filename = 'download_test.txt'
+    test_url = urljoin(httpd.get_url(), filename)
+    scraper = mozdownload.DirectScraper(url=test_url, destination=str(tmpdir))
+    scraper.download()
+    md5_original = create_md5(os.path.join(httpd.router.doc_root, filename))
+    md5_downloaded = create_md5(os.path.join(str(tmpdir), filename))
     assert md5_original == md5_downloaded
 
-    # RequestException
+def test_request_exception(httpd, tmpdir):
+    """RequestException"""
     test_url1 = urljoin(httpd.get_url(), 'does_not_exist.html')
-    scraper1 = mozdownload.DirectScraper(url=test_url1,
-                                         destination=tmpdir)
+    scraper1 = mozdownload.DirectScraper(url=test_url1, destination=str(tmpdir))
     with pytest.raises(requests.exceptions.RequestException):
         scraper1.download()
 
-    # Covering retry_attempts
+def test_retry_attempts(httpd, tmpdir):
+    """Covering retry attempts"""
     test_url2 = urljoin(httpd.get_url(), 'does_not_exist.html')
     scraper2 = mozdownload.DirectScraper(url=test_url2,
-                                         destination=tmpdir,
+                                         destination=str(tmpdir),
                                          retry_attempts=3,
                                          retry_delay=1.0)
     with pytest.raises(requests.exceptions.RequestException):
@@ -55,65 +56,69 @@ def test_download(httpd, tmpdir):
 
 @pytest.mark.parametrize('attr', ['binary', 'binary_regex', 'path_regex'])
 def test_notimplementedexceptions(tmpdir, attr):
-    tmpdir = str(tmpdir)
-    scraper = mozdownload.Scraper(destination=tmpdir)
+    """test implementations available"""
+    scraper = mozdownload.Scraper(destination=str(tmpdir))
     with pytest.raises(errors.NotImplementedError):
         getattr(scraper, attr)
     with pytest.raises(errors.NotImplementedError):
         scraper.build_filename('invalid binary')
 
 @pytest.mark.skip(reason="Permanent failure due to mozqa.com not available anymore (#492)")
-def test_authentication(tmpdir):
-    """testing with basic authentication"""
-    tmpdir = str(tmpdir)
-    username = 'mozilla'
-    password = 'mozilla'
+def test_invalid_authentication(tmpdir):
+    """test with invalid authentication"""
     basic_auth_url = 'http://mozqa.com/data/mozqa.com/http_auth/basic/'
-
-    # test with invalid authentication
-    scraper = mozdownload.DirectScraper(destination=tmpdir,
-                                        url=basic_auth_url)
+    scraper = mozdownload.DirectScraper(destination=str(tmpdir), url=basic_auth_url)
     with pytest.raises(requests.exceptions.HTTPError):
         scraper.download()
 
-    # testing with valid authentication
-    scraper = mozdownload.DirectScraper(destination=tmpdir,
+@pytest.mark.skip(reason="Permanent failure due to mozqa.com not available anymore (#492)")
+def test_valid_authentication(tmpdir):
+    """testing with valid authentication"""
+    username = 'mozilla'
+    password = 'mozilla'
+    basic_auth_url = 'http://mozqa.com/data/mozqa.com/http_auth/basic/'
+    scraper = mozdownload.DirectScraper(destination=str(tmpdir),
                                         url=basic_auth_url,
                                         username=username,
                                         password=password)
     scraper.download()
-    assert os.path.isfile(os.path.join(tmpdir, 'mozqa.com'))
+    assert os.path.isfile(os.path.join(str(tmpdir), 'mozqa.com'))
 
-def test_destination(httpd, tmpdir):
-    """Test for various destination scenarios"""
-    tmpdir = str(tmpdir)
+def test_destination_isdirectory(httpd, tmpdir):
+    """destination is directory"""
     filename = 'download_test.txt'
     test_url = urljoin(httpd.get_url(), filename)
+    scraper = mozdownload.DirectScraper(url=test_url, destination=str(tmpdir))
+    assert scraper.filename == os.path.join(str(tmpdir), filename)
 
-    # destination is directory
-    scraper = mozdownload.DirectScraper(url=test_url,
-                                        destination=tmpdir)
-    assert scraper.filename == os.path.join(tmpdir, filename)
 
-    # destination has directory path with filename
-    destination = os.path.join(tmpdir, filename)
-    scraper = mozdownload.DirectScraper(url=test_url,
-                                        destination=destination)
+def test_destination_hasdirectory(httpd, tmpdir):
+    """destination has directory path with filename"""
+    filename = 'download_test.txt'
+    test_url = urljoin(httpd.get_url(), filename)
+    destination = os.path.join(str(tmpdir), filename)
+    scraper = mozdownload.DirectScraper(url=test_url, destination=destination)
     assert scraper.filename == destination
 
-    # destination only has filename
-    scraper = mozdownload.DirectScraper(url=test_url,
-                                        destination=filename)
+def test_destination_hasfile(httpd):
+    """destination only has filename"""
+    filename = 'download_test.txt'
+    test_url = urljoin(httpd.get_url(), filename)
+    scraper = mozdownload.DirectScraper(url=test_url, destination=filename)
     assert scraper.filename == os.path.abspath(filename)
 
-    # destination directory does not exist
-    destination = os.path.join(tmpdir, 'temp_folder', filename)
-    scraper = mozdownload.DirectScraper(url=test_url,
-                                        destination=destination)
+def test_destination_doesnotexist(httpd, tmpdir):
+    """destination directory does not exist"""
+    filename = 'download_test.txt'
+    test_url = urljoin(httpd.get_url(), filename)
+    destination = os.path.join(str(tmpdir), 'temp_folder', filename)
+    scraper = mozdownload.DirectScraper(url=test_url, destination=destination)
     assert scraper.destination == destination
 
-    # ensure that multiple non existing directories are created
-    destination = os.path.join(tmpdir, 'tmp1', 'tmp2', filename)
-    scraper = mozdownload.DirectScraper(url=test_url,
-                                        destination=destination)
+def test_destination_multipledir(httpd, tmpdir):
+    """ensure that multiple non existing directories are created"""
+    filename = 'download_test.txt'
+    test_url = urljoin(httpd.get_url(), filename)
+    destination = os.path.join(str(tmpdir), 'tmp1', 'tmp2', filename)
+    scraper = mozdownload.DirectScraper(url=test_url, destination=destination)
     assert scraper.destination == destination
