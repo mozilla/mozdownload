@@ -84,7 +84,8 @@ def test_daily_scraper(tmpdir, args):
     {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'linux'},
     {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'linux64'},
     {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'mac'},
-    {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'debug_build': True},
+    # Currently no debug builds are shipped for comm-central
+    # {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'debug_build': True},
     {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'locale': 'de'},
     {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'extension': 'txt'},
 ])
