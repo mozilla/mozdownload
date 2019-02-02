@@ -21,6 +21,7 @@ def test_valid_revision(httpd, tmpdir, mocker):
     assert len(scraper.builds) == 1
     assert scraper.url == (build_path + 'firefox-27.0a1.en-US.linux-i686.tar.bz2')
 
+
 def test_invalid_revision(httpd, tmpdir, mocker):
     """Testing invalid revision"""
 

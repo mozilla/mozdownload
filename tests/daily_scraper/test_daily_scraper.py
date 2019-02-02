@@ -14,16 +14,13 @@ from mozdownload.utils import urljoin
 firefox_tests = [
     ({'platform': 'win32'},
      '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
-     'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/''firefox-27.0a1.en-US.win32.installer.exe'),
+     'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'),
     ({'platform': 'win32', 'branch': 'mozilla-central'},
      '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
      'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'),
     ({'platform': 'win64', 'branch': 'mozilla-central'},
      '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win64.installer.exe',
      'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64.installer.exe'),
-    ({'platform': 'win64', 'branch': 'mozilla-central', 'date': '2013-09-30'},
-     '2013-09-30-03-02-04-mozilla-central-firefox-27.0a1.en-US.win64-x86_64.installer.exe',
-     'firefox/nightly/2013/09/2013-09-30-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64-x86_64.installer.exe'),
     ({'platform': 'linux', 'branch': 'mozilla-central'},
      '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.linux-i686.tar.bz2',
      'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.linux-i686.tar.bz2'),
@@ -51,9 +48,15 @@ firefox_tests = [
     ({'platform': 'win32', 'branch': 'mozilla-central', 'date': '2013-07-02', 'build_number': 1},
      '2013-07-02-03-12-13-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
      'firefox/nightly/2013/07/2013-07-02-03-12-13-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'),
+     # -p win32 --branch=mozilla-central --stub (old format)
     ({'platform': 'win32', 'branch': 'mozilla-central', 'date': '2013-09-30', 'is_stub_installer': True},
      '2013-09-30-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer-stub.exe',
      'firefox/nightly/2013/09/2013-09-30-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.installer-stub.exe'),
+     # -p win64 --branch=mozilla-central --stub (old format)
+    ({'platform': 'win64', 'branch': 'mozilla-central', 'date': '2013-09-30'},
+     '2013-09-30-03-02-04-mozilla-central-firefox-27.0a1.en-US.win64-x86_64.installer.exe',
+     'firefox/nightly/2013/09/2013-09-30-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64-x86_64.installer.exe'),
+     # -p win32 --branch=mozilla-central --stub (new format)
     ({'platform': 'win32', 'branch': 'mozilla-central', 'is_stub_installer': True},
      '2013-10-01-03-02-04-mozilla-central-Firefox Installer.en-US.exe',
      'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/Firefox Installer.en-US.exe'),
@@ -62,10 +65,7 @@ firefox_tests = [
      'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-aurora/firefox-27.0a1.en-US.win32.installer.exe'),
     ({'platform': 'win32', 'branch': 'ux'},
      '2013-10-01-03-02-04-ux-firefox-27.0a1.en-US.win32.installer.exe',
-     'firefox/nightly/2013/10/2013-10-01-03-02-04-ux/firefox-27.0a1.en-US.win32.installer.exe'),
-    ({'platform': 'win32'},
-     '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
-     'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe')
+     'firefox/nightly/2013/10/2013-10-01-03-02-04-ux/firefox-27.0a1.en-US.win32.installer.exe')
 ]
 
 thunderbird_tests = [
@@ -107,7 +107,7 @@ thunderbird_tests = [
      '2013-10-01-03-02-04-comm-aurora-thunderbird-27.0a1.en-US.win32.installer.exe',
      'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-aurora/thunderbird-27.0a1.en-US.win32.installer.exe'),
 ]
-#
+
 fennec_tests = [
     ({'application': 'fennec', 'platform': 'android-api-9', 'branch': 'mozilla-central'},
      '2016-02-01-03-02-41-mozilla-central-fennec-47.0a1.multi.android-arm.apk',
