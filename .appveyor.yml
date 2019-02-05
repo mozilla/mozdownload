@@ -1,20 +1,22 @@
 build: false
 
 environment:
-    PYTHON: "C:\\Python27"
-    TOXENV: "py27"
+  matrix:
+    - PYTHON: "C:\\Python27"
+      PYTHON_VERSION: "2.7"
+      TOXENV: "py27"
+    - PYTHON: "C:\\Python36"
+      PYTHON_VERSION: "3.6"
+      TOXENV: "py36"
 
 init:
-    - ECHO %PYTHON%
-    - ECHO %TOXENV%
-    - SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
+  - ECHO %PYTHON%
+  - ECHO %TOXENV%
+  - SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
 
 install:
-    - python -m pip install --upgrade pip
-    # Latest tox 2.3.x is currently busted:
-    # https://bitbucket.org/hpk42/tox/issues/314/tox-command-busted-on-windows
-    - pip install tox==2.2.0
-
+  - python -m pip install --upgrade pip
+  - pip install tox==3.7.0
 
 test_script:
-    - tox
+  - tox

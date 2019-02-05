@@ -1,6 +1,8 @@
+.idea/
 .cache/
 .tox/
 *.egg-info
 *.pyc
+.coverage
 build
 dist

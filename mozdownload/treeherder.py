@@ -7,11 +7,11 @@
 from __future__ import absolute_import, unicode_literals
 
 import logging
+import six
 
 from thclient import TreeherderClient
 
 from mozdownload.errors import NotSupportedError
-
 
 PLATFORM_MAP = {
     'android-api-9': {'build_platform': 'android-2-3-armv7-api9'},
@@ -69,11 +69,11 @@ class Treeherder(object):
 
         try:
             self.logger.info('Querying {url} for list of builds for revision: {revision}'.format(
-                             url=self.client.server_url, revision=revision))
+                url=self.client.server_url, revision=revision))
 
             # Retrieve the option hash to filter for type of build (opt, and debug for now)
             option_hash = None
-            for key, values in self.client.get_option_collection_hash().iteritems():
+            for key, values in six.iteritems(self.client.get_option_collection_hash()):
                 for value in values:
                     if value['name'] == ('debug' if debug_build else 'opt'):
                         option_hash = key

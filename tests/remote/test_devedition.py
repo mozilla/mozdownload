@@ -6,9 +6,8 @@
 
 """Test all scraper classes for Firefox Developer Edition against the remote server"""
 
-import urllib
-
 import pytest
+from six.moves.urllib.parse import unquote
 
 import mozdownload
 from mozdownload.scraper import BASE_URL
@@ -34,7 +33,7 @@ def test_release_scraper(tmpdir, args, url):
     scraper = mozdownload.ReleaseScraper(destination=tmpdir, **args)
 
     if url:
-        assert urllib.unquote(scraper.url) == urljoin(BASE_URL, url)
+        assert unquote(scraper.url) == urljoin(BASE_URL, url)
 
 
 @pytest.mark.parametrize("args,url", [
@@ -47,14 +46,14 @@ def test_release_scraper(tmpdir, args, url):
     ({'application': 'devedition', 'platform': 'win32', 'version': '60.0b1', 'build_number': 1},
      'devedition/candidates/60.0b1-candidates/build3/win32/en-US/Firefox Setup 60.0b1.exe'),
     ({'application': 'devedition', 'platform': 'mac', 'version': '60.0b1', 'build_number': 1,
-          'locale': 'de'},
+      'locale': 'de'},
      'devedition/candidates/60.0b1-candidates/build3/mac/de/Firefox 60.0b1.dmg'),
     ({'application': 'devedition', 'platform': 'mac', 'version': '60.0b1', 'build_number': 1,
-         'extension': 'json'},
+      'extension': 'json'},
      'devedition/candidates/60.0b1-candidates/build3/mac/en-US/firefox-60.0b1.json'),
 ])
 def test_candidate_scraper(tmpdir, args, url):
     """Test release candidate scraper against the remote server."""
     scraper = mozdownload.ReleaseCandidateScraper(destination=tmpdir, **args)
 
-    assert urllib.unquote(scraper.url) == urljoin(BASE_URL, url)
+    assert unquote(scraper.url) == urljoin(BASE_URL, url)

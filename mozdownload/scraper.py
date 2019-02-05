@@ -10,21 +10,19 @@ import logging
 import os
 import re
 import sys
-import urllib
 from datetime import datetime
-from urlparse import urlparse
 
 import mozinfo
 import progressbar as pb
 import redo
 import requests
+from six.moves.urllib.parse import quote, urlparse
 
 from mozdownload import errors
+from mozdownload import treeherder
 from mozdownload.parser import DirectoryParser
 from mozdownload.timezones import PacificTimezone
-from mozdownload import treeherder
 from mozdownload.utils import urljoin
-
 
 APPLICATIONS = ('devedition', 'firefox', 'fennec', 'thunderbird')
 
@@ -164,6 +162,7 @@ class Scraper(object):
     @property
     def binary(self):
         """Return the name of the build."""
+
         def _get_binary():
             # Retrieve all entries from the remote virtual folder
             parser = self._create_directory_parser(self.path)
@@ -195,8 +194,8 @@ class Scraper(object):
     @property
     def url(self):
         """Return the URL of the build."""
-        return urllib.quote(urljoin(self.path, self.binary),
-                            safe='%/:=&?~#+!$,;\'@()*[]|')
+        return quote(urljoin(self.path, self.binary),
+                     safe='%/:=&?~#+!$,;\'@()*[]|')
 
     @property
     def path(self):
@@ -248,6 +247,7 @@ class Scraper(object):
 
     def download(self):
         """Download the specified file."""
+
         def total_seconds(td):
             # Keep backward compatibility with Python 2.6 which doesn't have
             # this method
@@ -417,7 +417,7 @@ class DailyScraper(Scraper):
         parser.entries = parser.filter(r'.*%s\.txt' % self.platform_regex)
         if not parser.entries:
             message = 'Status file for %s build cannot be found' % \
-                self.platform_regex
+                      self.platform_regex
             raise errors.NotFoundError(message, url)
 
         # Read status file for the platform, retrieve build id,
@@ -457,7 +457,7 @@ class DailyScraper(Scraper):
     def get_build_info_for_date(self, date, build_index=None):
         """Return the build information for a given date."""
         url = urljoin(self.base_url, self.monthly_build_list_regex)
-        has_time = date and date.time()
+        has_time = date and date.time() and date.strftime('%H-%M-%S') != '00-00-00'
 
         self.logger.info('Retrieving list of builds from %s' % url)
         parser = self._create_directory_parser(url)
@@ -467,7 +467,7 @@ class DailyScraper(Scraper):
             # ensure to select the correct subfolder for localized builds
             'L10N': '(-l10n)?' if self.locale_build else '',
             'PLATFORM': '' if self.application not in (
-                        'fennec') else '-' + self.platform
+                'fennec') else '-' + self.platform
         }
 
         parser.entries = parser.filter(regex)
@@ -482,7 +482,7 @@ class DailyScraper(Scraper):
         if not parser.entries:
             date_format = '%Y-%m-%d-%H-%M-%S' if has_time else '%Y-%m-%d'
             message = 'Folder for builds on %s has not been found' % \
-                self.date.strftime(date_format)
+                      self.date.strftime(date_format)
             raise errors.NotFoundError(message, url)
 
         # If no index has been given, set it to the last build of the day.
@@ -663,8 +663,8 @@ class ReleaseScraper(Scraper):
         parser = self._create_directory_parser(url)
         if version:
             versions = parser.filter(RELEASE_AND_CANDIDATE_LATEST_VERSIONS[version])
-            from distutils.version import LooseVersion
-            versions.sort(key=LooseVersion)
+            from packaging.version import LegacyVersion
+            versions.sort(key=LegacyVersion)
             return [versions[-1]]
         else:
             return parser.entries
@@ -690,7 +690,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
         parser = self._create_directory_parser(url)
         if not parser.entries:
             message = 'Folder for specific candidate builds at %s has not' \
-                'been found' % url
+                      'been found' % url
             raise errors.NotFoundError(message, url)
 
         self.show_matching_builds(parser.entries)
@@ -909,11 +909,11 @@ class TinderboxScraper(Scraper):
             # If a timestamp is given, retrieve the folder with the timestamp
             # as name
             parser.entries = self.timestamp in parser.entries and \
-                [self.timestamp]
+                             [self.timestamp]
 
         elif self.date:
             # If date is given, retrieve the subset of builds on that date
-            parser.entries = filter(self.date_matches, parser.entries)
+            parser.entries = list(filter(self.date_matches, parser.entries))
 
         if not parser.entries:
             message = 'No builds have been found'

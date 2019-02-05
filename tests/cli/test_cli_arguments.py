@@ -13,4 +13,4 @@ def test_unrecognized_argument():
                                          stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         output = e.output
-    assert re.search(r'mozdownload: error: unrecognized arguments: --abc', output) is not None
+    assert re.search(r'mozdownload: error: unrecognized arguments: --abc'.encode('utf-8'), output) is not None

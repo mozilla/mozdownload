@@ -5,12 +5,13 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-import urllib
 
 import pytest
+from six.moves.urllib.parse import unquote
 
 from mozdownload import TinderboxScraper
 from mozdownload.utils import urljoin
+
 
 @pytest.mark.parametrize("args,filename,url", [
     ({'platform': 'win32'},
@@ -76,7 +77,8 @@ from mozdownload.utils import urljoin
      '1374583608-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'firefox/tinderbox-builds/mozilla-central-win32/'
      '1374583608/firefox-25.0a1.en-US.win32.installer.exe'),
-    ({'application': 'firefox', 'branch': 'mozilla-central', 'build_number': '1', 'date': '2013-07-23', 'platform': 'win32'},
+    ({'application': 'firefox', 'branch': 'mozilla-central', 'build_number': '1', 'date': '2013-07-23',
+      'platform': 'win32'},
      '1374568307-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'firefox/tinderbox-builds/mozilla-central-win32/'
      '1374568307/firefox-25.0a1.en-US.win32.installer.exe'),
@@ -137,7 +139,8 @@ from mozdownload.utils import urljoin
      '1380362686-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
      'thunderbird/tinderbox-builds/comm-central-win32/'
      '1380362686/thunderbird-27.0a1.en-US.win32.installer.exe'),
-    ({'application': 'thunderbird', 'branch': 'comm-central', 'build_number': '1', 'date': '2013-09-28', 'platform': 'win32'},
+    ({'application': 'thunderbird', 'branch': 'comm-central', 'build_number': '1', 'date': '2013-09-28',
+      'platform': 'win32'},
      '1380362527-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
      'thunderbird/tinderbox-builds/comm-central-win32/'
      '1380362527/thunderbird-27.0a1.en-US.win32.installer.exe'),
@@ -156,4 +159,4 @@ def test_scraper(httpd, tmpdir, args, filename, url):
     scraper = TinderboxScraper(destination=str(tmpdir), base_url=httpd.get_url(), **args)
     expected_filename = os.path.join(str(tmpdir), filename)
     assert scraper.filename == expected_filename
-    assert urllib.unquote(scraper.url) == urljoin(httpd.get_url(), url)
+    assert unquote(scraper.url) == urljoin(httpd.get_url(), url)

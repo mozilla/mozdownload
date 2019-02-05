@@ -5,11 +5,13 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-import urllib
+
 import pytest
+from six.moves.urllib.parse import unquote
 
 from mozdownload import TryScraper
 from mozdownload.utils import urljoin
+
 
 @pytest.mark.parametrize("args,filename,url", [
     ({'platform': 'mac64', 'revision': '8fcac92cfcad'},
@@ -42,4 +44,4 @@ def test_scraper(httpd, tmpdir, args, filename, url, mocker):
                          **args)
     expected_filename = os.path.join(str(tmpdir), filename)
     assert scraper.filename == expected_filename
-    assert urllib.unquote(scraper.url) == urljoin(httpd.get_url(), url)
+    assert unquote(scraper.url) == urljoin(httpd.get_url(), url)
