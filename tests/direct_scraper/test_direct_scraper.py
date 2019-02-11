@@ -5,29 +5,29 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
+import pytest
 
 from mozdownload import DirectScraper
 import mozdownload.errors as errors
-import mozhttpd_base_test as mhttpd
 from mozdownload.utils import urljoin
 
-
-class TestDirectScraper(mhttpd.MozHttpdBaseTest):
+def test_url_download(httpd, tmpdir):
     """test mozdownload direct url scraper"""
+    filename = 'download_test.txt'
+    test_url = urljoin(httpd.get_url(), filename)
+    scraper = DirectScraper(url=test_url, destination=str(tmpdir))
+    assert scraper.url == test_url
+    assert scraper.filename == os.path.join(str(tmpdir), filename)
 
-    def test_url_download(self):
-        filename = 'download_test.txt'
-        test_url = urljoin(self.wdir, filename)
-        scraper = DirectScraper(url=test_url,
-                                destination=self.temp_dir,
-                                logger=self.logger)
-        self.assertEqual(scraper.url, test_url)
-        self.assertEqual(scraper.filename,
-                         os.path.join(self.temp_dir, filename))
+    scraper.download()
+    assert os.path.isfile(os.path.join(str(tmpdir), scraper.filename))
 
-        for attr in ['binary', 'binary_regex', 'path', 'path_regex']:
-            self.assertRaises(errors.NotImplementedError, getattr, scraper, attr)
 
-        scraper.download()
-        self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
-                                                    scraper.filename)))
+@pytest.mark.parametrize('attr', ['binary', 'binary_regex', 'path', 'path_regex'])
+def test_implementation_error(httpd, tmpdir, attr):
+    """test implementations available"""
+    filename = 'download_test.txt'
+    test_url = urljoin(httpd.get_url(), filename)
+    scraper = DirectScraper(url=test_url, destination=str(tmpdir))
+    with pytest.raises(errors.NotImplementedError):
+        getattr(scraper, attr)

@@ -5,9 +5,7 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-import unittest
-
-import mozhttpd_base_test as mhttpd
+import pytest
 import requests
 
 import mozdownload
@@ -15,123 +13,115 @@ import mozdownload.errors as errors
 from mozdownload.scraper import PLATFORM_FRAGMENTS
 from mozdownload.utils import create_md5, urljoin
 
+@pytest.mark.parametrize('platform_key,platform_value', PLATFORM_FRAGMENTS.items())
+def test_platform_regex(tmpdir, platform_key, platform_value):
+    """Test for correct platform_regex output"""
+    scraper = mozdownload.Scraper(destination=str(tmpdir), platform=platform_key)
+    assert scraper.platform_regex == platform_value
 
-class TestBaseScraper(mhttpd.MozHttpdBaseTest):
-    """Testing the basic functionality of the Base Scraper Class"""
 
-    def test_platform_regex(self):
-        """Test for correct platform_regex output"""
+def test_standard_download(httpd, tmpdir):
+    filename = 'download_test.txt'
+    test_url = urljoin(httpd.get_url(), filename)
+    scraper = mozdownload.DirectScraper(url=test_url, destination=str(tmpdir))
+    scraper.download()
+    assert os.path.isfile(os.path.join(str(tmpdir), filename))
 
-        for key in PLATFORM_FRAGMENTS:
-            scraper = mozdownload.Scraper(destination=self.temp_dir,
-                                          platform=key)
-            self.assertEqual(scraper.platform_regex,
-                             PLATFORM_FRAGMENTS[key])
 
-    def test_download(self):
-        """Test download method"""
+def test_compare_download(httpd, tmpdir):
+    """Compare original and downloaded file via md5 hash"""
+    filename = 'download_test.txt'
+    test_url = urljoin(httpd.get_url(), filename)
+    scraper = mozdownload.DirectScraper(url=test_url, destination=str(tmpdir))
+    scraper.download()
+    md5_original = create_md5(os.path.join(httpd.router.doc_root, filename))
+    md5_downloaded = create_md5(os.path.join(str(tmpdir), filename))
+    assert md5_original == md5_downloaded
 
-        filename = 'download_test.txt'
-        # standard download
-        test_url = urljoin(self.wdir, filename)
-        scraper = mozdownload.DirectScraper(url=test_url,
-                                            destination=self.temp_dir,
-                                            logger=self.logger)
+
+def test_url_not_found(httpd, tmpdir):
+    test_url = urljoin(httpd.get_url(), 'does_not_exist.html')
+    scraper = mozdownload.DirectScraper(url=test_url, destination=str(tmpdir))
+    with pytest.raises(requests.exceptions.RequestException):
         scraper.download()
-        self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
-                                                    filename)))
-        # Compare original and downloaded file via md5 hash
-        md5_original = create_md5(os.path.join(mhttpd.HERE,
-                                               mhttpd.WDIR,
-                                               filename))
-        md5_downloaded = create_md5(os.path.join(self.temp_dir, filename))
-        self.assertEqual(md5_original, md5_downloaded)
 
-        # RequestException
-        test_url1 = urljoin(self.wdir, 'does_not_exist.html')
-        scraper1 = mozdownload.DirectScraper(url=test_url1,
-                                             destination=self.temp_dir,
-                                             logger=self.logger)
-        self.assertRaises(requests.exceptions.RequestException,
-                          scraper1.download)
 
-        # Covering retry_attempts
-        test_url2 = urljoin(self.wdir, 'does_not_exist.html')
-        scraper2 = mozdownload.DirectScraper(url=test_url2,
-                                             destination=self.temp_dir,
-                                             retry_attempts=3,
-                                             retry_delay=1.0,
-                                             logger=self.logger)
-        self.assertRaises(requests.exceptions.RequestException,
-                          scraper2.download)
-
-    def test_notimplementedexceptions(self):
-        scraper = mozdownload.Scraper(destination=self.temp_dir,
-                                      logger=self.logger)
-        for attr in ['binary', 'binary_regex', 'path_regex']:
-            self.assertRaises(errors.NotImplementedError, getattr,
-                              scraper, attr)
-        self.assertRaises(errors.NotImplementedError,
-                          scraper.build_filename, 'invalid binary')
-
-    @unittest.skip("Perma failure due to mozqa.com not available anymore (#492)")
-    def test_authentication(self):
-        """testing with basic authentication"""
-        username = 'mozilla'
-        password = 'mozilla'
-        basic_auth_url = 'http://mozqa.com/data/mozqa.com/http_auth/basic/'
-
-        # test with invalid authentication
-        scraper = mozdownload.DirectScraper(destination=self.temp_dir,
-                                            url=basic_auth_url,
-                                            logger=self.logger)
-        self.assertRaises(requests.exceptions.HTTPError, scraper.download)
-
-        # testing with valid authentication
-        scraper = mozdownload.DirectScraper(destination=self.temp_dir,
-                                            url=basic_auth_url,
-                                            logger=self.logger,
-                                            username=username,
-                                            password=password)
+def test_retry_attempts(httpd, tmpdir):
+    test_url = urljoin(httpd.get_url(), 'does_not_exist.html')
+    scraper = mozdownload.DirectScraper(url=test_url,
+                                        destination=str(tmpdir),
+                                        retry_attempts=3,
+                                        retry_delay=0.1)
+    with pytest.raises(requests.exceptions.RequestException):
         scraper.download()
-        self.assertTrue(os.path.isfile(os.path.join(self.temp_dir,
-                                                    'mozqa.com')))
 
-    def test_destination(self):
-        """Test for various destination scenarios"""
 
-        filename = 'download_test.txt'
-        test_url = urljoin(self.wdir, filename)
+@pytest.mark.parametrize('attr', ['binary', 'binary_regex', 'path_regex'])
+def test_not_implemented(tmpdir, attr):
+    """test implementations available"""
+    scraper = mozdownload.Scraper(destination=str(tmpdir))
+    with pytest.raises(errors.NotImplementedError):
+        getattr(scraper, attr)
 
-        # destination is directory
-        scraper = mozdownload.DirectScraper(url=test_url,
-                                            destination=self.temp_dir,
-                                            logger=self.logger)
-        self.assertEqual(scraper.filename, os.path.join(self.temp_dir, filename))
+    with pytest.raises(errors.NotImplementedError):
+        scraper.build_filename('invalid binary')
 
-        # destination has directory path with filename
-        destination = os.path.join(self.temp_dir, filename)
-        scraper = mozdownload.DirectScraper(url=test_url,
-                                            destination=destination,
-                                            logger=self.logger)
-        self.assertEqual(scraper.filename, destination)
 
-        # destination only has filename
-        scraper = mozdownload.DirectScraper(url=test_url,
-                                            destination=filename,
-                                            logger=self.logger)
-        self.assertEqual(scraper.filename, os.path.abspath(filename))
+@pytest.mark.skip(reason="Permanent failure due to mozqa.com not available anymore (#492)")
+def test_invalid_authentication(tmpdir):
+    basic_auth_url = 'http://mozqa.com/data/mozqa.com/http_auth/basic/'
+    scraper = mozdownload.DirectScraper(destination=str(tmpdir), url=basic_auth_url)
+    with pytest.raises(requests.exceptions.HTTPError):
+        scraper.download()
 
-        # destination directory does not exist
-        destination = os.path.join(self.temp_dir, 'temp_folder', filename)
-        scraper = mozdownload.DirectScraper(url=test_url,
-                                            destination=destination,
-                                            logger=self.logger)
-        self.assertEqual(scraper.destination, destination)
 
-        # ensure that multiple non existing directories are created
-        destination = os.path.join(self.temp_dir, 'tmp1', 'tmp2', filename)
-        scraper = mozdownload.DirectScraper(url=test_url,
-                                            destination=destination,
-                                            logger=self.logger)
-        self.assertEqual(scraper.destination, destination)
+@pytest.mark.skip(reason="Permanent failure due to mozqa.com not available anymore (#492)")
+def test_valid_authentication(tmpdir):
+    username = 'mozilla'
+    password = 'mozilla'
+    basic_auth_url = 'http://mozqa.com/data/mozqa.com/http_auth/basic/'
+    scraper = mozdownload.DirectScraper(destination=str(tmpdir),
+                                        url=basic_auth_url,
+                                        username=username,
+                                        password=password)
+    scraper.download()
+    assert os.path.isfile(os.path.join(str(tmpdir), 'mozqa.com'))
+
+
+def test_destination_as_directory(httpd, tmpdir):
+    filename = 'download_test.txt'
+    test_url = urljoin(httpd.get_url(), filename)
+    scraper = mozdownload.DirectScraper(url=test_url, destination=str(tmpdir))
+    assert scraper.filename == os.path.join(str(tmpdir), filename)
+
+
+def test_destination_as_path_with_filename(httpd, tmpdir):
+    filename = 'download_test.txt'
+    test_url = urljoin(httpd.get_url(), filename)
+    destination = os.path.join(str(tmpdir), filename)
+    scraper = mozdownload.DirectScraper(url=test_url, destination=destination)
+    assert scraper.filename == destination
+
+
+def test_destination_as_filename_only(httpd):
+    filename = 'download_test.txt'
+    test_url = urljoin(httpd.get_url(), filename)
+    scraper = mozdownload.DirectScraper(url=test_url, destination=filename)
+    assert scraper.filename == os.path.abspath(filename)
+
+
+def test_destination_does_not_exist(httpd, tmpdir):
+    filename = 'download_test.txt'
+    test_url = urljoin(httpd.get_url(), filename)
+    destination = os.path.join(str(tmpdir), 'temp_folder', filename)
+    scraper = mozdownload.DirectScraper(url=test_url, destination=destination)
+    assert scraper.destination == destination
+
+
+def test_destination_multiple_dir(httpd, tmpdir):
+    """ensure that multiple non existing directories are created"""
+    filename = 'download_test.txt'
+    test_url = urljoin(httpd.get_url(), filename)
+    destination = os.path.join(str(tmpdir), 'tmp1', 'tmp2', filename)
+    scraper = mozdownload.DirectScraper(url=test_url, destination=destination)
+    assert scraper.destination == destination
