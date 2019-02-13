@@ -10,7 +10,7 @@ from mozdownload import TinderboxScraper, errors
 
 def test_valid_revision(httpd, tmpdir, mocker):
     query_builds_by_revision = mocker.patch('mozdownload.treeherder.Treeherder.query_builds_by_revision')
-    build_path = httpd.get_url() + '/firefox/tinderbox-builds/mozilla-central-linux/1374583608/'
+    build_path = httpd.get_url() + 'firefox/tinderbox-builds/mozilla-central-linux/1374583608/'
     query_builds_by_revision.return_value = [build_path]
 
     scraper = TinderboxScraper(destination=str(tmpdir),
