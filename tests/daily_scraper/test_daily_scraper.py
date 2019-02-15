@@ -30,6 +30,7 @@ firefox_tests = [
     ({'platform': 'mac', 'branch': 'mozilla-central'},
      '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.mac.dmg',
      'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.mac.dmg'),
+    # Old stub format
     ({'platform': 'linux', 'branch': 'mozilla-central', 'extension': 'txt'},
      '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.linux-i686.txt',
      'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.linux-i686.txt'),
@@ -48,15 +49,15 @@ firefox_tests = [
     ({'platform': 'win32', 'branch': 'mozilla-central', 'date': '2013-07-02', 'build_number': 1},
      '2013-07-02-03-12-13-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
      'firefox/nightly/2013/07/2013-07-02-03-12-13-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'),
-     # -p win32 --branch=mozilla-central --stub (old format)
+     # Old stub format
     ({'platform': 'win32', 'branch': 'mozilla-central', 'date': '2013-09-30', 'is_stub_installer': True},
      '2013-09-30-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer-stub.exe',
      'firefox/nightly/2013/09/2013-09-30-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.installer-stub.exe'),
-     # -p win64 --branch=mozilla-central --stub (old format)
+     # Old file name format
     ({'platform': 'win64', 'branch': 'mozilla-central', 'date': '2013-09-30'},
      '2013-09-30-03-02-04-mozilla-central-firefox-27.0a1.en-US.win64-x86_64.installer.exe',
      'firefox/nightly/2013/09/2013-09-30-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64-x86_64.installer.exe'),
-     # -p win32 --branch=mozilla-central --stub (new format)
+     # New stub format
     ({'platform': 'win32', 'branch': 'mozilla-central', 'is_stub_installer': True},
      '2013-10-01-03-02-04-mozilla-central-Firefox Installer.en-US.exe',
      'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/Firefox Installer.en-US.exe'),
