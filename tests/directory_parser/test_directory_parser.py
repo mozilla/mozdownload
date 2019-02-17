@@ -9,59 +9,52 @@ import os
 from mozdownload.parser import DirectoryParser
 from mozdownload.utils import urljoin
 
-import mozhttpd_base_test as mhttpd
 
+def test_init(httpd):
+    """Testing the basic functionality of the DirectoryParser Class"""
 
-class DirectoryParserTest(mhttpd.MozHttpdBaseTest):
-    """test mozdownload scraper class"""
+    # DirectoryParser returns output
+    parser = DirectoryParser(httpd.get_url())
 
-    def test_init(self):
-        """Testing the basic functionality of the DirectoryParser Class"""
+    # relies on the presence of other files in the directory
+    # Checks if DirectoryParser lists the server entries
+    assert parser.entries != [], "parser.entries were not listed"
 
-        # DirectoryParser returns output
-        parser = DirectoryParser(self.wdir)
+    # path_regex to mozdownload -t release -p win32 -v latest
+    testpath = urljoin(httpd.get_url(), 'directoryparser/')
+    parser1 = DirectoryParser(testpath)
+    parser1.entries.sort()
+    testdir = os.listdir(urljoin(httpd.router.doc_root, 'data', 'directoryparser'))
+    testdir.sort()
+    assert parser1.entries == testdir
 
-        # relies on the presence of other files in the directory
-        # Checks if DirectoryParser lists the server entries
-        self.assertNotEqual(parser.entries, [], "parser.entries were not listed")
+def test_filter(httpd):
+    """Testing the DirectoryParser filter method"""
+    parser = DirectoryParser(urljoin(httpd.get_url(), 'directoryparser', 'filter/'))
 
-        # path_regex to mozdownload -t release -p win32 -v latest
-        testpath = urljoin(self.wdir, 'directoryparser/')
-        parser1 = DirectoryParser(testpath)
-        parser1.entries.sort()
-        testdir = os.listdir(urljoin(mhttpd.HERE, 'data', 'directoryparser'))
-        testdir.sort()
-        self.assertEqual(parser1.entries, testdir)
+    # Get the contents of the folder - dirs and files
+    folder_path = urljoin(httpd.router.doc_root, 'directoryparser', 'filter')
+    contents = os.listdir(folder_path)
+    contents.sort()
+    assert parser.entries == contents
 
-    def test_filter(self):
-        """Testing the DirectoryParser filter method"""
-        parser = DirectoryParser(urljoin(self.wdir, 'directoryparser', 'filter/'))
+    # filter out files
+    parser.entries = parser.filter(r'^\d+$')
 
-        # Get the contents of the folder - dirs and files
-        folder_path = urljoin(mhttpd.HERE, mhttpd.WDIR, 'directoryparser',
-                              'filter')
-        contents = os.listdir(folder_path)
-        contents.sort()
-        self.assertEqual(parser.entries, contents)
+    # Get only the subdirectories of the folder
+    dirs = os.walk(folder_path).next()[1]
+    dirs.sort()
+    assert parser.entries == dirs
 
-        # filter out files
-        parser.entries = parser.filter(r'^\d+$')
+    # Test filter method with a function
+    parser.entries = parser.filter(lambda x: x == dirs[0])
+    assert parser.entries == [dirs[0]]
 
-        # Get only the subdirectories of the folder
-        dirs = os.walk(folder_path).next()[1]
-        dirs.sort()
-        self.assertEqual(parser.entries, dirs)
+def test_names_with_spaces(httpd):
+    parser = DirectoryParser(urljoin(httpd.get_url(), 'directoryparser', 'some spaces/'))
 
-        # Test filter method with a function
-        parser.entries = parser.filter(lambda x: x == dirs[0])
-        self.assertEqual(parser.entries, [dirs[0]])
-
-    def test_names_with_spaces(self):
-        parser = DirectoryParser(urljoin(self.wdir, 'directoryparser', 'some spaces/'))
-
-        # Get the contents of the folder - dirs and files
-        folder_path = urljoin(mhttpd.HERE, mhttpd.WDIR, 'directoryparser',
-                              'some spaces')
-        contents = os.listdir(folder_path)
-        contents.sort()
-        self.assertEqual(parser.entries, contents)
+    # Get the contents of the folder - dirs and files
+    folder_path = urljoin(httpd.router.doc_root, 'directoryparser', 'some spaces')
+    contents = os.listdir(folder_path)
+    contents.sort()
+    assert parser.entries == contents
