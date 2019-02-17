@@ -24,12 +24,14 @@ def test_init(httpd):
     testpath = urljoin(httpd.get_url(), 'directoryparser/')
     parser1 = DirectoryParser(testpath)
     parser1.entries.sort()
-    testdir = os.listdir(urljoin(httpd.router.doc_root, 'data', 'directoryparser'))
+    testdir = os.listdir(urljoin(httpd.router.doc_root, 'directoryparser'))
     testdir.sort()
     assert parser1.entries == testdir
 
+
 def test_filter(httpd):
     """Testing the DirectoryParser filter method"""
+
     parser = DirectoryParser(urljoin(httpd.get_url(), 'directoryparser', 'filter/'))
 
     # Get the contents of the folder - dirs and files
@@ -50,7 +52,9 @@ def test_filter(httpd):
     parser.entries = parser.filter(lambda x: x == dirs[0])
     assert parser.entries == [dirs[0]]
 
+
 def test_names_with_spaces(httpd):
+
     parser = DirectoryParser(urljoin(httpd.get_url(), 'directoryparser', 'some spaces/'))
 
     # Get the contents of the folder - dirs and files
