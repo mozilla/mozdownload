@@ -45,6 +45,8 @@ def test_non_release_non_candidate_devedition(httpd, tmpdir):
                        base_url=httpd.get_url(),
                        application='devedition',
                        version='60.0b1')
+
+
 @pytest.mark.parametrize('scraper_type,builds,fname,arg', [
     # ReleaseScraper
     ('release', None, 'firefox-23.0.1.en-US.win32.exe', {
