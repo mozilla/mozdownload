@@ -9,7 +9,6 @@ import subprocess
 
 def test_unrecognized_argument():
     """Test CLI entry script for arguments."""
-
     try:
         output = subprocess.check_output(['mozdownload', '--abc'],
                                          stderr=subprocess.STDOUT)

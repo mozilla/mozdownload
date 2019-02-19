@@ -38,10 +38,8 @@ from mozdownload import cli
         'fname': '8fcac92cfcad-firefox-38.0a1.en-US.win32.installer.exe',
     })
 ])
-
 def test_cli_scraper(httpd, tmpdir, scraper_type, data, mocker):
     """Test mozdownload for correct choice of scraper"""
-
     query_builds_by_revision = mocker.patch('mozdownload.treeherder.Treeherder.query_builds_by_revision')
 
     if data.get('builds'):
