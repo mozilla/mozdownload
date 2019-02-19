@@ -11,34 +11,35 @@ import pytest
 
 from mozdownload import cli
 
-@pytest.mark.parametrize("scraper_type,data", [
-    ('release', {
+tests = {
+    'release': {
         'args': ['-v', '23.0.1', '-p', 'win32'],
         'fname': 'firefox-23.0.1.en-US.win32.exe',
-    }),
+    },
 
-    ('candidate', {
+    'candidate': {
         'args': ['-t', 'candidate', '-v', '23.0.1', '-p', 'win32'],
         'fname': 'firefox-23.0.1-build3.en-US.win32.exe',
-    }),
+    },
 
-    ('daily', {
+    'daily': {
         'args': ['-t', 'daily', '-p', 'win32'],
         'fname': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
-    }),
+    },
 
-    ('tinderbox', {
+    'tinderbox': {
         'args': ['-t', 'tinderbox', '-p', 'win32'],
         'fname': '1374583608-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
-    }),
+    },
 
-    ('try', {
+    'try': {
         'args': ['-t', 'try', '-p', 'win32', '--revision', '8fcac92cfcad'],
         'builds': ['/firefox/try-builds/test-user@mozilla.com-8fcac92cfcad/try-win32/'],
         'fname': '8fcac92cfcad-firefox-38.0a1.en-US.win32.installer.exe',
-    })
-])
-def test_cli_scraper(httpd, tmpdir, scraper_type, data, mocker):
+    },
+}
+@pytest.mark.parametrize("data", tests.values())
+def test_cli_scraper(httpd, tmpdir, data, mocker):
     """Test mozdownload for correct choice of scraper"""
     query_builds_by_revision = mocker.patch('mozdownload.treeherder.Treeherder.query_builds_by_revision')
 
