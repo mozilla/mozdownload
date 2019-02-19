@@ -5,7 +5,7 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import subprocess
-
+import re
 
 def test_unrecognized_argument():
     """Test CLI entry script for arguments."""
@@ -14,4 +14,4 @@ def test_unrecognized_argument():
                                          stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         output = e.output
-    assert r'mozdownload: error: unrecognized arguments: --abc' in output
+    assert re.search(r'mozdownload: error: unrecognized arguments: --abc', output) is not None

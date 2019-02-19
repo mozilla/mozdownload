@@ -7,11 +7,12 @@
 import json
 import os
 import urlparse
+import re
 
 from wptserve.handlers import json_handler
+import pytest
 
 from mozdownload.treeherder import Treeherder, PLATFORM_MAP
-import mozhttpd_base_test as mhttpd
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -52,34 +53,19 @@ def handle_rest_api(request, response):
 
     return data
 
-
-class TestAPI(mhttpd.MozHttpdBaseTest):
+@pytest.mark.parametrize('platform', PLATFORM_MAP)
+def test_query_tinderbox_builds(httpd, platform):
     """Basic tests for the Treeherder wrapper."""
+    httpd.router.register('GET', '/api/*', handle_rest_api)
 
-    def test_query_tinderbox_builds(self):
-        self.httpd.router.register('GET', '/api/*', handle_rest_api)
+    if platform == 'mac64':
+        pytest.skip("mac64 is identical to mac")
 
-        for platform in PLATFORM_MAP:
-            # mac64 is identical to mac
-            if platform == 'mac64':
-                continue
+    application = 'firefox' if not platform.startswith('android') else 'mobile'
+    th = Treeherder(application, 'mozilla-beta', platform,
+                    server_url='http://{}:{}'.format(httpd.host, httpd.port))
+    builds = th.query_builds_by_revision('29258f59e545')
 
-            application = 'firefox' if not platform.startswith('android') else 'mobile'
-            th = Treeherder(application, 'mozilla-beta', platform,
-                            server_url='http://{}:{}'.format(self.httpd.host, self.httpd.port))
-            builds = th.query_builds_by_revision('29258f59e545')
+    assert len(builds) == 1
+    assert re.search(r'mozilla-beta-%s' % platform, builds[0].rsplit('/', 3)[1]) is not None
 
-            self.assertEqual(len(builds), 1)
-            self.assertRegexpMatches(builds[0].rsplit('/', 3)[1],
-                                     r'mozilla-beta-%s' % platform)
-
-
-class TestAPIInvalidUsage(mhttpd.MozHttpdBaseTest):
-    """Invalid usage of the Treeherder wrapper."""
-
-    def test_invalid_query_does_not_raise(self):
-        th = Treeherder('firefox', 'mozilla-beta', 'invalid_platform',
-                        server_url='http://{}:{}'.format(self.httpd.host, self.httpd.port))
-        builds = th.query_builds_by_revision('29258f59e545')
-
-        self.assertEqual(builds, [])

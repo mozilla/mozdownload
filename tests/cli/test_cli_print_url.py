@@ -5,6 +5,7 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import subprocess
+import re
 
 
 def test_print_url_argument():
@@ -17,4 +18,4 @@ def test_print_url_argument():
         output = subprocess.check_output(args, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         output = e.output
-    assert url in output
+    assert re.search(url, output) is not None
