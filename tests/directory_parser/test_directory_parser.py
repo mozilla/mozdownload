@@ -23,9 +23,7 @@ def test_init(httpd):
     # path_regex to mozdownload -t release -p win32 -v latest
     testpath = urljoin(httpd.get_url(), 'directoryparser/')
     parser = DirectoryParser(testpath)
-    parser.entries.sort()
     testdir = os.listdir(urljoin(httpd.router.doc_root, 'directoryparser'))
-    testdir.sort()
     assert parser.entries == testdir
 
 
@@ -36,7 +34,6 @@ def test_filter(httpd):
     # Get the contents of the folder - dirs and files
     folder_path = urljoin(httpd.router.doc_root, 'directoryparser', 'filter')
     contents = os.listdir(folder_path)
-    contents.sort()
     assert parser.entries == contents
 
     # filter out files
@@ -44,7 +41,6 @@ def test_filter(httpd):
 
     # Get only the subdirectories of the folder
     dirs = os.walk(folder_path).next()[1]
-    dirs.sort()
     assert parser.entries == dirs
 
     # Test filter method with a function
@@ -58,5 +54,4 @@ def test_names_with_spaces(httpd):
     # Get the contents of the folder - dirs and files
     folder_path = urljoin(httpd.router.doc_root, 'directoryparser', 'some spaces')
     contents = os.listdir(folder_path)
-    contents.sort()
     assert parser.entries == contents
