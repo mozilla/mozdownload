@@ -5,17 +5,14 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import subprocess
-import unittest
 
 
-class TestCLIArguments(unittest.TestCase):
+def test_unrecognized_argument():
     """Test CLI entry script for arguments."""
 
-    def test_unrecognized_argument(self):
-        try:
-            output = subprocess.check_output(['mozdownload', '--abc'],
-                                             stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
-            output = e.output
-
-        self.assertRegexpMatches(output, r'mozdownload: error: unrecognized arguments: --abc')
+    try:
+        output = subprocess.check_output(['mozdownload', '--abc'],
+                                         stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        output = e.output
+    assert r'mozdownload: error: unrecognized arguments: --abc' in output
