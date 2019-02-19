@@ -30,7 +30,6 @@ firefox_tests = [
     ({'platform': 'mac', 'branch': 'mozilla-central'},
      '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.mac.dmg',
      'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.mac.dmg'),
-    # Old stub format
     ({'platform': 'linux', 'branch': 'mozilla-central', 'extension': 'txt'},
      '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.linux-i686.txt',
      'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.linux-i686.txt'),
