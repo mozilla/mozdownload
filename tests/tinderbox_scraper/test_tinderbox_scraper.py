@@ -25,10 +25,12 @@ from mozdownload.utils import urljoin
      '1374583608-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'firefox/tinderbox-builds/mozilla-central-win32/'
      '1374583608/firefox-25.0a1.en-US.win32.installer.exe'),
+    # -a firefox -p win32 --date 1374573725 --stub (old format)
     ({'application': 'firefox', 'date': '1374573725', 'is_stub_installer': True, 'platform': 'win32'},
      '1374573725-mozilla-central-firefox-25.0a1.en-US.win32.installer-stub.exe',
      'firefox/tinderbox-builds/mozilla-central-win32/'
      '1374573725/firefox-25.0a1.en-US.win32.installer-stub.exe'),
+    # -a firefox -p win32 --stub (new format)
     ({'application': 'firefox', 'platform': 'win32', 'date': '1374583608', 'is_stub_installer': True},
      '1374583608-mozilla-central-setup.exe',
      'firefox/tinderbox-builds/mozilla-central-win32/'
@@ -49,6 +51,7 @@ from mozdownload.utils import urljoin
      '1423517445-mozilla-central-firefox-38.0a1.en-US.win64.installer.exe',
      'firefox/tinderbox-builds/mozilla-central-win64/'
      '1423517445/firefox-38.0a1.en-US.win64.installer.exe'),
+    # -a firefox -p win64 --branch=mozilla-central --date=2013-07-23 (old filename format)
     ({'application': 'firefox', 'branch': 'mozilla-central', 'platform': 'win64', 'date': '2013-07-23'},
      '1374583608-mozilla-central-firefox-25.0a1.en-US.win64-x86_64.installer.exe',
      'firefox/tinderbox-builds/mozilla-central-win64/'
@@ -97,6 +100,7 @@ from mozdownload.utils import urljoin
      '1374568307-mozilla-central-firefox-25.0a1.en-US.mac.txt',
      'firefox/tinderbox-builds/mozilla-central-macosx64/'
      '1374568307/firefox-25.0a1.en-US.mac.txt'),
+
     ({'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'linux'},
      '1380362686-comm-central-thunderbird-27.0a1.en-US.linux-i686.tar.bz2',
      'thunderbird/tinderbox-builds/comm-central-linux/'
