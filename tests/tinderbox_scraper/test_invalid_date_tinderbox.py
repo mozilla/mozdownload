@@ -16,7 +16,6 @@ import pytest
     ({'branch': 'mozilla-central', 'date': '2013/07/02', 'platform': 'win64'}),
     ({'branch': 'mozilla-central', 'date': '2013-March-15', 'platform': 'win32'}),
 ])
-
 def test_scraper(httpd, tmpdir, args):
     """Testing download scenarios with invalid parameters for TinderboxScraper"""
 

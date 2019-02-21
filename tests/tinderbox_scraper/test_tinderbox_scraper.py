@@ -150,7 +150,6 @@ from mozdownload.utils import urljoin
      'thunderbird/tinderbox-builds/comm-aurora-win32/'
      '1380362686/thunderbird-27.0a1.en-US.win32.installer.exe'),
 ])
-
 def test_scraper(httpd, tmpdir, args, filename, url):
     """Testing various download scenarios for TinderboxScraper"""
 
