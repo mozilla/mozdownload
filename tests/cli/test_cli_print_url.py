@@ -9,7 +9,6 @@ import re
 
 
 def test_print_url_argument():
-    """Test CLI for print-url argument."""
     url = r'https://raw.github.com/mozilla/mozdownload/master/README.md'
     try:
         args = ['mozdownload',

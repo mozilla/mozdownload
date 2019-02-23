@@ -39,8 +39,7 @@ tests = {
     },
 }
 @pytest.mark.parametrize("data", tests.values())
-def test_cli_scraper(httpd, tmpdir, data, mocker):
-    """Test mozdownload for correct choice of scraper"""
+def test_correct_cli_scraper(httpd, tmpdir, data, mocker):
     query_builds_by_revision = mocker.patch('mozdownload.treeherder.Treeherder.query_builds_by_revision')
 
     if data.get('builds'):
@@ -55,5 +54,3 @@ def test_cli_scraper(httpd, tmpdir, data, mocker):
 
     dir_content = os.listdir(str(tmpdir))
     assert data['fname'] in dir_content
-
-    mozfile.remove(os.path.join(str(tmpdir), data['fname']))
