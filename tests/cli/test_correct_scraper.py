@@ -6,12 +6,9 @@
 
 import os
 
-import mozfile
-from mock import patch
+import pytest
 
 from mozdownload import cli
-import mozhttpd_base_test as mhttpd
-
 
 tests = {
     'release': {
@@ -40,25 +37,19 @@ tests = {
         'fname': '8fcac92cfcad-firefox-38.0a1.en-US.win32.installer.exe',
     },
 }
+@pytest.mark.parametrize("data", tests.values())
+def test_correct_cli_scraper(httpd, tmpdir, data, mocker):
+    query_builds_by_revision = mocker.patch('mozdownload.treeherder.Treeherder.query_builds_by_revision')
 
+    if data.get('builds'):
+        query_builds_by_revision.return_value = data['builds']
 
-class TestCLICorrectScraper(mhttpd.MozHttpdBaseTest):
-    """Test mozdownload for correct choice of scraper"""
+    args = [
+        '--base_url', httpd.get_url(),
+        '--destination', str(tmpdir),
+    ]
+    args.extend(data['args'])
+    cli.cli(args)
 
-    @patch('mozdownload.treeherder.Treeherder.query_builds_by_revision')
-    def test_cli_scraper(self, query_builds_by_revision):
-        for scraper_type, data in tests.iteritems():
-            if data.get('builds'):
-                query_builds_by_revision.return_value = data['builds']
-
-            args = [
-                '--base_url', self.wdir,
-                '--destination', self.temp_dir,
-            ]
-            args.extend(data['args'])
-            cli.cli(args)
-
-            dir_content = os.listdir(self.temp_dir)
-            self.assertTrue(data['fname'] in dir_content)
-
-            mozfile.remove(os.path.join(self.temp_dir, data['fname']))
+    dir_content = os.listdir(str(tmpdir))
+    assert data['fname'] in dir_content
