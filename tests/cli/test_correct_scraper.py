@@ -6,7 +6,6 @@
 
 import os
 
-import mozfile
 import pytest
 
 from mozdownload import cli
