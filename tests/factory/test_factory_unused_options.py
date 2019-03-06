@@ -84,7 +84,7 @@ from mozdownload import FactoryScraper
          }
      })
 ])
-def test_unknown_options(httpd, tmpdir, filename, args, mocker):
+def test_unused_options(httpd, tmpdir, filename, args, mocker):
     """Test that unknown optional options do not break the given scraper."""
     base_kwargs = {
         'base_url': httpd.get_url(),
@@ -107,7 +107,7 @@ def test_unknown_options(httpd, tmpdir, filename, args, mocker):
     assert args['fname'] in dir_content
 
 
-def test_unknown_options_direct_scraper(httpd, tmpdir):
+def test_unused_options_direct_scraper(httpd, tmpdir):
     filename = 'download_test.txt'
     test_url = urljoin(httpd.get_url(), filename)
 
