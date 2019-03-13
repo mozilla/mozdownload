@@ -37,7 +37,7 @@ class MozHttpdBaseTest(unittest.TestCase):
         self.temp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
-        mozfile.rmtree(self.temp_dir)
+        mozfile.remove(self.temp_dir)
 
     @classmethod
     def tearDownClass(cls):
