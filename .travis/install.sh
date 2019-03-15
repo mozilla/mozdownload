@@ -8,7 +8,6 @@ ci_requirements="tox virtualenv"
 if [ "$TRAVIS_OS_NAME" == "osx" ]; then
     curl -O https://bootstrap.pypa.io/get-pip.py
     python get-pip.py --user
-    pip install --user virtualenv
 fi
 
 pip install $ci_requirements
