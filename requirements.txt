@@ -1,5 +1,5 @@
 mozinfo >= 0.9
 progressbar2 >= 3.34.3
-redo==2.0.2
+redo==2.0.3
 requests >= 2.9.1, <3.0.0
 treeherder-client==5.0.0
