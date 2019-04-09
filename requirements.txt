@@ -3,4 +3,3 @@ progressbar2 >= 3.34.3
 redo==2.0.3
 requests >= 2.21.0, <3.0.0
 treeherder-client >= 5.0.0, <6.0.0
-packaging == 19.0
