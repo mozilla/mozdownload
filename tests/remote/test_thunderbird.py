@@ -90,6 +90,7 @@ def test_daily_scraper(tmpdir, args):
 ])
 def test_tinderbox_scraper(tmpdir, args):
     """Test tinderbox scraper against the remote server."""
+    pytest.skip("Thunderbird tinderbox not been updated to the archive")
     mozdownload.TinderboxScraper(destination=tmpdir, **args)
 
 
