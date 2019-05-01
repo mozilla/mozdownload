@@ -88,7 +88,7 @@ def test_daily_scraper(tmpdir, args):
     {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'locale': 'de'},
     {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'extension': 'txt'},
 ])
-@pytest.mark.xfail(run=False, reasson="tinderbox builds not available in the archive")
+@pytest.mark.xfail(strict=True, reason="tinderbox builds not available in the archive")
 def test_tinderbox_scraper(tmpdir, args):
     """Test tinderbox scraper against the remote server."""
     mozdownload.TinderboxScraper(destination=tmpdir, **args)
