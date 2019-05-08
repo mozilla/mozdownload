@@ -85,7 +85,8 @@ def test_daily_scraper(tmpdir, args):
     {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'mac'},
     # Currently no debug builds are shipped for comm-central
     # {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'debug_build': True},
-    {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'locale': 'de'},
+    # Tindebox builds are not available at the moment
+    # {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'locale': 'de'},
     {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'extension': 'txt'},
 ])
 @pytest.mark.xfail(strict=True, reason="tinderbox builds not available in the archive")
