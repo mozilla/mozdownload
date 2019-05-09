@@ -85,7 +85,7 @@ def test_daily_scraper(tmpdir, args):
     {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'mac'},
     # Currently no debug builds are shipped for comm-central
     # {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'debug_build': True},
-    # Tindebox builds are not available at the moment
+    # Test inappropriately causes an xpass even when it should fail
     # {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'locale': 'de'},
     {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'extension': 'txt'},
 ])
