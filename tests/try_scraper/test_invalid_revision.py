@@ -6,8 +6,9 @@
 
 import pytest
 
-from mozdownload import TryScraper
 import mozdownload.errors as errors
+from mozdownload import TryScraper
+
 
 def test_invalid_parameters(httpd, tmpdir, mocker):
     """Testing download scenarios with invalid parameters for TryScraper"""

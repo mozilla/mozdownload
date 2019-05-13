@@ -4,9 +4,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import urllib
-
 import pytest
+from six.moves.urllib.parse import unquote
 
 import mozdownload
 from mozdownload.scraper import BASE_URL
@@ -24,7 +23,7 @@ from mozdownload.utils import urljoin
      'thunderbird/releases/52.0/linux-x86_64/en-US/thunderbird-52.0.tar.bz2'),
     ({'application': 'thunderbird', 'platform': 'mac', 'version': '52.0'},
      'thunderbird/releases/52.0/mac/en-US/Thunderbird 52.0.dmg'),
-    ({'application': 'thunderbird', 'platform': 'win32', 'version': '52.0','locale': 'de'},
+    ({'application': 'thunderbird', 'platform': 'win32', 'version': '52.0', 'locale': 'de'},
      'thunderbird/releases/52.0/win32/de/Thunderbird Setup 52.0.exe'),
 ])
 def test_release_scraper(tmpdir, args, url):
@@ -32,7 +31,7 @@ def test_release_scraper(tmpdir, args, url):
     scraper = mozdownload.ReleaseScraper(destination=tmpdir, **args)
 
     if url:
-        assert urllib.unquote(scraper.url) == urljoin(BASE_URL, url)
+        assert unquote(scraper.url) == urljoin(BASE_URL, url)
 
 
 @pytest.mark.parametrize("args,url", [
@@ -44,18 +43,18 @@ def test_release_scraper(tmpdir, args, url):
      'thunderbird/candidates/52.7.0-candidates/build1/mac/en-US/Thunderbird 52.7.0.dmg'),
     ({'application': 'thunderbird', 'platform': 'win32', 'version': '52.7.0'},
      'thunderbird/candidates/52.7.0-candidates/build1/win32/en-US/Thunderbird Setup 52.7.0.exe'),
-    ({'application': 'thunderbird', 'platform': 'win32', 'version': '52.7.0','locale': 'cs'},
+    ({'application': 'thunderbird', 'platform': 'win32', 'version': '52.7.0', 'locale': 'cs'},
      'thunderbird/candidates/52.7.0-candidates/build1/win32/cs/Thunderbird Setup 52.7.0.exe'),
-    ({'application': 'thunderbird', 'platform': 'win32', 'version': '52.7.0','locale': 'en-GB'},
+    ({'application': 'thunderbird', 'platform': 'win32', 'version': '52.7.0', 'locale': 'en-GB'},
      'thunderbird/candidates/52.7.0-candidates/build1/win32/en-GB/Thunderbird Setup 52.7.0.exe'),
-    ({'application': 'thunderbird', 'platform': 'win32', 'version': '52.7.0','build_number': 1},
+    ({'application': 'thunderbird', 'platform': 'win32', 'version': '52.7.0', 'build_number': 1},
      'thunderbird/candidates/52.7.0-candidates/build1/win32/en-US/Thunderbird Setup 52.7.0.exe'),
 ])
 def test_candidate_scraper(tmpdir, args, url):
     """Test release candidate scraper against the remote server."""
     scraper = mozdownload.ReleaseCandidateScraper(destination=tmpdir, **args)
 
-    assert urllib.unquote(scraper.url) == urljoin(BASE_URL, url)
+    assert unquote(scraper.url) == urljoin(BASE_URL, url)
 
 
 @pytest.mark.parametrize("args", [
@@ -65,12 +64,13 @@ def test_candidate_scraper(tmpdir, args, url):
     {'application': 'thunderbird', 'platform': 'win32', 'branch': 'comm-central'},
     {'application': 'thunderbird', 'platform': 'win64', 'branch': 'comm-central'},
     {'application': 'thunderbird', 'platform': 'win64', 'branch': 'comm-central', 'date': '2018-03-01'},
-    {'application': 'thunderbird', 'platform': 'win64', 'branch': 'comm-central', 'date': '2018-03-01', 'build_number': 1},
+    {'application': 'thunderbird', 'platform': 'win64', 'branch': 'comm-central', 'date': '2018-03-01',
+     'build_number': 1},
     {'application': 'thunderbird', 'platform': 'win64', 'branch': 'comm-central', 'build_id': '20180301030201'},
     {'application': 'thunderbird', 'platform': 'linux', 'branch': 'comm-central', 'build_id': '20180301030201',
-        'extension': 'txt'},
+     'extension': 'txt'},
     {'application': 'thunderbird', 'platform': 'linux', 'branch': 'comm-central', 'build_id': '20180301030201',
-        'locale': 'de'},
+     'locale': 'de'},
 ])
 def test_daily_scraper(tmpdir, args):
     """Test daily scraper against the remote server."""

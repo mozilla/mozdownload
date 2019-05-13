@@ -5,8 +5,9 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-import urllib
+
 import pytest
+from six.moves.urllib.parse import unquote
 
 from mozdownload import DailyScraper
 from mozdownload.utils import urljoin
@@ -48,15 +49,15 @@ firefox_tests = [
     ({'platform': 'win32', 'branch': 'mozilla-central', 'date': '2013-07-02', 'build_number': 1},
      '2013-07-02-03-12-13-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
      'firefox/nightly/2013/07/2013-07-02-03-12-13-mozilla-central/firefox-27.0a1.en-US.win32.installer.exe'),
-     # Old stub format
+    # Old stub format
     ({'platform': 'win32', 'branch': 'mozilla-central', 'date': '2013-09-30', 'is_stub_installer': True},
      '2013-09-30-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer-stub.exe',
      'firefox/nightly/2013/09/2013-09-30-03-02-04-mozilla-central/firefox-27.0a1.en-US.win32.installer-stub.exe'),
-     # Old file name format
+    # Old file name format
     ({'platform': 'win64', 'branch': 'mozilla-central', 'date': '2013-09-30'},
      '2013-09-30-03-02-04-mozilla-central-firefox-27.0a1.en-US.win64-x86_64.installer.exe',
      'firefox/nightly/2013/09/2013-09-30-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64-x86_64.installer.exe'),
-     # New stub format
+    # New stub format
     ({'platform': 'win32', 'branch': 'mozilla-central', 'is_stub_installer': True},
      '2013-10-01-03-02-04-mozilla-central-Firefox Installer.en-US.exe',
      'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/Firefox Installer.en-US.exe'),
@@ -126,6 +127,7 @@ fennec_tests = [
      'mobile/nightly/2016/02/2016-02-02-00-40-08-mozilla-aurora-android-api-15/fennec-46.0a2.multi.android-arm.apk'),
 ]
 
+
 @pytest.mark.parametrize("args,filename,url", firefox_tests + thunderbird_tests + fennec_tests)
 def test_scraper(httpd, tmpdir, args, filename, url):
     """Testing various download scenarios for DailyScraper"""
@@ -134,4 +136,4 @@ def test_scraper(httpd, tmpdir, args, filename, url):
     expected_target = os.path.join(str(tmpdir), filename)
     assert scraper.filename == expected_target
 
-    assert urllib.unquote(scraper.url) == urljoin(httpd.get_url(), url)
+    assert unquote(scraper.url) == urljoin(httpd.get_url(), url)

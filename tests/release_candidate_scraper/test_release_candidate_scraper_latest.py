@@ -5,9 +5,9 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-import urllib
 
 import pytest
+from six.moves.urllib.parse import unquote
 
 from mozdownload import ReleaseCandidateScraper
 from mozdownload.utils import urljoin
@@ -96,12 +96,10 @@ from mozdownload.utils import urljoin
      'thunderbird-17.0.1esr-build1.en-US.win32.exe',
      'thunderbird/candidates/17.0.1esr-candidates/build1/win32/en-US/Thunderbird Setup 17.0.1esr.exe'),
 ])
-
-
 def test_latest_build(httpd, tmpdir, args, filename, url):
     """Testing various download scenarios for latest release candidate builds"""
 
     scraper = ReleaseCandidateScraper(destination=str(tmpdir), base_url=httpd.get_url(), **args)
     expected_filename = os.path.join(str(tmpdir), filename)
     assert scraper.filename == expected_filename
-    assert urllib.unquote(scraper.url) == urljoin(httpd.get_url(), url)
+    assert unquote(scraper.url) == urljoin(httpd.get_url(), url)

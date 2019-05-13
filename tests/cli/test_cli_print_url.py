@@ -17,4 +17,4 @@ def test_print_url_argument():
         output = subprocess.check_output(args, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         output = e.output
-    assert re.search(url, output) is not None
+    assert re.search(url.encode('utf-8'), output) is not None

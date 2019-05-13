@@ -6,9 +6,8 @@
 
 """Test all scraper classes for Firefox against the remote server"""
 
-import urllib
-
 import pytest
+from six.moves.urllib.parse import unquote
 
 import mozdownload
 from mozdownload.scraper import BASE_URL
@@ -31,10 +30,10 @@ from mozdownload.utils import urljoin
     ({'application': 'firefox', 'platform': 'win32', 'version': '42.0b2', 'locale': 'de'},
      'firefox/releases/42.0b2/win32/de/Firefox Setup 42.0b2.exe'),
     ({'application': 'firefox', 'platform': 'win32', 'version': '42.0b2',
-        'is_stub_installer': True},  # old format
+      'is_stub_installer': True},  # old format
      'firefox/releases/42.0b2/win32/en-US/Firefox Setup Stub 42.0b2.exe'),
     ({'application': 'firefox', 'platform': 'win32', 'version': '55.0',
-        'is_stub_installer': True},  # new format
+      'is_stub_installer': True},  # new format
      'firefox/releases/55.0/win32/en-US/Firefox Installer.exe'),
 ])
 def test_release_scraper(tmpdir, args, url):
@@ -42,7 +41,7 @@ def test_release_scraper(tmpdir, args, url):
     scraper = mozdownload.ReleaseScraper(destination=tmpdir, **args)
 
     if url:
-        assert urllib.unquote(scraper.url) == urljoin(BASE_URL, url)
+        assert unquote(scraper.url) == urljoin(BASE_URL, url)
 
 
 @pytest.mark.parametrize("args,url", [
@@ -55,23 +54,23 @@ def test_release_scraper(tmpdir, args, url):
     ({'application': 'firefox', 'platform': 'win32', 'version': '45.4.0esr', 'build_number': 1},
      'firefox/candidates/45.4.0esr-candidates/build1/win32/en-US/Firefox Setup 45.4.0esr.exe'),
     ({'application': 'firefox', 'platform': 'mac', 'version': '45.4.0esr', 'build_number': 1,
-          'locale': 'de'},
+      'locale': 'de'},
      'firefox/candidates/45.4.0esr-candidates/build1/mac/de/Firefox 45.4.0esr.dmg'),
     ({'application': 'firefox', 'platform': 'mac', 'version': '45.4.0esr', 'build_number': 1,
-         'extension': 'json'},
+      'extension': 'json'},
      'firefox/candidates/45.4.0esr-candidates/build1/mac/en-US/firefox-45.4.0esr.json'),
     ({'application': 'firefox', 'platform': 'win32', 'version': '52.0', 'build_number': 1,
-          'is_stub_installer': True},  # old format
+      'is_stub_installer': True},  # old format
      'firefox/candidates/52.0-candidates/build1/win32/en-US/Firefox Setup Stub 52.0.exe'),
     ({'application': 'firefox', 'platform': 'win32', 'version': '55.0', 'build_number': 1,
-          'is_stub_installer': True},
+      'is_stub_installer': True},
      'firefox/candidates/55.0-candidates/build1/win32/en-US/Firefox Installer.exe'),
 ])
 def test_candidate_scraper(tmpdir, args, url):
     """Test release candidate scraper against the remote server."""
     scraper = mozdownload.ReleaseCandidateScraper(destination=tmpdir, **args)
 
-    assert urllib.unquote(scraper.url) == urljoin(BASE_URL, url)
+    assert unquote(scraper.url) == urljoin(BASE_URL, url)
 
 
 @pytest.mark.parametrize("args", [
@@ -84,15 +83,15 @@ def test_candidate_scraper(tmpdir, args, url):
     {'branch': 'mozilla-central', 'platform': 'win32', 'date': '2015-10-21', 'build_number': 2},
     {'branch': 'mozilla-central', 'platform': 'win32', 'build_id': '20151021065025'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'build_id': '20151021030212',
-        'locale': 'de'},
+     'locale': 'de'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'build_id': '20151021030212',
-        'extension': 'txt'},
+     'extension': 'txt'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'build_id': '20151021030212',
-        'is_stub_installer': True},  # old format
+     'is_stub_installer': True},  # old format
     {'branch': 'mozilla-central', 'platform': 'win32', 'build_id': '20170821100350',
-        'is_stub_installer': True},  # new format
+     'is_stub_installer': True},  # new format
     {'branch': 'mozilla-central', 'platform': 'win64', 'build_id': '20170821100350',
-        'is_stub_installer': True},
+     'is_stub_installer': True},
 ])
 def test_daily_scraper(tmpdir, args):
     """Test daily scraper against the remote server."""

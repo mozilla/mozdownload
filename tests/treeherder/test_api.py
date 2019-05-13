@@ -6,14 +6,14 @@
 
 import json
 import os
-import urlparse
 import re
 
-from wptserve.handlers import json_handler
 import pytest
+import six
+from six.moves.urllib.parse import parse_qs, urlparse
+from wptserve.handlers import json_handler
 
 from mozdownload.treeherder import Treeherder, PLATFORM_MAP
-
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -21,8 +21,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 @json_handler
 def handle_rest_api(request, response):
     """Simple JSON handler for the Treeherder Rest API."""
-    url_fragments = urlparse.urlparse(request.url)
-    query_options = urlparse.parse_qs(url_fragments.query)
+    url_fragments = urlparse(request.url)
+    query_options = parse_qs(url_fragments.query)
     api_endpoint = url_fragments.path.rsplit('/', 2)[1]
 
     # Use API endpoint to load reference JSON data
@@ -32,7 +32,7 @@ def handle_rest_api(request, response):
     def do_filter(entry):
         result = True
 
-        for option, values in query_options.iteritems():
+        for option, values in six.iteritems(query_options):
             # Don't handle options which are not properties of the entry
             if option not in entry:
                 continue
@@ -46,12 +46,13 @@ def handle_rest_api(request, response):
         return result
 
     if api_endpoint == 'jobs':
-        data['results'] = filter(do_filter, data['results'])
+        data['results'] = list(filter(do_filter, data['results']))
 
     elif api_endpoint == 'job-log-url':
-        data = filter(do_filter, data)
+        data = list(filter(do_filter, data))
 
     return data
+
 
 @pytest.mark.parametrize('platform', PLATFORM_MAP)
 def test_query_tinderbox_builds(httpd, platform):
@@ -68,4 +69,3 @@ def test_query_tinderbox_builds(httpd, platform):
 
     assert len(builds) == 1
     assert re.search(r'mozilla-beta-%s' % platform, builds[0].rsplit('/', 3)[1]) is not None
-

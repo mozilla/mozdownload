@@ -7,10 +7,10 @@
 from __future__ import absolute_import, unicode_literals
 
 import re
-import urllib
-from HTMLParser import HTMLParser
 
 import requests
+from six.moves.html_parser import HTMLParser
+from six.moves.urllib.parse import unquote
 
 
 class DirectoryParser(HTMLParser):
@@ -68,7 +68,7 @@ class DirectoryParser(HTMLParser):
                 # Links look like: /pub/firefox/nightly/2015/
                 # We have to trim the fragment down to the last item. Also to ensure we
                 # always get it, we remove a possible final slash first
-                url = urllib.unquote(attr[1])
+                url = unquote(attr[1])
                 self.active_url = url.rstrip('/').split('/')[-1]
 
                 return
