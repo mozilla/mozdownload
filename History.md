@@ -1,3 +1,16 @@
+1.26 / 2019-05-13
+=================
+  * Update setup.py for classifiers (#557)
+  * Add support for Python 3 (#536)
+  * Testing: Skip remote tests for Thunderbird tinderbox builds (#554)
+  * Scheduled weekly dependency updates (#520, #522, #535, #540, #546, #552)
+  * Add Mozilla Code of Conduct file (#547)
+  * Testing: Removing obsolete test dependencies and MozHTTPBaseTest class (#544)
+  * Testing: Convert unit tests to plain pytest (#468)
+  * Testing: Temporarily skip the remote daily debug thunderbird test (#533)
+  * Testing: Update pytest from 3.8.2 to 4.0.0 (#511, %512, #515)
+  * Add MPL 2.0 licence, and properly display README on PyPI (#509)
+
 1.25 / 2018-10-22
 =================
   * Added Support for Firefox Developer Edition (#504)
