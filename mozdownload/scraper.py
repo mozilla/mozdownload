@@ -696,7 +696,12 @@ class ReleaseCandidateScraper(ReleaseScraper):
         self.show_matching_builds(parser.entries)
         self.builds = parser.entries
         self.build_index = len(parser.entries) - 1
-
+        
+        self.tmp = "build"+str(self.build_number)
+        if self.tmp not in self.builds:
+          message = 'Selected build is not available.'
+          raise errors.NotSupportedError(message)
+          
         if self.build_number and \
                 ('build%s' % self.build_number) in self.builds:
             self.builds = ['build%s' % self.build_number]
