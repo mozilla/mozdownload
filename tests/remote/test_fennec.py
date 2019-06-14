@@ -19,18 +19,7 @@ import mozdownload
     # Support for API level 15 ended on Aug 29th 2017
     {'application': 'fennec', 'platform': 'android-api-15',
      'branch': 'mozilla-central', 'date': '2017-08-29'},
-    {'application': 'fennec', 'platform': 'android-api-16', 'branch': 'mozilla-central'},
     {'application': 'fennec', 'platform': 'android-x86', 'branch': 'mozilla-central'},
-    {'application': 'fennec', 'platform': 'android-api-16',
-     'branch': 'mozilla-central', 'date': '2017-08-30'},
-    {'application': 'fennec', 'platform': 'android-api-16',
-     'branch': 'mozilla-central', 'date': '2017-08-30', 'build_number': 1},
-    {'application': 'fennec', 'platform': 'android-api-16',
-     'branch': 'mozilla-central', 'build_id': '20170830100224'},
-    {'application': 'fennec', 'platform': 'android-api-16',
-     'branch': 'mozilla-central', 'build_id': '20170830100224', 'locale': 'en-US'},
-    {'application': 'fennec', 'platform': 'android-api-16',
-     'branch': 'mozilla-central', 'build_id': '20170830100224', 'extension': 'txt'},
 ])
 def test_daily_scraper(tmpdir, args):
     mozdownload.DailyScraper(destination=tmpdir, **args)
