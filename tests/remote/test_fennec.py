@@ -22,8 +22,6 @@ import mozdownload
     {'application': 'fennec', 'platform': 'android-api-16', 'branch': 'mozilla-central','date':'2019-05-16'},
     {'application': 'fennec', 'platform': 'android-x86', 'branch': 'mozilla-central','date':'2019-05-16'},
     {'application': 'fennec', 'platform': 'android-api-16',
-     'branch': 'mozilla-central', 'date': '2017-08-30'},
-    {'application': 'fennec', 'platform': 'android-api-16',
      'branch': 'mozilla-central', 'date': '2017-08-30', 'build_number': 1},
     {'application': 'fennec', 'platform': 'android-api-16',
      'branch': 'mozilla-central', 'build_id': '20170830100224'},
