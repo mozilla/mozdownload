@@ -29,7 +29,6 @@ import mozdownload
      'branch': 'mozilla-central', 'build_id': '20170830100224', 'locale': 'en-US'},
     {'application': 'fennec', 'platform': 'android-api-16',
      'branch': 'mozilla-central', 'build_id': '20170830100224', 'extension': 'txt'},
-
 ])
 def test_daily_scraper(tmpdir, args):
     mozdownload.DailyScraper(destination=tmpdir, **args)
