@@ -696,13 +696,6 @@ class ReleaseCandidateScraper(ReleaseScraper):
         self.show_matching_builds(parser.entries)
         self.builds = parser.entries
         self.build_index = len(parser.entries) - 1
-        
-        if self.build_number:
-          self.tmp = "build"+str(self.build_number)
-          if self.tmp not in self.builds:
-            message = 'Selected build is not available.'
-            sys.logger.info(message)
-            sys.exit()
           
         if self.build_number and \
                 ('build%s' % self.build_number) in self.builds:
@@ -710,7 +703,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
             self.build_index = 0
             self.logger.info('Selected build: build%s' % self.build_number)
         elif self.build_number and ('build%s' %self.build_number) not in self.builds:
-            message='Selected build not available.Select another'
+            message='Selected build not available!'
             self.logger.info(message)
             raise errors.NotSupportedError(message)
         else:
