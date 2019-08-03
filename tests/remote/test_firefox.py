@@ -14,6 +14,7 @@ from mozdownload.scraper import BASE_URL
 from mozdownload.utils import urljoin
 
 
+@pytest.mark.ci_vendor
 @pytest.mark.parametrize("args,url", [
     ({'application': 'firefox', 'platform': 'linux', 'version': 'latest'},
      None),
@@ -44,6 +45,7 @@ def test_release_scraper(tmpdir, args, url):
         assert unquote(scraper.url) == urljoin(BASE_URL, url)
 
 
+@pytest.mark.ci_vendor
 @pytest.mark.parametrize("args,url", [
     ({'application': 'firefox', 'platform': 'linux', 'version': '45.4.0esr', 'build_number': 1},
      'firefox/candidates/45.4.0esr-candidates/build1/linux-i686/en-US/firefox-45.4.0esr.tar.bz2'),
@@ -73,6 +75,7 @@ def test_candidate_scraper(tmpdir, args, url):
     assert unquote(scraper.url) == urljoin(BASE_URL, url)
 
 
+@pytest.mark.ci_vendor
 @pytest.mark.parametrize("args", [
     {'branch': 'mozilla-central', 'platform': 'linux'},
     {'branch': 'mozilla-central', 'platform': 'linux64'},
@@ -98,6 +101,7 @@ def test_daily_scraper(tmpdir, args):
     mozdownload.DailyScraper(destination=tmpdir, **args)
 
 
+@pytest.mark.ci_vendor
 @pytest.mark.parametrize("args", [
     {'branch': 'mozilla-central', 'platform': 'linux'},
     {'branch': 'mozilla-central', 'platform': 'linux64'},

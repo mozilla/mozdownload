@@ -12,6 +12,7 @@ from mozdownload.scraper import BASE_URL
 from mozdownload.utils import urljoin
 
 
+@pytest.mark.ci_vendor
 @pytest.mark.parametrize("args,url", [
     ({'application': 'thunderbird', 'platform': 'win32', 'version': 'latest'},
      None),
@@ -34,6 +35,7 @@ def test_release_scraper(tmpdir, args, url):
         assert unquote(scraper.url) == urljoin(BASE_URL, url)
 
 
+@pytest.mark.ci_vendor
 @pytest.mark.parametrize("args,url", [
     ({'application': 'thunderbird', 'platform': 'linux', 'version': '52.7.0'},
      'thunderbird/candidates/52.7.0-candidates/build1/linux-i686/en-US/thunderbird-52.7.0.tar.bz2'),
@@ -57,6 +59,7 @@ def test_candidate_scraper(tmpdir, args, url):
     assert unquote(scraper.url) == urljoin(BASE_URL, url)
 
 
+@pytest.mark.ci_vendor
 @pytest.mark.parametrize("args", [
     {'application': 'thunderbird', 'platform': 'linux', 'branch': 'comm-central'},
     {'application': 'thunderbird', 'platform': 'linux64', 'branch': 'comm-central'},
@@ -77,6 +80,7 @@ def test_daily_scraper(tmpdir, args):
     mozdownload.DailyScraper(destination=tmpdir, **args)
 
 
+@pytest.mark.ci_vendor
 @pytest.mark.parametrize("args", [
     {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32'},
     {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win64'},
