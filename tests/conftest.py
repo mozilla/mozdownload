@@ -4,8 +4,6 @@ import pytest
 
 from wptserve import server
 
-CI_VENDORS = set(["TRAVIS", "APPVEYOR"])
-
 
 @pytest.fixture
 def httpd():
@@ -21,13 +19,9 @@ def httpd():
 
 
 def pytest_runtest_setup(item):
-    valid_ci_flags = [
-        os.getenv(ci, False) for ci in CI_VENDORS]
-    run_in_ci_cond = any(valid_ci_flags)
+    valid_ci = os.getenv('CI', False)
     for marker in item.iter_markers():
-        if marker.name == 'ci_vendor' and not run_in_ci_cond:
+        if marker.name == 'ci_vendor' and not valid_ci:
             pytest.skip("""
-                Can not run this test when not running in {vendors}
-                """.format(vendors='\n'.join(CI_VENDORS)
-                    )
-                )
+                Can not run this test when not running in CI environment
+                """)

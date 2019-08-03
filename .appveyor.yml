@@ -12,7 +12,6 @@ environment:
 init:
   - ECHO %PYTHON%
   - ECHO %TOXENV%
-  - ECHO %APPVEYOR%
   - SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
 
 install:
