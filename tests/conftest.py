@@ -22,7 +22,7 @@ def httpd():
 
 def pytest_runtest_setup(item):
     valid_ci_flags = [
-        os.environ.get(ci, False) for ci in CI_VENDORS]
+        os.getenv(ci, False) for ci in CI_VENDORS]
     run_in_ci_cond = any(valid_ci_flags)
     for marker in item.iter_markers():
         if marker.name == 'ci_vendor' and not run_in_ci_cond:
