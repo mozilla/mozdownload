@@ -1,16 +1,15 @@
 build: false
 
 environment:
-  global:
-    APPVEYOR: True
   matrix:
     - PYTHON: "C:\\Python27"
       PYTHON_VERSION: "2.7"
       TOXENV: "py27"
-
+      APPVEYOR: True
     - PYTHON: "C:\\Python36"
       PYTHON_VERSION: "3.6"
       TOXENV: "py36"
+      APPVEYOR: True
 
 init:
   - ECHO %PYTHON%
