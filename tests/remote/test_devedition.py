@@ -14,7 +14,7 @@ from mozdownload.scraper import BASE_URL
 from mozdownload.utils import urljoin
 
 
-@pytest.mark.ci_vendor
+@pytest.mark.ci_only
 @pytest.mark.parametrize("args,url", [
     ({'application': 'devedition', 'platform': 'linux', 'version': '60.0b1'},
      'devedition/releases/60.0b1/linux-i686/en-US/firefox-60.0b1.tar.bz2'),
@@ -37,7 +37,7 @@ def test_release_scraper(tmpdir, args, url):
         assert unquote(scraper.url) == urljoin(BASE_URL, url)
 
 
-@pytest.mark.ci_vendor
+@pytest.mark.ci_only
 @pytest.mark.parametrize("args,url", [
     ({'application': 'devedition', 'platform': 'linux', 'version': '60.0b1', 'build_number': 1},
      'devedition/candidates/60.0b1-candidates/build3/linux-i686/en-US/firefox-60.0b1.tar.bz2'),

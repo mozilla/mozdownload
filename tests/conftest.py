@@ -19,9 +19,9 @@ def httpd():
 
 
 def pytest_runtest_setup(item):
-    valid_ci = os.getenv('CI', False)
+    ci_enabled = os.getenv('CI', False)
     for marker in item.iter_markers():
-        if marker.name == 'ci_vendor' and not valid_ci:
+        if marker.name == 'ci_only' and not ci_enabled:
             pytest.skip("""
                 Can not run this test when not running in CI environment
                 """)
