@@ -43,4 +43,3 @@ def create_sha512(path):
             s.update(data)
 
     return s.hexdigest()
-

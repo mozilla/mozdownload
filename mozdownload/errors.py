@@ -40,6 +40,7 @@ class TimeoutError(Exception):
         self.message = 'The download exceeded the allocated timeout'
         Exception.__init__(self, self.message)
 
+
 class HashMismatchError(Exception):
     """Exception for when the hash of a file does not match with
         what is provided."""
@@ -49,4 +50,3 @@ class HashMismatchError(Exception):
         self.message = ('The hash for %s is different from what was'
                         ' expected' % filename)
         Exception.__init__(self, self.message)
-

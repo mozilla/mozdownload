@@ -260,7 +260,6 @@ class Scraper(object):
                     return
                 else:
                     break
-        
         # Could not find the hash in the file
         raise errors.HashMismatchError(file_identifier)
 
@@ -290,7 +289,7 @@ class Scraper(object):
                 self.verify_checksum()
             else:
                 self.logger.warn(('There is no checksum data available for this '
-                                    'file so it will not be checked'))
+                                  'file so it will not be checked'))
 
     def download_file(self, url, filename):
         """Download a file."""
@@ -790,9 +789,9 @@ class ReleaseCandidateScraper(ReleaseScraper):
     @property
     def checksum_url(self):
         """Return the location of the checksum file for the download"""
-        return urljoin(self.base_url, self.candidate_build_list_regex, 
-                        self.builds[self.build_index] if self.build_number is None 
-                        else 'build%s' % self.build_number, 'SHA512SUMS')
+        return urljoin(self.base_url, self.candidate_build_list_regex,
+                       self.builds[self.build_index] if self.build_number is None
+                       else 'build%s' % self.build_number, 'SHA512SUMS')
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary."""
