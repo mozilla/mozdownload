@@ -22,7 +22,7 @@ from mozdownload import errors
 from mozdownload import treeherder
 from mozdownload.parser import DirectoryParser
 from mozdownload.timezones import PacificTimezone
-from mozdownload.utils import urljoin
+from mozdownload.utils import urljoin, create_sha512
 
 APPLICATIONS = ('devedition', 'firefox', 'fennec', 'thunderbird')
 
@@ -80,7 +80,7 @@ class Scraper(object):
                  username=None, password=None,
                  retry_attempts=0, retry_delay=10.,
                  is_stub_installer=False, timeout=None,
-                 logger=None,
+                 logger=None, verify=False,
                  base_url=BASE_URL):
         """Create an instance of the generic scraper."""
         # Private properties for caching
@@ -88,6 +88,7 @@ class Scraper(object):
         self._binary = None
 
         self.logger = logger or logging.getLogger(self.__module__)
+        self.verify = verify
 
         self.destination = destination or os.getcwd()
 
@@ -228,6 +229,41 @@ class Scraper(object):
 
         return self._filename
 
+    @property
+    def checksum_url(self):
+        """Return the location of the checksum file for the download"""
+        pass
+
+    @property
+    def checksum_destination(self):
+        """Return the location that the checksum file will be downloaded to."""
+        return '%s.CHECKSUM' % self.filename
+
+    def verify_checksum(self):
+        """Verify the checksum of the downloaded file."""
+        self.logger.info('Verifying Checksum')
+        self.download_file(self.checksum_url, self.checksum_destination)
+
+        # Get the identifier of the file - this is not necessarily the name
+        # of the file
+        file_identifier = self.url[len(os.path.dirname(self.checksum_url)) + 1:]
+        file_hash = create_sha512(self.filename)
+
+        checksum_file = open(self.checksum_destination, 'r')
+        lines = checksum_file.readlines()
+        checksum_file.close()
+
+        for line in lines:
+            if line.strip().endswith(file_identifier):
+                if file_hash == line[:128]:
+                    self.logger.info('Checksum verified')
+                    return
+                else:
+                    break
+        
+        # Could not find the hash in the file
+        raise errors.HashMismatchError(file_identifier)
+
     def get_build_info(self):
         """Return additional build information in subclasses if necessary."""
         pass
@@ -246,7 +282,18 @@ class Scraper(object):
             return "%s%d" % (mozinfo.os, mozinfo.bits)
 
     def download(self):
-        """Download the specified file."""
+        """Download the necessary files."""
+        self.download_file(self.url, self.filename)
+
+        if self.verify:
+            if self.checksum_url:
+                self.verify_checksum()
+            else:
+                self.logger.warn(('There is no checksum data available for this '
+                                    'file so it will not be checked'))
+
+    def download_file(self, url, filename):
+        """Download a file."""
 
         def total_seconds(td):
             # Keep backward compatibility with Python 2.6 which doesn't have
@@ -258,26 +305,26 @@ class Scraper(object):
                         (td.seconds + td.days * 24 * 3600) * 10 ** 6) / 10 ** 6
 
         # Don't re-download the file
-        if os.path.isfile(os.path.abspath(self.filename)):
+        if os.path.isfile(os.path.abspath(filename)):
             self.logger.info("File has already been downloaded: %s" %
-                             (self.filename))
-            return self.filename
+                             (filename))
+            return filename
 
-        directory = os.path.dirname(self.filename)
+        directory = os.path.dirname(filename)
         if not os.path.isdir(directory):
             os.makedirs(directory)
 
-        self.logger.info('Downloading from: %s' % self.url)
-        self.logger.info('Saving as: %s' % self.filename)
+        self.logger.info('Downloading from: %s' % url)
+        self.logger.info('Saving as: %s' % filename)
 
-        tmp_file = self.filename + ".part"
+        tmp_file = filename + ".part"
 
         def _download():
             try:
                 start_time = datetime.now()
 
                 # Enable streaming mode so we can download content in chunks
-                r = self.session.get(self.url, stream=True)
+                r = self.session.get(url, stream=True)
                 r.raise_for_status()
 
                 content_length = r.headers.get('Content-length')
@@ -319,9 +366,9 @@ class Scraper(object):
                     retry_exceptions=(requests.exceptions.RequestException,
                                       errors.TimeoutError))
 
-        os.rename(tmp_file, self.filename)
+        os.rename(tmp_file, filename)
 
-        return self.filename
+        return filename
 
     def show_matching_builds(self, builds):
         """Output the matching builds."""
@@ -563,6 +610,11 @@ class DailyScraper(Scraper):
             raise errors.NotFoundError("Specified sub folder cannot be found",
                                        folder)
 
+    @property
+    def checksum_url(self):
+        """Return the location of the checksum file for the download"""
+        return '%schecksums' % self.url[:-len(self.extension)]
+
 
 class DirectScraper(Scraper):
     """Class to download a file from a specified URL."""
@@ -638,6 +690,11 @@ class ReleaseScraper(Scraper):
             return self.platform
 
         return PLATFORM_FRAGMENTS[self.platform]
+
+    @property
+    def checksum_url(self):
+        """Return the location of the checksum file for the download"""
+        return urljoin(self.base_url, 'releases', self.version, 'SHA512SUMS')
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary."""
@@ -729,6 +786,13 @@ class ReleaseCandidateScraper(ReleaseScraper):
             return self.platform
 
         return PLATFORM_FRAGMENTS[self.platform]
+
+    @property
+    def checksum_url(self):
+        """Return the location of the checksum file for the download"""
+        return urljoin(self.base_url, self.candidate_build_list_regex, 
+                        self.builds[self.build_index] if self.build_number is None 
+                        else 'build%s' % self.build_number, 'SHA512SUMS')
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary."""
@@ -953,6 +1017,11 @@ class TinderboxScraper(Scraper):
                               'win64': 'win64'}
 
         return platform_fragments[self.platform]
+
+    @property
+    def checksum_url(self):
+        """Return the location of the checksum file for the download"""
+        return '%schecksums' % self.url[:-len(self.extension)]
 
 
 class TryScraper(Scraper):
