@@ -47,6 +47,16 @@ class HashMismatchError(Exception):
 
     def __init__(self, filename):
         """Create an instance of an exception."""
-        self.message = ('The hash for %s is different from what was'
+        self.message = ('The checksum for %s is different from what was'
                         ' expected' % filename)
+        Exception.__init__(self, self.message)
+
+
+class HashNotFoundError(Exception):
+    """Exception for when a file's checksum cannot be found in a
+        list of checksums."""
+
+    def __init__(self, filename):
+        """Create an instance of an exception."""
+        self.message = 'A checksum for %s could not be found' % filename
         Exception.__init__(self, self.message)

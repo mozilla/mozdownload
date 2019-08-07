@@ -259,9 +259,9 @@ class Scraper(object):
                     self.logger.info('Checksum verified')
                     return
                 else:
-                    break
+                    raise errors.HashMismatchError(file_identifier)
         # Could not find the hash in the file
-        raise errors.HashMismatchError(file_identifier)
+        raise errors.HashNotFoundError(file_identifier)
 
     def get_build_info(self):
         """Return additional build information in subclasses if necessary."""
