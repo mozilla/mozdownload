@@ -48,6 +48,7 @@ class FactoryScraper(scraper.Scraper):
         :param revision: Revision of the build to download.
         :param timeout: Amount of time (in seconds) until a download times out.
         :param username: Username for basic HTTP authentication.
+        :param verify: Verify the integrity of downloaded files
         :param version: Version of the application to be downloaded.
 
         Daily builds:
@@ -86,6 +87,7 @@ class FactoryScraper(scraper.Scraper):
                             'retry_delay': kwargs.get('retry_delay', 10),
                             'timeout': kwargs.get('timeout'),
                             'username': kwargs.get('username'),
+                            'verify': kwargs.get('verify'),
                             }
 
         scraper_type_keywords = {
