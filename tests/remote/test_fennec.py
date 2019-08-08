@@ -9,6 +9,7 @@ import pytest
 import mozdownload
 
 
+@pytest.mark.ci_only
 @pytest.mark.parametrize("args", [
     # Support for API level 9 ended on Mar 11th 2016
     {'application': 'fennec', 'platform': 'android-api-9',

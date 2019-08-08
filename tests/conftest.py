@@ -16,3 +16,12 @@ def httpd():
     httpd.start(block=False)
     yield httpd
     httpd.stop()
+
+
+def pytest_runtest_setup(item):
+    ci_enabled = os.getenv('CI', False)
+    for marker in item.iter_markers():
+        if marker.name == 'ci_only' and not ci_enabled:
+            pytest.skip("""
+                Can not run this test when not running in CI environment
+                """)
