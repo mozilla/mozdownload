@@ -237,7 +237,10 @@ class Scraper(object):
     @property
     def checksum_destination(self):
         """Return the location that the checksum file will be downloaded to."""
-        return '%s.CHECKSUM' % self.filename
+        path_length = len(self.base_url) - len(APPLICATIONS_TO_FTP_DIRECTORY.get(self.application,
+                                                                                 self.application))
+        return os.path.join(self.destination,
+                            self.checksum_url[path_length - 1:].replace('/', '-'))
 
     def verify_checksum(self):
         """Verify the checksum of the downloaded file."""
