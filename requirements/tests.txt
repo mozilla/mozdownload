@@ -1,5 +1,5 @@
 coveralls==1.8.2
 pytest==5.2.1
 pytest-cov==2.8.1
-pytest-mock==1.10.4
+pytest-mock==1.11.1
 wptserve==2.0
