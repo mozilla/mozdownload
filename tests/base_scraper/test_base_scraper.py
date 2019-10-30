@@ -12,6 +12,7 @@ import mozdownload
 import mozdownload.errors as errors
 from mozdownload.scraper import PLATFORM_FRAGMENTS
 from mozdownload.utils import create_md5, urljoin
+from mozdownload import errors
 
 @pytest.mark.parametrize('platform_key,platform_value', PLATFORM_FRAGMENTS.items())
 def test_platform_regex(tmpdir, platform_key, platform_value):
@@ -42,7 +43,7 @@ def test_compare_download(httpd, tmpdir):
 def test_url_not_found(httpd, tmpdir):
     test_url = urljoin(httpd.get_url(), 'does_not_exist.html')
     scraper = mozdownload.DirectScraper(url=test_url, destination=str(tmpdir))
-    with pytest.raises(requests.exceptions.RequestException):
+    with pytest.raises(mozdownload.errors.NotFoundError):
         scraper.download()
 
 
