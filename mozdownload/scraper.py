@@ -702,6 +702,11 @@ class ReleaseCandidateScraper(ReleaseScraper):
             self.builds = ['build%s' % self.build_number]
             self.build_index = 0
             self.logger.info('Selected build: build%s' % self.build_number)
+        elif self.build_number and \
+                ('build%s' % self.build_number) not in self.builds:
+            message = 'build%s not available' % self.build_number
+            self.logger.info(message)
+            raise errors.NotSupportedError(message)
         else:
             self.logger.info('Selected build: %s' %
                              (parser.entries[self.build_index]))
