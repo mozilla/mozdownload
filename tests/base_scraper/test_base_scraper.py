@@ -42,7 +42,7 @@ def test_compare_download(httpd, tmpdir):
 def test_url_not_found(httpd, tmpdir):
     test_url = urljoin(httpd.get_url(), 'does_not_exist.html')
     scraper = mozdownload.DirectScraper(url=test_url, destination=str(tmpdir))
-    with pytest.raises(requests.exceptions.RequestException):
+    with pytest.raises(errors.NotFoundError):
         scraper.download()
 
 
@@ -52,7 +52,7 @@ def test_retry_attempts(httpd, tmpdir):
                                         destination=str(tmpdir),
                                         retry_attempts=3,
                                         retry_delay=0.1)
-    with pytest.raises(requests.exceptions.RequestException):
+    with pytest.raises(errors.NotFoundError):
         scraper.download()
 
 
