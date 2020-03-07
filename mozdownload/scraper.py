@@ -312,9 +312,9 @@ class Scraper(object):
                     pbar.finish()
 
             except requests.exceptions.HTTPError as ex:
+                if os.path.isfile(tmp_file):
+                    os.remove(tmp_file)
                 if ex.response.status_code == 404:
-                    if os.path.isfile(tmp_file):
-                        os.remove(tmp_file)
                     raise errors.NotFoundError("The requested file was not found", self.url)
                 else:
                     raise
