@@ -68,8 +68,8 @@ def test_not_implemented(tmpdir, attr):
 
 
 def test_invalid_authentication(httpd, tmpdir):
-    test_url = urljoin(httpd.get_url(), 'http_auth')
-    scraper = mozdownload.DirectScraper(destination=str(tmpdir), url=test_url)
+    basic_auth_url = urljoin(httpd.get_url(), 'basic_auth')
+    scraper = mozdownload.DirectScraper(destination=str(tmpdir), url=basic_auth_url)
     with pytest.raises(requests.exceptions.HTTPError):
         scraper.download()
 
@@ -77,13 +77,13 @@ def test_invalid_authentication(httpd, tmpdir):
 def test_valid_authentication(httpd, tmpdir):
     username = 'mozilla'
     password = 'mozilla'
-    test_url = urljoin(httpd.get_url(), 'http_auth?username={0}&password={1}'.format(username, password))
+    basic_auth_url = urljoin(httpd.get_url(), 'basic_auth')
     scraper = mozdownload.DirectScraper(destination=str(tmpdir),
-                                        url=test_url,
+                                        url=basic_auth_url,
                                         username=username,
                                         password=password)
     scraper.download()
-    assert os.path.isfile(os.path.join(str(tmpdir), 'http_auth'))
+    assert os.path.isfile(os.path.join(str(tmpdir), 'basic_auth'))
 
 
 def test_destination_as_directory(httpd, tmpdir):

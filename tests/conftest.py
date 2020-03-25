@@ -11,25 +11,15 @@ from wptserve import (
     server,
 )
 
-class Authentication(request.Authentication):
-    """Override the faulty decode_basic method in request.Authentication
-       The original method uses base64.decodestring which gives an error if a str
-       is passed instead of a bytestring.
-       base64.b64decode works on both str and bytestring"""
-    def decode_basic(self, data):
-        decoded_data = base64.b64decode(data).decode()
-        return decoded_data.split(":", 1)
 
 @handlers.handler
-def http_auth_handler(req, response):
+def basic_auth_handler(req, response):
     # Allow the test to specify the username and password
 
-    url_fragments = urlparse(req.url)
-    query_options = parse_qs(url_fragments.query)
-    username = query_options.get("username", ["guest"])[0]
-    password = query_options.get("password", ["guest"])[0]
+    username = b"mozilla"
+    password = b"mozilla"
 
-    auth = Authentication(req.headers)
+    auth = request.Authentication(req.headers)
     content = """<!doctype html>
         <title>HTTP Authentication</title>
         <p id="status">{}</p>"""
@@ -47,8 +37,9 @@ def http_auth_handler(req, response):
 @pytest.fixture
 def httpd():
     HERE = os.path.dirname(os.path.abspath(__file__))
-    routes = [("GET", "/http_auth", http_auth_handler),
-              ]
+    routes = [
+        ("GET", "/basic_auth", basic_auth_handler),
+    ]
     routes.extend(default_routes.routes)
     httpd = server.WebTestHttpd(
         host="127.0.0.1",
