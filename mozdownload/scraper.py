@@ -311,18 +311,14 @@ class Scraper(object):
                 if log_level <= logging.INFO and content_length:
                     pbar.finish()
 
-            except requests.exceptions.HTTPError as ex:
+            except Exception as ex:
                 if os.path.isfile(tmp_file):
                     os.remove(tmp_file)
-                if ex.response.status_code == 404:
-                    raise errors.NotFoundError("The requested file was not found", self.url)
+                if type(ex) == requests.exceptions.HTTPError:
+                    if ex.response.status_code == 404:
+                        raise errors.NotFoundError("The requested file was not found", self.url)
                 else:
                     raise
-
-            except Exception:
-                if os.path.isfile(tmp_file):
-                    os.remove(tmp_file)
-                raise
 
         self._retry(_download,
                     retry_exceptions=(errors.NotFoundError,
