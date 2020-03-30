@@ -2,4 +2,4 @@ coveralls==1.11.1
 pytest==5.4.1
 pytest-cov==2.8.1
 pytest-mock==2.0.0
-wptserve==2.0
+wptserve==3.0
