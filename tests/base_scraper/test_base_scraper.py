@@ -67,25 +67,23 @@ def test_not_implemented(tmpdir, attr):
         scraper.build_filename('invalid binary')
 
 
-@pytest.mark.skip(reason="Permanent failure due to mozqa.com not available anymore (#492)")
-def test_invalid_authentication(tmpdir):
-    basic_auth_url = 'http://mozqa.com/data/mozqa.com/http_auth/basic/'
+def test_invalid_authentication(httpd, tmpdir):
+    basic_auth_url = urljoin(httpd.get_url(), 'basic_auth')
     scraper = mozdownload.DirectScraper(destination=str(tmpdir), url=basic_auth_url)
     with pytest.raises(requests.exceptions.HTTPError):
         scraper.download()
 
 
-@pytest.mark.skip(reason="Permanent failure due to mozqa.com not available anymore (#492)")
-def test_valid_authentication(tmpdir):
+def test_valid_authentication(httpd, tmpdir):
     username = 'mozilla'
     password = 'mozilla'
-    basic_auth_url = 'http://mozqa.com/data/mozqa.com/http_auth/basic/'
+    basic_auth_url = urljoin(httpd.get_url(), 'basic_auth')
     scraper = mozdownload.DirectScraper(destination=str(tmpdir),
                                         url=basic_auth_url,
                                         username=username,
                                         password=password)
     scraper.download()
-    assert os.path.isfile(os.path.join(str(tmpdir), 'mozqa.com'))
+    assert os.path.isfile(os.path.join(str(tmpdir), 'basic_auth'))
 
 
 def test_destination_as_directory(httpd, tmpdir):
