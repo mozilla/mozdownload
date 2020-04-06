@@ -314,8 +314,8 @@ class Scraper(object):
             except Exception as ex:
                 if os.path.isfile(tmp_file):
                     os.remove(tmp_file)
-                if type(ex) == requests.exceptions.HTTPError:
-                    if ex.response.status_code == 404:
+                if type(ex) is requests.exceptions.HTTPError and \
+                    ex.response.status_code == 404:
                         raise errors.NotFoundError("The requested file was not found", self.url)
                 else:
                     raise
