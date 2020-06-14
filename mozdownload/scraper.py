@@ -697,14 +697,19 @@ class ReleaseCandidateScraper(ReleaseScraper):
         self.builds = parser.entries
         self.build_index = len(parser.entries) - 1
 
-        if self.build_number and \
-                ('build%s' % self.build_number) in self.builds:
+        if self.build_number is None:
+            self.logger.info('Selected build: %s' %
+                             (parser.entries[self.build_index]))
+            return
+
+        if ('build%s' % self.build_number) in self.builds:
             self.builds = ['build%s' % self.build_number]
             self.build_index = 0
             self.logger.info('Selected build: build%s' % self.build_number)
         else:
-            self.logger.info('Selected build: %s' %
-                             (parser.entries[self.build_index]))
+            message = 'Selected build not available!'
+            self.logger.info(message)
+            raise errors.NotSupportedError(message)
 
     @property
     def candidate_build_list_regex(self):
