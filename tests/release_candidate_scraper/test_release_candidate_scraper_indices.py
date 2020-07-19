@@ -6,7 +6,7 @@
 
 import pytest
 
-from mozdownload import ReleaseCandidateScraper, errors
+from mozdownload import errors, ReleaseCandidateScraper
 
 
 @pytest.mark.parametrize("args,build_index,build_number,builds", [
