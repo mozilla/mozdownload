@@ -39,18 +39,18 @@ def test_release_scraper(tmpdir, args, url):
 
 @pytest.mark.ci_only
 @pytest.mark.parametrize("args,url", [
-    ({'application': 'devedition', 'platform': 'linux', 'version': '60.0b1', 'build_number': 1},
+    ({'application': 'devedition', 'platform': 'linux', 'version': '60.0b1', 'build_number': 3},
      'devedition/candidates/60.0b1-candidates/build3/linux-i686/en-US/firefox-60.0b1.tar.bz2'),
-    ({'application': 'devedition', 'platform': 'linux64', 'version': '60.0b1', 'build_number': 1},
+    ({'application': 'devedition', 'platform': 'linux64', 'version': '60.0b1', 'build_number': 3},
      'devedition/candidates/60.0b1-candidates/build3/linux-x86_64/en-US/firefox-60.0b1.tar.bz2'),  # noqa
-    ({'application': 'devedition', 'platform': 'mac', 'version': '60.0b1', 'build_number': 1},
+    ({'application': 'devedition', 'platform': 'mac', 'version': '60.0b1', 'build_number': 3},
      'devedition/candidates/60.0b1-candidates/build3/mac/en-US/Firefox 60.0b1.dmg'),
-    ({'application': 'devedition', 'platform': 'win32', 'version': '60.0b1', 'build_number': 1},
+    ({'application': 'devedition', 'platform': 'win32', 'version': '60.0b1', 'build_number': 3},
      'devedition/candidates/60.0b1-candidates/build3/win32/en-US/Firefox Setup 60.0b1.exe'),
-    ({'application': 'devedition', 'platform': 'mac', 'version': '60.0b1', 'build_number': 1,
+    ({'application': 'devedition', 'platform': 'mac', 'version': '60.0b1', 'build_number': 3,
       'locale': 'de'},
      'devedition/candidates/60.0b1-candidates/build3/mac/de/Firefox 60.0b1.dmg'),
-    ({'application': 'devedition', 'platform': 'mac', 'version': '60.0b1', 'build_number': 1,
+    ({'application': 'devedition', 'platform': 'mac', 'version': '60.0b1', 'build_number': 3,
       'extension': 'json'},
      'devedition/candidates/60.0b1-candidates/build3/mac/en-US/firefox-60.0b1.json'),
 ])

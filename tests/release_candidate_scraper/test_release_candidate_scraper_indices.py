@@ -6,7 +6,7 @@
 
 import pytest
 
-from mozdownload import ReleaseCandidateScraper
+from mozdownload import errors, ReleaseCandidateScraper
 
 
 @pytest.mark.parametrize("args,build_index,build_number,builds", [
@@ -14,14 +14,21 @@ from mozdownload import ReleaseCandidateScraper
      '0', '1', ['build1']),
     ({'application': 'firefox', 'build_number': '3', 'platform': 'mac', 'version': '23.0.1'},
      '0', '3', ['build3']),
-    ({'application': 'firefox', 'build_number': '2', 'platform': 'linux', 'version': '23.0.1'},
-     '1', '2', ['build1', 'build3']),
 ])
 
 def test_build_indices(httpd, tmpdir, args, build_index, build_number, builds):
     """Testing indices in choosing builds for ReleaseCandidateScraper"""
 
     scraper = ReleaseCandidateScraper(destination=tmpdir, base_url=httpd.get_url(), **args)
+
     assert scraper.build_index == int(build_index)
     assert scraper.build_number == build_number
     assert scraper.builds == builds
+
+def test_invalid_build_number(httpd, tmpdir):
+    """Testing invalid build number when choosing builds for ReleaseCandidateScraper"""
+
+    args = {'application': 'firefox', 'build_number': '2', 'platform': 'linux', 'version': '23.0.1'}
+
+    with pytest.raises(errors.NotSupportedError):
+        ReleaseCandidateScraper(destination=tmpdir, base_url=httpd.get_url(), **args)
