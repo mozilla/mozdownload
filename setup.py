@@ -18,8 +18,8 @@ def read(*parts):
 
 
 def get_version():
-    return re.findall("__version__ = '([\d\.]+)'",
-                      read('mozdownload', 'cli.py'), re.M)[0]
+	p = re.compile(r"__version__ = '(\d.+)'")
+    return p.findall(read('mozdownload', 'cli.py'), re.M)[0]
 
 
 setup(name='mozdownload',
