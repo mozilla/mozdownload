@@ -42,8 +42,8 @@ jobs:
           command: tox
 
 workflows:
-  main:
+  tests:
     jobs:
       - test-linux
-      - test-mac
-      - test-windows
+      # - test-mac
+      # - test-windows
