@@ -31,7 +31,7 @@ jobs:
           command: tox
 
   test-windows:
-    executor: win/default
+    executor: windows/default
     steps:
       - checkout
       - python/load-cache
