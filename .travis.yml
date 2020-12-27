@@ -12,13 +12,13 @@ matrix:
           os: linux
           python: 2.7
           env: TOXENV=py27
-        - name: "Run test suite on Linux with Python 3.6"
+        - name: "Run test suite on Linux with Python 3.8"
           os: linux
-          python: 3.6
-          env: TOXENV=py36
-        - name: "Check code style with pylama on Linux - Python 3.6"
+          python: 3.8
+          env: TOXENV=py38
+        - name: "Check code style with pylama on Linux - Python 3.8"
           os: linux
-          python: 3.6
+          python: 3.8
           env: TOXENV=pylama
           # 10.1 is OS X 10.13.x
           # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
@@ -28,11 +28,11 @@ matrix:
           language: generic
           python: 2.7
           env: TOXENV=py27
-        - name: "Run test suite on OS X with Python 3.6"
+        - name: "Run test suite on OS X with Python 3.8"
           os: osx
           osx_image: xcode9.4
           language: generic
-          env: TOXENV=py3
+          env: TOXENV=py38
 
 
 install:

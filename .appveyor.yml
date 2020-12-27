@@ -5,9 +5,9 @@ environment:
     - PYTHON: "C:\\Python27"
       PYTHON_VERSION: "2.7"
       TOXENV: "py27"
-    - PYTHON: "C:\\Python36"
-      PYTHON_VERSION: "3.6"
-      TOXENV: "py36"
+    - PYTHON: "C:\\Python38"
+      PYTHON_VERSION: "3.8"
+      TOXENV: "py38"
 
 init:
   - ECHO %PYTHON%
