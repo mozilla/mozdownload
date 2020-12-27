@@ -1,0 +1,48 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+
+jobs:
+  test-linux:
+    docker:
+      - image: themattrix/tox
+    # executor: python/default
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - run:
+          name: Test
+          command: tox
+
+  test-mac:
+    macos:
+      xcode: 11.6.0
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - run:
+          name: Test
+          command: tox
+
+  test-windows:
+    executor: win/default
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - run:
+          name: Test
+          command: tox
+
+workflows:
+  main:
+    jobs:
+      - test-linux
+      - test-mac
+      - test-windows
