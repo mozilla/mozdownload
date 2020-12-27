@@ -30,9 +30,9 @@ matrix:
           env: TOXENV=py27
         - name: "Run test suite on OS X with Python 3.8"
           os: osx
-          osx_image: xcode9.4
+          osx_image: xcode11
           language: generic
-          env: TOXENV=py38
+          env: TOXENV=py3
 
 
 install:
