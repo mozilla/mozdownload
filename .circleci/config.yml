@@ -15,7 +15,8 @@ jobs:
 
     steps:
       - checkout
-      - install tox
+      - pip_user_install:
+          requirements: tox
       - run:
           name: Test
           command: tox
