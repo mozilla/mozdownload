@@ -3,15 +3,19 @@ version: 2.1
 orbs:
   python: rohanpm/python@1.3.0
 
+workflows:
+  tests:
+    jobs:
+      - test-linux
+      # - test-mac
+
 jobs:
   test-linux:
     executor: python/python38
 
     steps:
       - checkout
-      - python/load-cache
       - python/install-deps
-      - python/save-cache
       - run:
           name: Test
           command: tox
@@ -27,9 +31,3 @@ jobs:
       - run:
           name: Test
           command: tox
-
-workflows:
-  tests:
-    jobs:
-      - test-linux
-      # - test-mac
