@@ -15,7 +15,6 @@ jobs:
 
     steps:
       - checkout
-      - python/install-deps
       - run:
           name: Test
           command: tox
