@@ -15,6 +15,7 @@ jobs:
 
     steps:
       - checkout
+      - install tox
       - run:
           name: Test
           command: tox
