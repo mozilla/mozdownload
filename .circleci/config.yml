@@ -15,8 +15,7 @@ jobs:
 
     steps:
       - checkout
-      - pip_user_install:
-          requirements: tox
+      - run: pip install tox
       - run:
           name: Test
           command: tox
@@ -26,9 +25,7 @@ jobs:
       xcode: 11.6.0
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
+      - run: pip install tox
       - run:
           name: Test
           command: tox
