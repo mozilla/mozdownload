@@ -7,7 +7,7 @@ workflows:
   tests:
     jobs:
       - test-linux
-      - test-mac
+      # - test-mac
 
 jobs:
   test-linux:
@@ -19,6 +19,7 @@ jobs:
       - run:
           name: Test
           command: tox
+      - store_test_results
 
   test-mac:
     macos:
