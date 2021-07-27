@@ -6,21 +6,21 @@ orbs:
 workflows:
   tests:
     jobs:
-      - test-linux
-      # - test-mac
+      # - test-linux
+      - test-mac
 
 jobs:
   test-linux:
+    name: "Run test suite on Linux with Python 3.8"
     executor: python/python38
 
     steps:
       - checkout
       - run: pip install tox
+      - env: TOXENV=py3.8
       - run:
           name: Test
           command: tox
-      - store_test_results
-          path: test-results
 
   test-mac:
     macos:
@@ -28,6 +28,7 @@ jobs:
     steps:
       - checkout
       - run: pip install tox
+      - env: TOXENV=py3.8
       - run:
           name: Test
           command: tox
