@@ -27,6 +27,7 @@ jobs:
       xcode: 11.6.0
     steps:
       - checkout
+      - run: brew install pyenv
       - run: pip install tox
       - run:
           name: Test
