@@ -19,8 +19,7 @@ jobs:
       - run: pip install tox
       - run:
           name: Test
-          environment: TOXENV=py3.8
-          command: tox
+          command: TOXENV=py3.8 tox
 
   test-mac:
     description: "Run test suite on MacOS with Python 3.8"
@@ -31,5 +30,4 @@ jobs:
       - run: pip install tox
       - run:
           name: Test
-          environment: TOXENV=py3.8
-          command: tox
+          command: TOXENV=py3.8 tox
