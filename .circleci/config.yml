@@ -28,7 +28,7 @@ jobs:
     steps:
       - checkout
       - run: brew install pyenv
-      - run: pyenv install 3.8 -s
+      - run: pyenv install 3.8.11 -s
       - restore_cache:  # ensure this step occurs *before* installing dependencies
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
