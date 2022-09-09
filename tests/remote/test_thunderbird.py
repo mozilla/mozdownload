@@ -5,7 +5,7 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
-from six.moves.urllib.parse import unquote
+from urllib.parse import unquote
 
 import mozdownload
 from mozdownload.scraper import BASE_URL

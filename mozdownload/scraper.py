@@ -16,7 +16,7 @@ import mozinfo
 import progressbar as pb
 import redo
 import requests
-from six.moves.urllib.parse import quote, urlparse
+from urllib.parse import quote, urlparse
 
 from mozdownload import errors
 from mozdownload import treeherder

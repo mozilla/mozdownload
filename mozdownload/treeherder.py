@@ -7,7 +7,6 @@
 from __future__ import absolute_import, unicode_literals
 
 import logging
-import six
 
 from thclient import TreeherderClient
 
@@ -73,7 +72,7 @@ class Treeherder(object):
 
             # Retrieve the option hash to filter for type of build (opt, and debug for now)
             option_hash = None
-            for key, values in six.iteritems(self.client.get_option_collection_hash()):
+            for key, values in self.client.get_option_collection_hash().items():
                 for value in values:
                     if value['name'] == ('debug' if debug_build else 'opt'):
                         option_hash = key
