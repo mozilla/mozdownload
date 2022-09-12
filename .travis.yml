@@ -8,10 +8,6 @@ language: python
 
 matrix:
     include:
-        - name: "Run test suite on Linux with Python 2.7"
-          os: linux
-          python: 2.7
-          env: TOXENV=py27
         - name: "Run test suite on Linux with Python 3.8"
           os: linux
           python: 3.8
@@ -22,12 +18,6 @@ matrix:
           env: TOXENV=pylama
           # 10.1 is OS X 10.13.x
           # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
-        - name: "Run test suite on OS X with Python 2.7"
-          os: osx
-          osx_image: xcode10.1
-          language: generic
-          python: 2.7
-          env: TOXENV=py27
         - name: "Run test suite on OS X with Python 3.8"
           os: osx
           osx_image: xcode11

@@ -9,8 +9,8 @@ from __future__ import absolute_import, unicode_literals
 import re
 
 import requests
-from six.moves.html_parser import HTMLParser
-from six.moves.urllib.parse import unquote
+from html.parser import HTMLParser
+from urllib.parse import unquote
 
 
 class DirectoryParser(HTMLParser):

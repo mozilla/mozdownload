@@ -7,7 +7,7 @@
 import os
 
 import pytest
-from six.moves.urllib.parse import unquote
+from urllib.parse import unquote
 
 from mozdownload import TinderboxScraper
 from mozdownload.utils import urljoin

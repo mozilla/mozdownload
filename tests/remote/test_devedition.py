@@ -7,7 +7,7 @@
 """Test all scraper classes for Firefox Developer Edition against the remote server"""
 
 import pytest
-from six.moves.urllib.parse import unquote
+from urllib.parse import unquote
 
 import mozdownload
 from mozdownload.scraper import BASE_URL

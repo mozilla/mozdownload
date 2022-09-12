@@ -9,8 +9,7 @@ import os
 import re
 
 import pytest
-import six
-from six.moves.urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlparse
 from wptserve.handlers import json_handler
 
 from mozdownload.treeherder import Treeherder, PLATFORM_MAP
@@ -32,7 +31,7 @@ def handle_rest_api(request, response):
     def do_filter(entry):
         result = True
 
-        for option, values in six.iteritems(query_options):
+        for option, values in query_options.items():
             # Don't handle options which are not properties of the entry
             if option not in entry:
                 continue

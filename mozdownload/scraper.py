@@ -16,7 +16,7 @@ import mozinfo
 import progressbar as pb
 import redo
 import requests
-from six.moves.urllib.parse import quote, urlparse
+from urllib.parse import quote, urlparse
 
 from mozdownload import errors
 from mozdownload import treeherder
@@ -917,7 +917,7 @@ class TinderboxScraper(Scraper):
             # If a timestamp is given, retrieve the folder with the timestamp
             # as name
             parser.entries = self.timestamp in parser.entries and \
-                             [self.timestamp]
+                [self.timestamp]
 
         elif self.date:
             # If date is given, retrieve the subset of builds on that date

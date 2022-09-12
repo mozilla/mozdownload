@@ -2,7 +2,7 @@ import base64
 import os
 
 import pytest
-from six.moves.urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlparse
 
 from wptserve import (
     handlers,

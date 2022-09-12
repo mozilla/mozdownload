@@ -6,8 +6,6 @@
 
 import os
 
-import six
-
 from mozdownload.parser import DirectoryParser
 from mozdownload.utils import urljoin
 
@@ -46,10 +44,7 @@ def test_filter(httpd):
     parser.entries = parser.filter(r'^\d+$')
 
     # Get only the subdirectories of the folder
-    if six.PY2:
-        dirs = os.walk(folder_path).next()[1]
-    elif six.PY3:
-        dirs = os.walk(folder_path).__next__()[1]
+    dirs = os.walk(folder_path).__next__()[1]
     dirs.sort()
     assert parser.entries == dirs
 
