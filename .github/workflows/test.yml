@@ -1,0 +1,55 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        # linux
+        - os: ubuntu-latest
+          python: 3.7
+          toxenv: py37
+        - os: ubuntu-latest
+          python: 3.8
+          toxenv: py38
+        - os: ubuntu-latest
+          python: 3.9
+          toxenv: py39
+        - os: ubuntu-latest
+          python: "3.10"
+          toxenv: py310
+        # windows
+        - os: windows-latest
+          python: 3.8
+          toxenv: py38
+        # macos
+        - os: macos-latest
+          python: 3.8
+          toxenv: py38
+        # misc
+        - os: ubuntu-latest
+          python: 3.8
+          toxenv: pylama
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install dependencies
+        run: python -m pip install -U tox
+
+      - name: Tox tests
+        run: tox -e ${{ matrix.toxenv }}
