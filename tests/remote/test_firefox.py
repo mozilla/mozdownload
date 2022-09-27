@@ -101,6 +101,7 @@ def test_daily_scraper(tmpdir, args):
     mozdownload.DailyScraper(destination=tmpdir, **args)
 
 
+@pytest.mark.skip(reason="https://github.com/mozilla/mozdownload/issues/625")
 @pytest.mark.ci_only
 @pytest.mark.parametrize("args", [
     {'branch': 'mozilla-central', 'platform': 'linux'},
