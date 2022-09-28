@@ -1,3 +1,23 @@
+1.27.0 / 2022-09-28
+===================
+
+  * Switch remote tinderbox tests from mozilla-central to mozilla-release (#627)
+  * Bump redo from 2.0.3 to 2.0.4 (#626)
+  * Use GitHub Actions for running tests in CI (#623)
+  * Drop support for Python 2.7 (#622)
+  * Create .github folder for code owners and contribution doc (#616)
+  * Upgrade to Python 3.8 for CI tests (#615)
+  * Fix invalid escape sequence \d in setup.py for Python 3 (#612)
+  * Replace RequestException with NotFoundError (#596)
+  * Raise an error if an invalid build number for the candidate scraper is used (#607)
+  * Improve installation section of README (#608)
+  * Enable authentication tests in test_base_scraper.py (#597)
+  * Fix Python 3 job on MacOS (#600) (#601)
+  * Add markers to run remote tests by default only in CI (#572)
+  * Scheduled weekly dependency update for week 25 (#568)
+  * Fix remote tests for Fennec which is discontinued on mozilla-central (#566)
+  * Scheduled weekly dependency update for week 21 (#561)
+
 1.26 / 2019-05-13
 =================
   * Update setup.py for classifiers (#557)
