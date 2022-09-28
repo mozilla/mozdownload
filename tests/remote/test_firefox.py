@@ -101,18 +101,16 @@ def test_daily_scraper(tmpdir, args):
     mozdownload.DailyScraper(destination=tmpdir, **args)
 
 
-@pytest.mark.skip(reason="https://github.com/mozilla/mozdownload/issues/625")
 @pytest.mark.ci_only
 @pytest.mark.parametrize("args", [
-    {'branch': 'mozilla-central', 'platform': 'linux'},
-    {'branch': 'mozilla-central', 'platform': 'linux64'},
-    {'branch': 'mozilla-central', 'platform': 'mac'},
-    {'branch': 'mozilla-central', 'platform': 'win32'},
-    {'branch': 'mozilla-central', 'platform': 'win64'},
+    {'branch': 'mozilla-release', 'platform': 'linux'},
+    {'branch': 'mozilla-release', 'platform': 'linux64'},
+    {'branch': 'mozilla-release', 'platform': 'mac'},
+    {'branch': 'mozilla-release', 'platform': 'win32'},
+    {'branch': 'mozilla-release', 'platform': 'win64'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'debug_build': True},
     {'branch': 'mozilla-central', 'platform': 'win32', 'locale': 'de'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'extension': 'txt'},
-    {'branch': 'mozilla-beta', 'platform': 'win32'},
 ])
 def test_tinderbox_scraper(tmpdir, args):
     """Test tinderbox scraper against the remote server."""
