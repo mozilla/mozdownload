@@ -24,10 +24,10 @@ from mozdownload.parser import DirectoryParser
 from mozdownload.timezones import PacificTimezone
 from mozdownload.utils import urljoin
 
-APPLICATIONS = ('devedition', 'firefox', 'fennec', 'thunderbird')
+APPLICATIONS = ('devedition', 'firefox', 'fenix', 'fennec', 'thunderbird')
 
 # Some applications contain all locales in a single build
-APPLICATIONS_MULTI_LOCALE = ('fennec')
+APPLICATIONS_MULTI_LOCALE = ('fenix', 'fennec')
 
 # Used if the application is named differently than the subfolder on the server
 APPLICATIONS_TO_FTP_DIRECTORY = {'fennec': 'mobile'}
@@ -44,7 +44,10 @@ DEFAULT_FILE_EXTENSIONS = {'android-api-9': 'apk',
                            'android-api-11': 'apk',
                            'android-api-15': 'apk',
                            'android-api-16': 'apk',
+                           'android-arm64-v8a': 'apk',
+                           'android-armeabi-v7a': 'apk',
                            'android-x86': 'apk',
+                           'android-x86_64': 'apk',
                            'linux': 'tar.bz2',
                            'linux64': 'tar.bz2',
                            'mac': 'dmg',
@@ -210,6 +213,8 @@ class Scraper(object):
     @property
     def platform_regex(self):
         """Return the platform fragment of the URL."""
+        if self.application == "fenix":
+            return self.platform
         return PLATFORM_FRAGMENTS[self.platform]
 
     @property
@@ -411,8 +416,10 @@ class DailyScraper(Scraper):
 
     def get_latest_build_date(self):
         """Return date of latest available nightly build."""
-        if self.application not in ('fennec'):
+        if self.application not in ('fenix', 'fennec'):
             url = urljoin(self.base_url, 'nightly', 'latest-%s/' % self.branch)
+        elif self.application == 'fenix':
+            url = urljoin(self.base_url, 'nightly/')
         else:
             url = urljoin(self.base_url, 'nightly', 'latest-%s-%s/' %
                           (self.branch, self.platform))
@@ -474,7 +481,11 @@ class DailyScraper(Scraper):
             'PLATFORM': '' if self.application not in (
                 'fennec') else '-' + self.platform
         }
-
+        if self.application == 'fenix':
+            regex = r'%(DATE)s-(\d+-){3}fenix-(\d+\.\d.\d)-%(PLATFORM)s$' % {
+                'DATE': date.strftime('%Y-%m-%d'),
+                'PLATFORM': self.platform
+            }
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
 
@@ -539,6 +550,9 @@ class DailyScraper(Scraper):
         except Exception:
             # If it's not available use the build's date
             timestamp = self.date.strftime('%Y-%m-%d')
+
+        if self.application == 'fenix':
+            return binary
 
         return '%(TIMESTAMP)s-%(BRANCH)s-%(NAME)s' % {
             'TIMESTAMP': timestamp,
