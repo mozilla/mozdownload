@@ -127,8 +127,13 @@ fennec_tests = [
      'mobile/nightly/2016/02/2016-02-02-00-40-08-mozilla-aurora-android-api-15/fennec-46.0a2.multi.android-arm.apk'),
 ]
 
+fenix_tests = [
+    ({'application': 'fenix', 'platform': 'android-x86', 'branch': '', 'date': '2022-11-14'},
+     'fenix-108.0b1.multi.android-x86.apk',
+     'fenix/nightly/2022/11/2022-11-14-17-01-36-fenix-108.0b1-android-x86/fenix-108.0b1.multi.android-x86.apk'),
+]
 
-@pytest.mark.parametrize("args,filename,url", firefox_tests + thunderbird_tests + fennec_tests)
+@pytest.mark.parametrize("args,filename,url", fenix_tests)
 def test_scraper(httpd, tmpdir, args, filename, url):
     """Testing various download scenarios for DailyScraper"""
 
