@@ -111,8 +111,8 @@ All those scraper instances allow you to retrieve the url which is used to downl
 ```python
 from mozdownload import FactoryScraper
 scraper = FactoryScraper('daily')
-print scraper.url
-print scraper.filename
+print(scraper.url)
+print(scraper.filename)
 ```
 
 To actually download the remote file the download() method has to be called:
