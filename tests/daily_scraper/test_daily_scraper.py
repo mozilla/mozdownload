@@ -128,12 +128,21 @@ fennec_tests = [
 ]
 
 fenix_tests = [
-    ({'application': 'fenix', 'platform': 'android-x86', 'branch': '', 'date': '2022-11-14'},
+    ({'application': 'fenix', 'platform': 'android-arm64-v8a', 'date': '2022-11-14'},
+     'fenix-108.0b1.multi.android-arm64-v8a.apk',
+     'fenix/nightly/2022/11/2022-11-14-17-01-36-fenix-108.0b1-android-arm64-v8a/fenix-108.0b1.multi.android-arm64-v8a.apk'),
+    ({'application': 'fenix', 'platform': 'android-x86', 'date': '2022-11-14'},
      'fenix-108.0b1.multi.android-x86.apk',
      'fenix/nightly/2022/11/2022-11-14-17-01-36-fenix-108.0b1-android-x86/fenix-108.0b1.multi.android-x86.apk'),
+    ({'application': 'fenix', 'platform': 'android-arm64-v8a', 'date': '2022-11-14'},
+     'fenix-108.0b1.multi.android-arm64-v8a.apk',
+     'fenix/nightly/2022/11/2022-11-14-17-01-36-fenix-108.0b1-android-arm64-v8a/fenix-108.0b1.multi.android-arm64-v8a.apk'),
+    ({'application': 'fenix', 'platform': 'android-x86_64', 'date': '2022-11-14'},
+     'fenix-108.0b1.multi.android-x86_64.apk',
+     'fenix/nightly/2022/11/2022-11-14-17-01-36-fenix-108.0b1-android-x86_64/fenix-108.0b1.multi.android-x86_64.apk'),
 ]
 
-@pytest.mark.parametrize("args,filename,url", fenix_tests)
+@pytest.mark.parametrize("args,filename,url", firefox_tests + thunderbird_tests + fennec_tests + fenix_tests)
 def test_scraper(httpd, tmpdir, args, filename, url):
     """Testing various download scenarios for DailyScraper"""
 
