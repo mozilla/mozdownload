@@ -54,5 +54,3 @@ jobs:
 
       - name: Tox tests
         run: tox -e ${{ matrix.toxenv }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
