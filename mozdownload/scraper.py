@@ -31,13 +31,29 @@ APPLICATIONS_MULTI_LOCALE = ('fenix', 'fennec')
 
 # Used if the application is named differently than the subfolder on the server
 APPLICATIONS_TO_FTP_DIRECTORY = {'fennec': 'mobile'}
-# Used if the application is named differently then the binary on the server
+# Used if the application is named differently than the binary on the server
 APPLICATIONS_TO_BINARY_NAME = {'devedition': 'firefox'}
 # Used when sorting versions
 APPLICATIONS_TO_VERSION_CLASS = {'devedition': 'DeveditionVersion',
                                  'firefox': 'FirefoxVersion',
                                  'fennec': 'FennecVersion',
                                  'thunderbird': 'ThunderbirdVersion'}
+
+APPLICATION_BUILD_FILENAME = {
+    app: (
+        '%(TIMESTAMP)s-%(BRANCH)s-%(NAME)s' if app != 'fenix'
+        else '%(TIMESTAMP)s-%(NAME)s'
+    )
+    for app in APPLICATIONS
+}
+
+APPLICATION_REGEX = {
+    app: (
+        r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s%(PLATFORM)s$' if app != 'fenix'
+        else r'%(DATE)s-(\d+-){3}fenix-(\d+\.\d.\d)%(PLATFORM)s$'
+    )
+    for app in APPLICATIONS
+}
 
 # Base URL for the path to all builds
 BASE_URL = 'https://archive.mozilla.org/pub/'
@@ -64,7 +80,10 @@ PLATFORM_FRAGMENTS = {'android-api-9': r'android-arm',
                       'android-api-11': r'android-arm',
                       'android-api-15': r'android-arm',
                       'android-api-16': r'android-arm',
+                      'android-arm64-v8a': r'android-arm64-v8a',
+                      'android-armeabi-v7a': r'android-armeabi-v7a',
                       'android-x86': r'android-i386',
+                      'android-x86_64': r'android-x86_64',
                       'linux': r'linux-i686',
                       'linux64': r'linux-x86_64',
                       'mac': r'mac',
@@ -234,8 +253,10 @@ class Scraper(object):
     @property
     def platform_regex(self):
         """Return the platform fragment of the URL."""
-        if self.application == "fenix":
+        # Special case fenix for android-x86 platform until fennec is supported
+        if self.platform == "android-x86" and self.application == "fenix":
             return self.platform
+
         return PLATFORM_FRAGMENTS[self.platform]
 
     @property
@@ -494,19 +515,14 @@ class DailyScraper(Scraper):
 
         self.logger.info('Retrieving list of builds from %s' % url)
         parser = self._create_directory_parser(url)
-        regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s%(PLATFORM)s$' % {
+        regex = APPLICATION_REGEX[self.application] % {
             'DATE': date.strftime('%Y-%m-%d'),
             'BRANCH': self.branch,
             # ensure to select the correct subfolder for localized builds
             'L10N': '(-l10n)?' if self.locale_build else '',
             'PLATFORM': '' if self.application not in (
-                'fennec') else '-' + self.platform
+                'fenix', 'fennec') else '-' + self.platform
         }
-        if self.application == 'fenix':
-            regex = r'%(DATE)s-(\d+-){3}fenix-(\d+\.\d.\d)-%(PLATFORM)s$' % {
-                'DATE': date.strftime('%Y-%m-%d'),
-                'PLATFORM': self.platform
-            }
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
 
@@ -546,7 +562,7 @@ class DailyScraper(Scraper):
                         'android-api-15': r'\.%(EXT)s$',
                         'android-api-16': r'\.%(EXT)s$',
                         'android-arm64-v8a': r'\.%(EXT)s$',
-                        'armeabi-v7a': r'\.%(EXT)s$',
+                        'android-armeabi-v7a': r'\.%(EXT)s$',
                         'android-x86': r'\.%(EXT)s$',
                         'android-x86_64': r'\.%(EXT)s$',
                         'linux': r'\.%(EXT)s$',
@@ -575,10 +591,7 @@ class DailyScraper(Scraper):
             # If it's not available use the build's date
             timestamp = self.date.strftime('%Y-%m-%d')
 
-        if self.application == 'fenix':
-            return binary
-
-        return '%(TIMESTAMP)s-%(BRANCH)s-%(NAME)s' % {
+        return APPLICATION_BUILD_FILENAME[self.application] % {
             'TIMESTAMP': timestamp,
             'BRANCH': self.branch,
             'NAME': binary}
