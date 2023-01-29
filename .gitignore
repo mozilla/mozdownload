@@ -4,7 +4,7 @@
 *.egg-info
 *.pyc
 .coverage
-build
-dist
 .pytest_cache/
 .vscode/
+build
+dist
