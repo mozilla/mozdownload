@@ -461,7 +461,20 @@ class DailyScraper(Scraper):
         if self.application not in ('fenix', 'fennec'):
             url = urljoin(self.base_url, 'nightly', 'latest-%s/' % self.branch)
         elif self.application == 'fenix':
-            url = urljoin(self.base_url, 'nightly/')
+            years = self._create_directory_parser(urljoin(self.base_url, 'nightly/'))
+            years.entries.sort()
+            months = self._create_directory_parser(urljoin(self.base_url, 'nightly',
+                                                           years.entries[-1] + '/'))
+            months.entries.sort()
+
+            url = urljoin(self.base_url, 'nightly', years.entries[-1],
+                          months.entries[-1] + '/')
+            parser = self._create_directory_parser(url)
+            parser.entries = parser.filter(r'.*%s' % self.platform_regex)
+            parser.entries.sort()
+
+            date = ''.join(parser.entries[-1].split('-')[:6])
+            return datetime.strptime(date, '%Y%m%d%H%M%S')
         else:
             url = urljoin(self.base_url, 'nightly', 'latest-%s-%s/' %
                           (self.branch, self.platform))
