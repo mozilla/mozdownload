@@ -33,6 +33,11 @@ APPLICATIONS_MULTI_LOCALE = ('fennec')
 APPLICATIONS_TO_FTP_DIRECTORY = {'fennec': 'mobile'}
 # Used if the application is named differently then the binary on the server
 APPLICATIONS_TO_BINARY_NAME = {'devedition': 'firefox'}
+# Used when sorting versions
+APPLICATIONS_TO_VERSION_CLASS = {'devedition': 'DeveditionVersion',
+                                 'firefox': 'FirefoxVersion',
+                                 'fennec': 'FennecVersion',
+                                 'thunderbird': 'ThunderbirdVersion'}
 
 # Base URL for the path to all builds
 BASE_URL = 'https://archive.mozilla.org/pub/'
@@ -668,8 +673,9 @@ class ReleaseScraper(Scraper):
         parser = self._create_directory_parser(url)
         if version:
             versions = parser.filter(RELEASE_AND_CANDIDATE_LATEST_VERSIONS[version])
-            from packaging.version import LegacyVersion
-            versions.sort(key=LegacyVersion)
+            from mozilla_version import gecko
+            MozVersion = getattr(gecko, APPLICATIONS_TO_VERSION_CLASS[self.application])
+            versions.sort(key=MozVersion.parse)
             return [versions[-1]]
         else:
             return parser.entries
