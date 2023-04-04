@@ -77,7 +77,7 @@ PLATFORM_FRAGMENTS = {'android-api-9': r'android-arm',
                       'android-api-16': r'android-arm',
                       'android-arm64-v8a': r'android-arm64-v8a',
                       'android-armeabi-v7a': r'android-armeabi-v7a',
-                      'android-x86': r'android-i386',
+                      'android-x86': r'android-x86',
                       'android-x86_64': r'android-x86_64',
                       'linux': r'linux-i686',
                       'linux64': r'linux-x86_64',
@@ -662,10 +662,16 @@ class ReleaseScraper(Scraper):
                      r'^%(BINARY_NAME)s(%(STUB_NEW)s|(?:\sSetup\s|-)%(STUB)s%(VERSION)s)\.%(EXT)s$',
                  'win64':
                      r'^%(BINARY_NAME)s(%(STUB_NEW)s|(?:\sSetup\s|-)%(STUB)s%(VERSION)s)\.%(EXT)s$',
+                 'android-arm64-v8a': r'^%(BINARY_NAME)s-%(VERSION)s\.multi.%(PLATFORM)s\.%(EXT)s$',
+                 'android-armeabi-v7a':
+                     r'^%(BINARY_NAME)s-%(VERSION)s\.multi.%(PLATFORM)s\.%(EXT)s$',
+                 'android-x86': r'^%(BINARY_NAME)s-%(VERSION)s\.multi.%(PLATFORM)s\.%(EXT)s$',
+                 'android-x86_64': r'^%(BINARY_NAME)s-%(VERSION)s\.multi.%(PLATFORM)s\.%(EXT)s$',
                  }
         return regex[self.platform] % {
             'BINARY_NAME': APPLICATIONS_TO_BINARY_NAME.get(self.application, self.application),
             'EXT': self.extension,
+            'PLATFORM': self.platform,
             'STUB': 'Stub ' if self.is_stub_installer else '',
             'STUB_NEW': ' Installer' if self.is_stub_installer else '',
             'VERSION': self.version,
@@ -675,6 +681,8 @@ class ReleaseScraper(Scraper):
     def path_regex(self):
         """Return the regex for the path to the build folder."""
         regex = r'releases/%(VERSION)s/%(PLATFORM)s/%(LOCALE)s/'
+        if self.application == "fenix":
+            regex = r'releases/%(VERSION)s/android/fenix-%(VERSION)s-%(PLATFORM)s/'
         return regex % {'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
                         'VERSION': self.version}
