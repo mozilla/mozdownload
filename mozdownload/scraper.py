@@ -77,6 +77,18 @@ RELEASE_AND_CANDIDATE_LATEST_VERSIONS = {
 }
 
 
+def thunderbird_latest_version_filter(x):
+    invalid_versions = ("0.7rc", "1.0rc", "2.0.0.0", "2.0.0.0rc1", "10.0-real")
+    return x not in invalid_versions and\
+        re.match(RELEASE_AND_CANDIDATE_LATEST_VERSIONS['latest'], x)
+
+
+def latest_version_filter(version, application):
+    if application == "thunderbird" and version == "latest":
+        return thunderbird_latest_version_filter
+    return RELEASE_AND_CANDIDATE_LATEST_VERSIONS[version]
+
+
 class Scraper(object):
     """Generic class to download a Gecko based application."""
 
@@ -672,7 +684,7 @@ class ReleaseScraper(Scraper):
         url = urljoin(self.base_url, 'releases/')
         parser = self._create_directory_parser(url)
         if version:
-            versions = parser.filter(RELEASE_AND_CANDIDATE_LATEST_VERSIONS[version])
+            versions = parser.filter(latest_version_filter(version, self.application))
             from mozilla_version import gecko
             MozVersion = getattr(gecko, APPLICATIONS_TO_VERSION_CLASS[self.application])
             versions.sort(key=MozVersion.parse)
