@@ -24,13 +24,11 @@ from mozdownload.parser import DirectoryParser
 from mozdownload.timezones import PacificTimezone
 from mozdownload.utils import urljoin
 
-APPLICATIONS = ('devedition', 'firefox', 'fenix', 'fennec', 'thunderbird')
+APPLICATIONS = ('devedition', 'firefox', 'fenix', 'thunderbird')
 
 # Some applications contain all locales in a single build
-APPLICATIONS_MULTI_LOCALE = ('fenix', 'fennec')
+APPLICATIONS_MULTI_LOCALE = ('fenix')
 
-# Used if the application is named differently than the subfolder on the server
-APPLICATIONS_TO_FTP_DIRECTORY = {'fennec': 'mobile'}
 # Used if the application is named differently than the binary on the server
 APPLICATIONS_TO_BINARY_NAME = {'devedition': 'firefox'}
 
@@ -139,10 +137,7 @@ class Scraper(object):
 
         # build the base URL
         self.application = application
-        self.base_url = '%s/' % urljoin(
-            base_url,
-            APPLICATIONS_TO_FTP_DIRECTORY.get(self.application, self.application)
-        )
+        self.base_url = '%s/' % urljoin(base_url, self.application)
 
         if extension:
             self.extension = extension
@@ -232,10 +227,6 @@ class Scraper(object):
     @property
     def platform_regex(self):
         """Return the platform fragment of the URL."""
-        # Special case fenix for android-x86 platform until fennec is supported
-        if self.platform == "android-x86" and self.application == "fenix":
-            return self.platform
-
         return PLATFORM_FRAGMENTS[self.platform]
 
     @property
@@ -382,10 +373,7 @@ class DailyScraper(Scraper):
         """Define additional build information."""
         # Retrieve build by revision
         if self.revision:
-            th = treeherder.Treeherder(
-                APPLICATIONS_TO_FTP_DIRECTORY.get(self.application, self.application),
-                self.branch,
-                self.platform)
+            th = treeherder.Treeherder(self.application, self.branch, self.platform)
             builds = th.query_builds_by_revision(
                 self.revision,
                 job_type_name='L10n Nightly' if self.locale_build else 'Nightly')
@@ -437,7 +425,7 @@ class DailyScraper(Scraper):
 
     def get_latest_build_date(self):
         """Return date of latest available nightly build."""
-        if self.application not in ('fenix', 'fennec'):
+        if self.application not in ('fenix'):
             url = urljoin(self.base_url, 'nightly', 'latest-%s/' % self.branch)
         elif self.application == 'fenix':
             years = self._create_directory_parser(urljoin(self.base_url, 'nightly/'))
@@ -512,8 +500,7 @@ class DailyScraper(Scraper):
             'BRANCH': self.branch,
             # ensure to select the correct subfolder for localized builds
             'L10N': '(-l10n)?' if self.locale_build else '',
-            'PLATFORM': '' if self.application not in (
-                'fenix', 'fennec') else '-' + self.platform
+            'PLATFORM': '' if self.application not in ('fenix') else '-' + self.platform
         }
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
@@ -824,10 +811,7 @@ class TinderboxScraper(Scraper):
         """Define additional build information."""
         # Retrieve build by revision
         if self.revision:
-            th = treeherder.Treeherder(
-                APPLICATIONS_TO_FTP_DIRECTORY.get(self.application, self.application),
-                self.branch,
-                self.platform)
+            th = treeherder.Treeherder(self.application, self.branch, self.platform)
             builds = th.query_builds_by_revision(
                 self.revision, job_type_name='Build', debug_build=self.debug_build)
 
@@ -1027,10 +1011,7 @@ class TryScraper(Scraper):
     def get_build_info(self):
         """Define additional build information."""
         # Retrieve build by revision
-        th = treeherder.Treeherder(
-            APPLICATIONS_TO_FTP_DIRECTORY.get(self.application, self.application),
-            'try',
-            self.platform)
+        th = treeherder.Treeherder(self.application, 'try', self.platform)
         builds = th.query_builds_by_revision(
             self.revision, job_type_name='Build', debug_build=self.debug_build)
 

@@ -22,14 +22,14 @@ def test_try_without_revision(httpd, tmpdir):
         FactoryScraper('try', destination=str(tmpdir), base_url=httpd.get_url())
 
 
-def test_non_daily_fennec(httpd, tmpdir):
-    """Test that non-daily scraper_type for fennec raises exception"""
+def test_non_daily_fenix(httpd, tmpdir):
+    """Test that non-daily scraper_type for fenix raises exception"""
     with pytest.raises(NotSupportedError):
         FactoryScraper('candidate',
                        destination=str(tmpdir),
                        base_url=httpd.get_url(),
-                       application='fennec',
-                       version='60.0b1')
+                       application='fenix',
+                       version='110.0b1')
 
 
 def test_non_release_non_candidate_devedition(httpd, tmpdir):
