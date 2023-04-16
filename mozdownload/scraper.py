@@ -78,8 +78,12 @@ RELEASE_AND_CANDIDATE_LATEST_VERSIONS = {
 
 
 def thunderbird_latest_version_filter(x):
-    invalid_versions = ("0.7rc", "1.0rc", "2.0.0.0", "2.0.0.0rc1", "10.0-real")
-    return x not in invalid_versions and\
+    """Ignore Thunderbird versions that mozilla-version does not accept as valid.
+       mozilla-version is only used to find the "latest" versions; these are old
+       and will not be relevant.
+    """
+    accepted_invalid_versions = ("0.7rc", "1.0rc", "2.0.0.0", "2.0.0.0rc1", "10.0-real")
+    return x not in accepted_invalid_versions and \
         re.match(RELEASE_AND_CANDIDATE_LATEST_VERSIONS['latest'], x)
 
 
