@@ -33,6 +33,11 @@ APPLICATIONS_MULTI_LOCALE = ('fennec')
 APPLICATIONS_TO_FTP_DIRECTORY = {'fennec': 'mobile'}
 # Used if the application is named differently then the binary on the server
 APPLICATIONS_TO_BINARY_NAME = {'devedition': 'firefox'}
+# Used when sorting versions
+APPLICATIONS_TO_VERSION_CLASS = {'devedition': 'DeveditionVersion',
+                                 'firefox': 'FirefoxVersion',
+                                 'fennec': 'FennecVersion',
+                                 'thunderbird': 'ThunderbirdVersion'}
 
 # Base URL for the path to all builds
 BASE_URL = 'https://archive.mozilla.org/pub/'
@@ -70,6 +75,22 @@ RELEASE_AND_CANDIDATE_LATEST_VERSIONS = {
     'latest-beta': r'^\d+(\.\d+)+b\d+(-candidates)?$',
     'latest-esr': r'^\d+(\.\d+)+esr(-candidates)?$',
 }
+
+
+def thunderbird_latest_version_filter(x):
+    """Ignore Thunderbird versions that mozilla-version does not accept as valid.
+       mozilla-version is only used to find the "latest" versions; these are old
+       and will not be relevant.
+    """
+    accepted_invalid_versions = ("0.7rc", "1.0rc", "2.0.0.0", "2.0.0.0rc1", "10.0-real")
+    return x not in accepted_invalid_versions and \
+        re.match(RELEASE_AND_CANDIDATE_LATEST_VERSIONS['latest'], x)
+
+
+def latest_version_filter(version, application):
+    if application == "thunderbird" and version == "latest":
+        return thunderbird_latest_version_filter
+    return RELEASE_AND_CANDIDATE_LATEST_VERSIONS[version]
 
 
 class Scraper(object):
@@ -667,9 +688,10 @@ class ReleaseScraper(Scraper):
         url = urljoin(self.base_url, 'releases/')
         parser = self._create_directory_parser(url)
         if version:
-            versions = parser.filter(RELEASE_AND_CANDIDATE_LATEST_VERSIONS[version])
-            from packaging.version import LegacyVersion
-            versions.sort(key=LegacyVersion)
+            versions = parser.filter(latest_version_filter(version, self.application))
+            from mozilla_version import gecko
+            MozVersion = getattr(gecko, APPLICATIONS_TO_VERSION_CLASS[self.application])
+            versions.sort(key=MozVersion.parse)
             return [versions[-1]]
         else:
             return parser.entries
