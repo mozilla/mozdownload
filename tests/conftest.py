@@ -47,7 +47,7 @@ def httpd():
         doc_root=os.path.join(HERE, 'data'),
         routes=routes,
         )
-    httpd.start(block=False)
+    httpd.start()
     yield httpd
     httpd.stop()
 
