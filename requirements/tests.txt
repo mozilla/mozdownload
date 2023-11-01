@@ -1,5 +1,5 @@
 coveralls[yaml]==3.3.1
-pytest==7.4.2
+pytest==7.4.3
 pytest-cov==4.1.0
 pytest-mock==3.11.1
 wptserve==3.0
