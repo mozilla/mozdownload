@@ -13,10 +13,6 @@ from thclient import TreeherderClient
 from mozdownload.errors import NotSupportedError
 
 PLATFORM_MAP = {
-    'android-api-9': {'build_platform': 'android-2-3-armv7-api9'},
-    'android-api-11': {'build_platform': 'android-4-0-armv7-api11'},
-    'android-api-15': {'build_platform': 'android-4-0-armv7-api15'},
-    'android-x86': {'build_platform': 'android-4-2-x86'},
     'linux': {'build_platform': 'linux32'},
     'linux64': {'build_platform': 'linux64'},
     'mac': {'build_os': 'mac', 'build_architecture': 'x86_64'},

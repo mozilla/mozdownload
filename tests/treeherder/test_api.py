@@ -61,7 +61,7 @@ def test_query_tinderbox_builds(httpd, platform):
     if platform == 'mac64':
         pytest.skip("mac64 is identical to mac")
 
-    application = 'firefox' if not platform.startswith('android') else 'mobile'
+    application = 'firefox' if not platform.startswith('android') else 'fenix'
     th = Treeherder(application, 'mozilla-beta', platform,
                     server_url='http://{}:{}'.format(httpd.host, httpd.port))
     builds = th.query_builds_by_revision('29258f59e545')
