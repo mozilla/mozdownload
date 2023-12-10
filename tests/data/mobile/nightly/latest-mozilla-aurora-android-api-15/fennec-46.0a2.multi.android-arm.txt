@@ -1,2 +1,0 @@
-20160202004008
-https://hg.mozilla.org/releases/mozilla-aurora/rev/980fea2f7011680074bf2f0941ee7e5d0eb3c4a3

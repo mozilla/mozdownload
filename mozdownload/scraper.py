@@ -34,7 +34,7 @@ APPLICATIONS_TO_BINARY_NAME = {'devedition': 'firefox'}
 # Used when sorting versions
 APPLICATIONS_TO_VERSION_CLASS = {'devedition': 'DeveditionVersion',
                                  'firefox': 'FirefoxVersion',
-                                 'fennec': 'FennecVersion',
+                                 'fenix': 'MobileVersion',
                                  'thunderbird': 'ThunderbirdVersion'}
 
 APPLICATION_BUILD_FILENAME = {
@@ -59,11 +59,7 @@ BASE_URL = 'https://archive.mozilla.org/pub/'
 # Chunk size when downloading a file
 CHUNK_SIZE = 16 * 1024
 
-DEFAULT_FILE_EXTENSIONS = {'android-api-9': 'apk',
-                           'android-api-11': 'apk',
-                           'android-api-15': 'apk',
-                           'android-api-16': 'apk',
-                           'android-arm64-v8a': 'apk',
+DEFAULT_FILE_EXTENSIONS = {'android-arm64-v8a': 'apk',
                            'android-armeabi-v7a': 'apk',
                            'android-x86': 'apk',
                            'android-x86_64': 'apk',
@@ -74,11 +70,7 @@ DEFAULT_FILE_EXTENSIONS = {'android-api-9': 'apk',
                            'win32': 'exe',
                            'win64': 'exe'}
 
-PLATFORM_FRAGMENTS = {'android-api-9': r'android-arm',
-                      'android-api-11': r'android-arm',
-                      'android-api-15': r'android-arm',
-                      'android-api-16': r'android-arm',
-                      'android-arm64-v8a': r'android-arm64-v8a',
+PLATFORM_FRAGMENTS = {'android-arm64-v8a': r'android-arm64-v8a',
                       'android-armeabi-v7a': r'android-armeabi-v7a',
                       'android-x86': r'android-x86',
                       'android-x86_64': r'android-x86_64',
@@ -557,11 +549,7 @@ class DailyScraper(Scraper):
         """Return the regex for the binary."""
         regex_base_name = (r'^%(BINARY_NAME)s(\s%(STUB_NEW)s\.%(LOCALE)s|' +
                            r'-.*\.%(LOCALE)s\.%(PLATFORM)s)')
-        regex_suffix = {'android-api-9': r'\.%(EXT)s$',
-                        'android-api-11': r'\.%(EXT)s$',
-                        'android-api-15': r'\.%(EXT)s$',
-                        'android-api-16': r'\.%(EXT)s$',
-                        'android-arm64-v8a': r'\.%(EXT)s$',
+        regex_suffix = {'android-arm64-v8a': r'\.%(EXT)s$',
                         'android-armeabi-v7a': r'\.%(EXT)s$',
                         'android-x86': r'\.%(EXT)s$',
                         'android-x86_64': r'\.%(EXT)s$',
@@ -688,9 +676,10 @@ class ReleaseScraper(Scraper):
     @property
     def path_regex(self):
         """Return the regex for the path to the build folder."""
-        regex = r'releases/%(VERSION)s/%(PLATFORM)s/%(LOCALE)s/'
         if self.application == "fenix":
             regex = r'releases/%(VERSION)s/android/fenix-%(VERSION)s-%(PLATFORM)s/'
+        else:
+            regex = r'releases/%(VERSION)s/%(PLATFORM)s/%(LOCALE)s/'
         return regex % {'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
                         'VERSION': self.version}
@@ -727,8 +716,8 @@ class ReleaseScraper(Scraper):
         parser = self._create_directory_parser(url)
         if version:
             versions = parser.filter(latest_version_filter(version, self.application))
-            from mozilla_version import gecko
-            MozVersion = getattr(gecko, APPLICATIONS_TO_VERSION_CLASS[self.application])
+            import mozilla_version
+            MozVersion = getattr(mozilla_version, APPLICATIONS_TO_VERSION_CLASS[self.application])
             versions.sort(key=MozVersion.parse)
             return [versions[-1]]
         else:
