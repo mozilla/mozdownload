@@ -24,20 +24,34 @@ from mozdownload.parser import DirectoryParser
 from mozdownload.timezones import PacificTimezone
 from mozdownload.utils import urljoin
 
-APPLICATIONS = ('devedition', 'firefox', 'fennec', 'thunderbird')
+APPLICATIONS = ('devedition', 'firefox', 'fenix', 'thunderbird')
 
 # Some applications contain all locales in a single build
-APPLICATIONS_MULTI_LOCALE = ('fennec')
+APPLICATIONS_MULTI_LOCALE = ('fenix')
 
-# Used if the application is named differently than the subfolder on the server
-APPLICATIONS_TO_FTP_DIRECTORY = {'fennec': 'mobile'}
-# Used if the application is named differently then the binary on the server
+# Used if the application is named differently than the binary on the server
 APPLICATIONS_TO_BINARY_NAME = {'devedition': 'firefox'}
 # Used when sorting versions
 APPLICATIONS_TO_VERSION_CLASS = {'devedition': 'DeveditionVersion',
                                  'firefox': 'FirefoxVersion',
-                                 'fennec': 'FennecVersion',
+                                 'fenix': 'MobileVersion',
                                  'thunderbird': 'ThunderbirdVersion'}
+
+APPLICATION_BUILD_FILENAME = {
+    app: (
+        '%(TIMESTAMP)s-%(BRANCH)s-%(NAME)s' if app != 'fenix'
+        else '%(TIMESTAMP)s-%(NAME)s'
+    )
+    for app in APPLICATIONS
+}
+
+APPLICATION_REGEX = {
+    app: (
+        r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s%(PLATFORM)s$' if app != 'fenix'
+        else r'%(DATE)s-(\d+-){3}fenix-(\d+\.\d.\d)%(PLATFORM)s$'
+    )
+    for app in APPLICATIONS
+}
 
 # Base URL for the path to all builds
 BASE_URL = 'https://archive.mozilla.org/pub/'
@@ -45,11 +59,10 @@ BASE_URL = 'https://archive.mozilla.org/pub/'
 # Chunk size when downloading a file
 CHUNK_SIZE = 16 * 1024
 
-DEFAULT_FILE_EXTENSIONS = {'android-api-9': 'apk',
-                           'android-api-11': 'apk',
-                           'android-api-15': 'apk',
-                           'android-api-16': 'apk',
+DEFAULT_FILE_EXTENSIONS = {'android-arm64-v8a': 'apk',
+                           'android-armeabi-v7a': 'apk',
                            'android-x86': 'apk',
+                           'android-x86_64': 'apk',
                            'linux': 'tar.bz2',
                            'linux64': 'tar.bz2',
                            'mac': 'dmg',
@@ -57,11 +70,10 @@ DEFAULT_FILE_EXTENSIONS = {'android-api-9': 'apk',
                            'win32': 'exe',
                            'win64': 'exe'}
 
-PLATFORM_FRAGMENTS = {'android-api-9': r'android-arm',
-                      'android-api-11': r'android-arm',
-                      'android-api-15': r'android-arm',
-                      'android-api-16': r'android-arm',
-                      'android-x86': r'android-i386',
+PLATFORM_FRAGMENTS = {'android-arm64-v8a': r'android-arm64-v8a',
+                      'android-armeabi-v7a': r'android-armeabi-v7a',
+                      'android-x86': r'android-x86',
+                      'android-x86_64': r'android-x86_64',
                       'linux': r'linux-i686',
                       'linux64': r'linux-x86_64',
                       'mac': r'mac',
@@ -138,10 +150,7 @@ class Scraper(object):
 
         # build the base URL
         self.application = application
-        self.base_url = '%s/' % urljoin(
-            base_url,
-            APPLICATIONS_TO_FTP_DIRECTORY.get(self.application, self.application)
-        )
+        self.base_url = '%s/' % urljoin(base_url, self.application)
 
         if extension:
             self.extension = extension
@@ -377,10 +386,7 @@ class DailyScraper(Scraper):
         """Define additional build information."""
         # Retrieve build by revision
         if self.revision:
-            th = treeherder.Treeherder(
-                APPLICATIONS_TO_FTP_DIRECTORY.get(self.application, self.application),
-                self.branch,
-                self.platform)
+            th = treeherder.Treeherder(self.application, self.branch, self.platform)
             builds = th.query_builds_by_revision(
                 self.revision,
                 job_type_name='L10n Nightly' if self.locale_build else 'Nightly')
@@ -432,8 +438,23 @@ class DailyScraper(Scraper):
 
     def get_latest_build_date(self):
         """Return date of latest available nightly build."""
-        if self.application not in ('fennec'):
+        if self.application not in ('fenix'):
             url = urljoin(self.base_url, 'nightly', 'latest-%s/' % self.branch)
+        elif self.application == 'fenix':
+            years = self._create_directory_parser(urljoin(self.base_url, 'nightly/'))
+            years.entries.sort()
+            months = self._create_directory_parser(urljoin(self.base_url, 'nightly',
+                                                           years.entries[-1] + '/'))
+            months.entries.sort()
+
+            url = urljoin(self.base_url, 'nightly', years.entries[-1],
+                          months.entries[-1] + '/')
+            parser = self._create_directory_parser(url)
+            parser.entries = parser.filter(r'.*%s' % self.platform_regex)
+            parser.entries.sort()
+
+            date = ''.join(parser.entries[-1].split('-')[:6])
+            return datetime.strptime(date, '%Y%m%d%H%M%S')
         else:
             url = urljoin(self.base_url, 'nightly', 'latest-%s-%s/' %
                           (self.branch, self.platform))
@@ -487,15 +508,13 @@ class DailyScraper(Scraper):
 
         self.logger.info('Retrieving list of builds from %s' % url)
         parser = self._create_directory_parser(url)
-        regex = r'%(DATE)s-(\d+-)+%(BRANCH)s%(L10N)s%(PLATFORM)s$' % {
+        regex = APPLICATION_REGEX[self.application] % {
             'DATE': date.strftime('%Y-%m-%d'),
             'BRANCH': self.branch,
             # ensure to select the correct subfolder for localized builds
             'L10N': '(-l10n)?' if self.locale_build else '',
-            'PLATFORM': '' if self.application not in (
-                'fennec') else '-' + self.platform
+            'PLATFORM': '' if self.application not in ('fenix') else '-' + self.platform
         }
-
         parser.entries = parser.filter(regex)
         parser.entries = parser.filter(self.is_build_dir)
 
@@ -530,11 +549,10 @@ class DailyScraper(Scraper):
         """Return the regex for the binary."""
         regex_base_name = (r'^%(BINARY_NAME)s(\s%(STUB_NEW)s\.%(LOCALE)s|' +
                            r'-.*\.%(LOCALE)s\.%(PLATFORM)s)')
-        regex_suffix = {'android-api-9': r'\.%(EXT)s$',
-                        'android-api-11': r'\.%(EXT)s$',
-                        'android-api-15': r'\.%(EXT)s$',
-                        'android-api-16': r'\.%(EXT)s$',
+        regex_suffix = {'android-arm64-v8a': r'\.%(EXT)s$',
+                        'android-armeabi-v7a': r'\.%(EXT)s$',
                         'android-x86': r'\.%(EXT)s$',
+                        'android-x86_64': r'\.%(EXT)s$',
                         'linux': r'\.%(EXT)s$',
                         'linux64': r'\.%(EXT)s$',
                         'mac': r'\.%(EXT)s$',
@@ -561,7 +579,7 @@ class DailyScraper(Scraper):
             # If it's not available use the build's date
             timestamp = self.date.strftime('%Y-%m-%d')
 
-        return '%(TIMESTAMP)s-%(BRANCH)s-%(NAME)s' % {
+        return APPLICATION_BUILD_FILENAME[self.application] % {
             'TIMESTAMP': timestamp,
             'BRANCH': self.branch,
             'NAME': binary}
@@ -640,10 +658,16 @@ class ReleaseScraper(Scraper):
                      r'^%(BINARY_NAME)s(%(STUB_NEW)s|(?:\sSetup\s|-)%(STUB)s%(VERSION)s)\.%(EXT)s$',
                  'win64':
                      r'^%(BINARY_NAME)s(%(STUB_NEW)s|(?:\sSetup\s|-)%(STUB)s%(VERSION)s)\.%(EXT)s$',
+                 'android-arm64-v8a': r'^%(BINARY_NAME)s-%(VERSION)s\.multi.%(PLATFORM)s\.%(EXT)s$',
+                 'android-armeabi-v7a':
+                     r'^%(BINARY_NAME)s-%(VERSION)s\.multi.%(PLATFORM)s\.%(EXT)s$',
+                 'android-x86': r'^%(BINARY_NAME)s-%(VERSION)s\.multi.%(PLATFORM)s\.%(EXT)s$',
+                 'android-x86_64': r'^%(BINARY_NAME)s-%(VERSION)s\.multi.%(PLATFORM)s\.%(EXT)s$',
                  }
         return regex[self.platform] % {
             'BINARY_NAME': APPLICATIONS_TO_BINARY_NAME.get(self.application, self.application),
             'EXT': self.extension,
+            'PLATFORM': self.platform,
             'STUB': 'Stub ' if self.is_stub_installer else '',
             'STUB_NEW': ' Installer' if self.is_stub_installer else '',
             'VERSION': self.version,
@@ -652,7 +676,10 @@ class ReleaseScraper(Scraper):
     @property
     def path_regex(self):
         """Return the regex for the path to the build folder."""
-        regex = r'releases/%(VERSION)s/%(PLATFORM)s/%(LOCALE)s/'
+        if self.application == "fenix":
+            regex = r'releases/%(VERSION)s/android/fenix-%(VERSION)s-%(PLATFORM)s/'
+        else:
+            regex = r'releases/%(VERSION)s/%(PLATFORM)s/%(LOCALE)s/'
         return regex % {'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
                         'VERSION': self.version}
@@ -689,8 +716,8 @@ class ReleaseScraper(Scraper):
         parser = self._create_directory_parser(url)
         if version:
             versions = parser.filter(latest_version_filter(version, self.application))
-            from mozilla_version import gecko
-            MozVersion = getattr(gecko, APPLICATIONS_TO_VERSION_CLASS[self.application])
+            import mozilla_version
+            MozVersion = getattr(mozilla_version, APPLICATIONS_TO_VERSION_CLASS[self.application])
             versions.sort(key=MozVersion.parse)
             return [versions[-1]]
         else:
@@ -795,10 +822,7 @@ class TinderboxScraper(Scraper):
         """Define additional build information."""
         # Retrieve build by revision
         if self.revision:
-            th = treeherder.Treeherder(
-                APPLICATIONS_TO_FTP_DIRECTORY.get(self.application, self.application),
-                self.branch,
-                self.platform)
+            th = treeherder.Treeherder(self.application, self.branch, self.platform)
             builds = th.query_builds_by_revision(
                 self.revision, job_type_name='Build', debug_build=self.debug_build)
 
@@ -998,10 +1022,7 @@ class TryScraper(Scraper):
     def get_build_info(self):
         """Define additional build information."""
         # Retrieve build by revision
-        th = treeherder.Treeherder(
-            APPLICATIONS_TO_FTP_DIRECTORY.get(self.application, self.application),
-            'try',
-            self.platform)
+        th = treeherder.Treeherder(self.application, 'try', self.platform)
         builds = th.query_builds_by_revision(
             self.revision, job_type_name='Build', debug_build=self.debug_build)
 

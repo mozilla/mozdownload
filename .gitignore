@@ -4,5 +4,7 @@
 *.egg-info
 *.pyc
 .coverage
+.pytest_cache/
+.vscode/
 build
 dist
