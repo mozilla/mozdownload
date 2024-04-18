@@ -709,19 +709,20 @@ class ReleaseScraper(Scraper):
 
     def query_versions(self, version=None):
         """Check specified version and resolve special values."""
-        if version not in RELEASE_AND_CANDIDATE_LATEST_VERSIONS:
-            return [version]
-
         url = urljoin(self.base_url, 'releases/')
         parser = self._create_directory_parser(url)
-        if version:
-            versions = parser.filter(latest_version_filter(version, self.application))
-            import mozilla_version
-            MozVersion = getattr(mozilla_version, APPLICATIONS_TO_VERSION_CLASS[self.application])
-            versions.sort(key=MozVersion.parse)
-            return [versions[-1]]
-        else:
+
+        if not version:
             return parser.entries
+
+        if version not in RELEASE_AND_CANDIDATE_LATEST_VERSIONS:
+            versions = parser.filter(version)
+        else:
+            versions = parser.filter(latest_version_filter(version, self.application))
+        import mozilla_version
+        MozVersion = getattr(mozilla_version, APPLICATIONS_TO_VERSION_CLASS[self.application])
+        versions.sort(key=MozVersion.parse)
+        return [versions[-1]]
 
 
 class ReleaseCandidateScraper(ReleaseScraper):
