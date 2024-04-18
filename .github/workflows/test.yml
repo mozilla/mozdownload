@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-    tags:
   pull_request:
 
 jobs:
@@ -16,29 +15,55 @@ jobs:
         include:
         # linux
         - os: ubuntu-latest
-          python: 3.7
-          toxenv: py37
+          python: "3.12"
+          toxenv: py312
         - os: ubuntu-latest
-          python: 3.8
-          toxenv: py38
+          python: "3.11"
+          toxenv: py311
         - os: ubuntu-latest
-          python: 3.9
+          python: "3.10"
+          toxenv: py310
+        - os: ubuntu-latest
+          python: "3.9"
           toxenv: py39
-        # Blocked by https://github.com/web-platform-tests/wpt/issues/35978
-        # - os: ubuntu-latest
-        #   python: "3.10"
-        #   toxenv: py310
+        - os: ubuntu-latest
+          python: "3.8"
+          toxenv: py38
         # windows
         - os: windows-latest
-          python: 3.8
+          python: "3.12"
+          toxenv: py312
+        - os: windows-latest
+          python: "3.11"
+          toxenv: py311
+        - os: windows-latest
+          python: "3.10"
+          toxenv: py310
+        - os: windows-latest
+          python: "3.9"
+          toxenv: py39
+        - os: windows-latest
+          python: "3.8"
           toxenv: py38
         # macos
         - os: macos-latest
-          python: 3.8
+          python: "3.12"
+          toxenv: py312
+        - os: macos-latest
+          python: "3.11"
+          toxenv: py311
+        - os: macos-latest
+          python: "3.10"
+          toxenv: py310
+        - os: macos-latest
+          python: "3.9"
+          toxenv: py39
+        - os: macos-latest
+          python: "3.8"
           toxenv: py38
         # misc
         - os: ubuntu-latest
-          python: 3.8
+          python: "3.11"
           toxenv: pylama
 
     steps:

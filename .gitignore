@@ -1,8 +1,11 @@
 .idea/
 .cache/
+.pytest_cache/
 .tox/
+.vscode/
+build/
+dist/
 *.egg-info
 *.pyc
 .coverage
-build
-dist
+.DS_Store

@@ -109,26 +109,22 @@ thunderbird_tests = [
      'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-aurora/thunderbird-27.0a1.en-US.win32.installer.exe'),
 ]
 
-fennec_tests = [
-    ({'application': 'fennec', 'platform': 'android-api-9', 'branch': 'mozilla-central'},
-     '2016-02-01-03-02-41-mozilla-central-fennec-47.0a1.multi.android-arm.apk',
-     'mobile/nightly/2016/02/2016-02-01-03-02-41-mozilla-central-android-api-9/fennec-47.0a1.multi.android-arm.apk'),
-    ({'application': 'fennec', 'platform': 'android-api-11', 'branch': 'mozilla-central'},
-     '2015-06-11-03-02-08-mozilla-central-fennec-41.0a1.multi.android-arm.apk',
-     'mobile/nightly/2015/06/2015-06-11-03-02-08-mozilla-central-android-api-11/fennec-41.0a1.multi.android-arm.apk'),
-    ({'application': 'fennec', 'platform': 'android-api-15', 'branch': 'mozilla-central'},
-     '2016-02-01-03-02-41-mozilla-central-fennec-47.0a1.multi.android-arm.apk',
-     'mobile/nightly/2016/02/2016-02-01-03-02-41-mozilla-central-android-api-15/fennec-47.0a1.multi.android-arm.apk'),
-    ({'application': 'fennec', 'platform': 'android-x86', 'branch': 'mozilla-central'},
-     '2016-02-01-03-02-41-mozilla-central-fennec-47.0a1.multi.android-i386.apk',
-     'mobile/nightly/2016/02/2016-02-01-03-02-41-mozilla-central-android-x86/fennec-47.0a1.multi.android-i386.apk'),
-    ({'application': 'fennec', 'platform': 'android-api-15', 'branch': 'mozilla-aurora'},
-     '2016-02-02-00-40-08-mozilla-aurora-fennec-46.0a2.multi.android-arm.apk',
-     'mobile/nightly/2016/02/2016-02-02-00-40-08-mozilla-aurora-android-api-15/fennec-46.0a2.multi.android-arm.apk'),
+fenix_tests = [
+    ({'application': 'fenix', 'platform': 'android-arm64-v8a', 'date': '2022-11-14'},
+     '2022-11-14-17-01-36-fenix-108.0b1.multi.android-arm64-v8a.apk',
+     'fenix/nightly/2022/11/2022-11-14-17-01-36-fenix-108.0b1-android-arm64-v8a/fenix-108.0b1.multi.android-arm64-v8a.apk'),
+    ({'application': 'fenix', 'platform': 'android-x86', 'date': '2022-11-14'},
+     '2022-11-14-17-01-36-fenix-108.0b1.multi.android-x86.apk',
+     'fenix/nightly/2022/11/2022-11-14-17-01-36-fenix-108.0b1-android-x86/fenix-108.0b1.multi.android-x86.apk'),
+    ({'application': 'fenix', 'platform': 'android-armeabi-v7a', 'date': '2022-11-14'},
+     '2022-11-14-17-01-36-fenix-108.0b1.multi.android-armeabi-v7a.apk',
+     'fenix/nightly/2022/11/2022-11-14-17-01-36-fenix-108.0b1-android-armeabi-v7a/fenix-108.0b1.multi.android-armeabi-v7a.apk'),
+    ({'application': 'fenix', 'platform': 'android-x86_64', 'date': '2022-11-14'},
+     '2022-11-14-17-01-36-fenix-108.0b1.multi.android-x86_64.apk',
+     'fenix/nightly/2022/11/2022-11-14-17-01-36-fenix-108.0b1-android-x86_64/fenix-108.0b1.multi.android-x86_64.apk'),
 ]
 
-
-@pytest.mark.parametrize("args,filename,url", firefox_tests + thunderbird_tests + fennec_tests)
+@pytest.mark.parametrize("args,filename,url", firefox_tests + thunderbird_tests + fenix_tests)
 def test_scraper(httpd, tmpdir, args, filename, url):
     """Testing various download scenarios for DailyScraper"""
 
