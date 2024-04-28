@@ -124,11 +124,10 @@ class Scraper(object):
 
         self.destination = destination or os.getcwd()
 
-        if not locale:
-            if application in APPLICATIONS_MULTI_LOCALE:
-                self.locale = 'multi'
-            else:
-                self.locale = 'en-US'
+        if application in APPLICATIONS_MULTI_LOCALE:
+            self.locale = 'multi'
+        elif not locale:
+            self.locale = 'en-US'
         else:
             self.locale = locale
         self.locale_build = self.locale not in ('en-US', 'multi')
