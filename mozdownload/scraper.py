@@ -100,6 +100,8 @@ def thunderbird_latest_version_filter(x):
 
 
 def latest_version_filter(version, application):
+    if application == "firefox" and version.isnumeric():
+        return fr'^{version}(\.\d+)+(-candidates)?$'
     if application == "thunderbird" and version == "latest":
         return thunderbird_latest_version_filter
     return RELEASE_AND_CANDIDATE_LATEST_VERSIONS[version]
@@ -709,7 +711,7 @@ class ReleaseScraper(Scraper):
 
     def query_versions(self, version=None):
         """Check specified version and resolve special values."""
-        if version not in RELEASE_AND_CANDIDATE_LATEST_VERSIONS:
+        if version not in RELEASE_AND_CANDIDATE_LATEST_VERSIONS and not version.isnumeric():
             return [version]
 
         url = urljoin(self.base_url, 'releases/')
