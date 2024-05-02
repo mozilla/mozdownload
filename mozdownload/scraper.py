@@ -126,10 +126,10 @@ class Scraper(object):
 
         if application in APPLICATIONS_MULTI_LOCALE:
             self.locale = 'multi'
-        elif not locale:
-            self.locale = 'en-US'
-        else:
+        elif locale:
             self.locale = locale
+        else:
+            self.locale = 'en-US'
         self.locale_build = self.locale not in ('en-US', 'multi')
 
         self.platform = platform or self.detect_platform()
