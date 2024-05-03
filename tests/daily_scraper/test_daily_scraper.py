@@ -70,6 +70,9 @@ firefox_tests = [
 ]
 
 thunderbird_tests = [
+    ({'application': 'thunderbird', 'platform': 'linux'},
+     '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.linux-i686.tar.bz2',
+     'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.linux-i686.tar.bz2'),
     ({'application': 'thunderbird', 'platform': 'linux', 'branch': 'comm-central'},
      '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.linux-i686.tar.bz2',
      'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.linux-i686.tar.bz2'),
@@ -107,9 +110,6 @@ thunderbird_tests = [
     ({'application': 'thunderbird', 'platform': 'win32', 'branch': 'comm-aurora'},
      '2013-10-01-03-02-04-comm-aurora-thunderbird-27.0a1.en-US.win32.installer.exe',
      'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-aurora/thunderbird-27.0a1.en-US.win32.installer.exe'),
-    ({'application': 'thunderbird', 'platform': 'linux'},
-     '2013-10-01-03-02-04-comm-central-thunderbird-27.0a1.en-US.linux-i686.tar.bz2',
-     'thunderbird/nightly/2013/10/2013-10-01-03-02-04-comm-central/thunderbird-27.0a1.en-US.linux-i686.tar.bz2'),
 ]
 
 fenix_tests = [
