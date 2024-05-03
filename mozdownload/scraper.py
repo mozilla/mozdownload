@@ -811,7 +811,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
 class TinderboxScraper(Scraper):
     """Class to download a tinderbox build of a Gecko based application."""
 
-    def __init__(self, branch='mozilla-central', build_number=None, date=None,
+    def __init__(self, branch=None, build_number=None, date=None,
                  debug_build=False, revision=None, *args, **kwargs):
         """Create instance of a tinderbox scraper."""
         self.branch = branch
@@ -828,6 +828,9 @@ class TinderboxScraper(Scraper):
 
     def get_build_info(self):
         """Define additional build information."""
+        # Retrieve branch once knowing self.application from Scraper.__init__
+        self.branch = self.branch if self.branch is not None else APPLICATIONS_TO_BRANCH.get(self.application,
+                                                                                             DEFAULT_BRANCH)
         # Retrieve build by revision
         if self.revision:
             th = treeherder.Treeherder(self.application, self.branch, self.platform)

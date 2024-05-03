@@ -103,6 +103,10 @@ from mozdownload.utils import urljoin
      'firefox/tinderbox-builds/mozilla-central-macosx64/'
      '1374568307/firefox-25.0a1.en-US.mac.txt'),
 
+    ({'application': 'thunderbird', 'platform': 'linux'},
+     '1380362686-comm-central-thunderbird-27.0a1.en-US.linux-i686.tar.bz2',
+     'thunderbird/tinderbox-builds/comm-central-linux/'
+     '1380362686/thunderbird-27.0a1.en-US.linux-i686.tar.bz2'),
     ({'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'linux'},
      '1380362686-comm-central-thunderbird-27.0a1.en-US.linux-i686.tar.bz2',
      'thunderbird/tinderbox-builds/comm-central-linux/'
