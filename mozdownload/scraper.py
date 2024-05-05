@@ -765,7 +765,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
             self.build_index = 0
             self.logger.info('Selected build: build%s' % self.build_number)
         else:
-            raise errors.NotSupportedError('Selected build not available')
+            raise errors.NotFoundError('Specified build has not been found', url)
 
     @property
     def candidate_build_list_regex(self):
