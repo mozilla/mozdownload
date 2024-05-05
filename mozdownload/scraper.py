@@ -540,6 +540,10 @@ class DailyScraper(Scraper):
                 build_index -= 1
                 if not build_index or self.is_build_dir(build):
                     break
+
+        if build_index >= len(parser.entries):
+            raise errors.NotFoundError('Specified build number is not found ', url)
+
         self.logger.info('Selected build: %s' % parser.entries[build_index])
 
         return (parser.entries, build_index)
