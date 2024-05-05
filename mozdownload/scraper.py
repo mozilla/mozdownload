@@ -988,6 +988,9 @@ class TinderboxScraper(Scraper):
                 if not build_index or self.is_build_dir(build):
                     break
 
+        if build_index >= len(parser.entries):
+            raise errors.NotFoundError('Specified build has not been found', url)
+
         self.logger.info('Selected build: %s' % parser.entries[build_index])
 
         return (parser.entries, build_index)
