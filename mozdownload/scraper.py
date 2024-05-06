@@ -391,6 +391,10 @@ class DailyScraper(Scraper):
         # Retrieve branch once knowing self.application from Scraper.__init__
         if self.branch is None:
             self.branch = APPLICATIONS_TO_BRANCH.get(self.application, DEFAULT_BRANCH)
+        branch_parser = self._create_directory_parser(urljoin(self.base_url, 'nightly/'))
+        branches = branch_parser.filter(f'latest-{self.branch}')
+        if not branches and self.application != 'fenix':
+            raise errors.NotSupportedError('No builds have been found')
         # Retrieve build by revision
         if self.revision:
             th = treeherder.Treeherder(self.application, self.branch, self.platform)
@@ -830,9 +834,12 @@ class TinderboxScraper(Scraper):
     def get_build_info(self):
         """Define additional build information."""
         # Retrieve branch once knowing self.application from Scraper.__init__
-
         if self.branch is None:
             self.branch = APPLICATIONS_TO_BRANCH.get(self.application, DEFAULT_BRANCH)
+        branch_parser = self._create_directory_parser(urljoin(self.base_url, 'tinderbox-builds/'))
+        branches = branch_parser.filter(f'{self.branch}-')
+        if not branches:
+            raise errors.NotSupportedError('No builds have been found')
         # Retrieve build by revision
         if self.revision:
             th = treeherder.Treeherder(self.application, self.branch, self.platform)
