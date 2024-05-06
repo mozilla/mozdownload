@@ -125,6 +125,9 @@ fenix_tests = [
     ({'application': 'fenix', 'platform': 'android-x86_64', 'date': '2022-11-14'},
      '2022-11-14-17-01-36-fenix-108.0b1.multi.android-x86_64.apk',
      'fenix/nightly/2022/11/2022-11-14-17-01-36-fenix-108.0b1-android-x86_64/fenix-108.0b1.multi.android-x86_64.apk'),
+    ({'application': 'fenix', 'platform': 'android-arm64-v8a', 'date': '2022-11-14', 'locale': 'de'},
+     '2022-11-14-17-01-36-fenix-108.0b1.multi.android-arm64-v8a.apk',
+     'fenix/nightly/2022/11/2022-11-14-17-01-36-fenix-108.0b1-android-arm64-v8a/fenix-108.0b1.multi.android-arm64-v8a.apk'),
 ]
 
 @pytest.mark.parametrize("args,filename,url", firefox_tests + thunderbird_tests + fenix_tests)
