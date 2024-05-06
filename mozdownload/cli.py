@@ -129,7 +129,7 @@ def parse_arguments(argv):
     group.add_argument('--branch',
                        dest='branch',
                        metavar='BRANCH',
-                       help='Name of the branch, default: "%(default)s"')
+                       help='Name of the branch')
     group.add_argument('--build-id',
                        dest='build_id',
                        metavar='BUILD_ID',
