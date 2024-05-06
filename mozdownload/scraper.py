@@ -390,8 +390,10 @@ class DailyScraper(Scraper):
     def get_build_info(self):
         """Define additional build information."""
         # Retrieve branch once knowing self.application from Scraper.__init__
-        self.branch = self.branch if self.branch is not None else APPLICATIONS_TO_BRANCH.get(self.application,
-                                                                                             DEFAULT_BRANCH)
+        if self.branch is not None:
+            self.branch = self.branch
+        else:
+            self.branch = APPLICATIONS_TO_BRANCH.get(self.application, DEFAULT_BRANCH)
         # Retrieve build by revision
         if self.revision:
             th = treeherder.Treeherder(self.application, self.branch, self.platform)
@@ -831,8 +833,10 @@ class TinderboxScraper(Scraper):
     def get_build_info(self):
         """Define additional build information."""
         # Retrieve branch once knowing self.application from Scraper.__init__
-        self.branch = self.branch if self.branch is not None else APPLICATIONS_TO_BRANCH.get(self.application,
-                                                                                             DEFAULT_BRANCH)
+        if self.branch is not None:
+            self.branch = self.branch
+        else:
+            self.branch = APPLICATIONS_TO_BRANCH.get(self.application, DEFAULT_BRANCH)
         # Retrieve build by revision
         if self.revision:
             th = treeherder.Treeherder(self.application, self.branch, self.platform)
