@@ -15,5 +15,5 @@ import mozdownload.errors as errors
 def test_invalid_platform(httpd, tmpdir, args):
     """Testing download scenarios with invalid platform parameters for DailyScraper"""
 
-    with pytest.raises(errors.NotSupportedError):
+    with pytest.raises(errors.NotFoundError):
         DailyScraper(destination=str(tmpdir), base_url=httpd.get_url(), **args)
