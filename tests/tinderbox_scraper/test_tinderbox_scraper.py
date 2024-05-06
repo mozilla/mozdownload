@@ -36,53 +36,53 @@ from mozdownload.utils import urljoin
      '1374583608-mozilla-central-setup.exe',
      'firefox/tinderbox-builds/mozilla-central-win32/'
      '1374583608/setup.exe'),
-    ({'branch': 'mozilla-central', 'platform': 'linux'},
+    ({'platform': 'linux'},
      '1374583608-mozilla-central-firefox-25.0a1.en-US.linux-i686.tar.bz2',
      'firefox/tinderbox-builds/mozilla-central-linux/'
      '1374583608/firefox-25.0a1.en-US.linux-i686.tar.bz2'),
-    ({'branch': 'mozilla-central', 'platform': 'linux64'},
+    ({'platform': 'linux64'},
      '1374583608-mozilla-central-firefox-25.0a1.en-US.linux-x86_64.tar.bz2',
      'firefox/tinderbox-builds/mozilla-central-linux64/'
      '1374583608/firefox-25.0a1.en-US.linux-x86_64.tar.bz2'),
-    ({'application': 'firefox', 'branch': 'mozilla-central', 'platform': 'win32'},
+    ({'application': 'firefox', 'platform': 'win32'},
      '1374583608-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'firefox/tinderbox-builds/mozilla-central-win32/'
      '1374583608/firefox-25.0a1.en-US.win32.installer.exe'),
-    ({'application': 'firefox', 'branch': 'mozilla-central', 'platform': 'win64'},
+    ({'application': 'firefox', 'platform': 'win64'},
      '1423517445-mozilla-central-firefox-38.0a1.en-US.win64.installer.exe',
      'firefox/tinderbox-builds/mozilla-central-win64/'
      '1423517445/firefox-38.0a1.en-US.win64.installer.exe'),
     # -a firefox -p win64 --branch=mozilla-central --date=2013-07-23 (old filename format)
-    ({'application': 'firefox', 'branch': 'mozilla-central', 'platform': 'win64', 'date': '2013-07-23'},
+    ({'application': 'firefox', 'platform': 'win64', 'date': '2013-07-23'},
      '1374583608-mozilla-central-firefox-25.0a1.en-US.win64-x86_64.installer.exe',
      'firefox/tinderbox-builds/mozilla-central-win64/'
      '1374583608/firefox-25.0a1.en-US.win64-x86_64.installer.exe'),
-    ({'application': 'firefox', 'branch': 'mozilla-central', 'platform': 'mac64'},
+    ({'application': 'firefox', 'platform': 'mac64'},
      '1374583608-mozilla-central-firefox-25.0a1.en-US.mac.dmg',
      'firefox/tinderbox-builds/mozilla-central-macosx64/'
      '1374583608/firefox-25.0a1.en-US.mac.dmg'),
-    ({'application': 'firefox', 'branch': 'mozilla-central', 'debug_build': True, 'platform': 'win32'},
+    ({'application': 'firefox', 'debug_build': True, 'platform': 'win32'},
      '1374583608-mozilla-central-debug-firefox-25.0a1.en-US.win32.installer.exe',
      'firefox/tinderbox-builds/mozilla-central-win32-debug/'
      '1374583608/firefox-25.0a1.en-US.win32.installer.exe'),
-    ({'application': 'firefox', 'branch': 'mozilla-central', 'locale': 'de', 'platform': 'win32'},
+    ({'application': 'firefox', 'locale': 'de', 'platform': 'win32'},
      'mozilla-central-firefox-25.0a1.de.win32.installer.exe',
      'firefox/tinderbox-builds/mozilla-central-l10n/'
      'firefox-25.0a1.de.win32.installer.exe'),
-    ({'application': 'firefox', 'branch': 'mozilla-central', 'locale': 'pt-PT', 'platform': 'win32'},
+    ({'application': 'firefox', 'locale': 'pt-PT', 'platform': 'win32'},
      'mozilla-central-firefox-25.0a1.pt-PT.win32.installer.exe',
      'firefox/tinderbox-builds/mozilla-central-l10n/'
      'firefox-25.0a1.pt-PT.win32.installer.exe'),
-    ({'application': 'firefox', 'branch': 'mozilla-central', 'date': '2013-07-23', 'platform': 'win32'},
+    ({'application': 'firefox', 'date': '2013-07-23', 'platform': 'win32'},
      '1374583608-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'firefox/tinderbox-builds/mozilla-central-win32/'
      '1374583608/firefox-25.0a1.en-US.win32.installer.exe'),
-    ({'application': 'firefox', 'branch': 'mozilla-central', 'build_number': '1', 'date': '2013-07-23',
+    ({'application': 'firefox', 'build_number': '1', 'date': '2013-07-23',
       'platform': 'win32'},
      '1374568307-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'firefox/tinderbox-builds/mozilla-central-win32/'
      '1374568307/firefox-25.0a1.en-US.win32.installer.exe'),
-    ({'application': 'firefox', 'branch': 'mozilla-central', 'date': '1374573725', 'platform': 'win32'},
+    ({'application': 'firefox', 'date': '1374573725', 'platform': 'win32'},
      '1374573725-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
      'firefox/tinderbox-builds/mozilla-central-win32/'
      '1374573725/firefox-25.0a1.en-US.win32.installer.exe'),
@@ -90,7 +90,7 @@ from mozdownload.utils import urljoin
      '1374583608-mozilla-inbound-firefox-25.0a1.en-US.win32.installer.exe',
      'firefox/tinderbox-builds/mozilla-inbound-win32/'
      '1374583608/firefox-25.0a1.en-US.win32.installer.exe'),
-    ({'application': 'firefox', 'branch': 'mozilla-central', 'extension': 'txt', 'platform': 'linux'},
+    ({'application': 'firefox', 'extension': 'txt', 'platform': 'linux'},
      '1374583608-mozilla-central-firefox-25.0a1.en-US.linux-i686.txt',
      'firefox/tinderbox-builds/mozilla-central-linux/'
      '1374583608/firefox-25.0a1.en-US.linux-i686.txt'),
@@ -111,44 +111,44 @@ from mozdownload.utils import urljoin
      '1380362686-comm-central-thunderbird-27.0a1.en-US.linux-i686.tar.bz2',
      'thunderbird/tinderbox-builds/comm-central-linux/'
      '1380362686/thunderbird-27.0a1.en-US.linux-i686.tar.bz2'),
-    ({'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'linux64'},
+    ({'application': 'thunderbird', 'platform': 'linux64'},
      '1380362686-comm-central-thunderbird-27.0a1.en-US.linux-x86_64.tar.bz2',
      'thunderbird/tinderbox-builds/comm-central-linux64/'
      '1380362686/thunderbird-27.0a1.en-US.linux-x86_64.tar.bz2'),
-    ({'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'mac64'},
+    ({'application': 'thunderbird', 'platform': 'mac64'},
      '1380362686-comm-central-thunderbird-27.0a1.en-US.mac.dmg',
      'thunderbird/tinderbox-builds/comm-central-macosx64/'
      '1380362686/thunderbird-27.0a1.en-US.mac.dmg'),
-    ({'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32'},
+    ({'application': 'thunderbird', 'platform': 'win32'},
      '1380362686-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
      'thunderbird/tinderbox-builds/comm-central-win32/'
      '1380362686/thunderbird-27.0a1.en-US.win32.installer.exe'),
-    ({'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win64'},
+    ({'application': 'thunderbird', 'platform': 'win64'},
      '1380362686-comm-central-thunderbird-27.0a1.en-US.win64-x86_64.installer.exe',
      'thunderbird/tinderbox-builds/comm-central-win64/'
      '1380362686/thunderbird-27.0a1.en-US.win64-x86_64.installer.exe'),
-    ({'application': 'thunderbird', 'branch': 'comm-central', 'debug_build': True, 'platform': 'win32'},
+    ({'application': 'thunderbird', 'debug_build': True, 'platform': 'win32'},
      '1380362686-comm-central-debug-thunderbird-27.0a1.en-US.win32.installer.exe',
      'thunderbird/tinderbox-builds/comm-central-win32-debug/'
      '1380362686/thunderbird-27.0a1.en-US.win32.installer.exe'),
-    ({'application': 'thunderbird', 'branch': 'comm-central', 'locale': 'de', 'platform': 'win32'},
+    ({'application': 'thunderbird', 'locale': 'de', 'platform': 'win32'},
      'comm-central-thunderbird-27.0a1.de.win32.installer.exe',
      'thunderbird/tinderbox-builds/comm-central-l10n/'
      'thunderbird-27.0a1.de.win32.installer.exe'),
-    ({'application': 'thunderbird', 'branch': 'comm-central', 'locale': 'pt-PT', 'platform': 'win32'},
+    ({'application': 'thunderbird', 'locale': 'pt-PT', 'platform': 'win32'},
      'comm-central-thunderbird-27.0a1.pt-PT.win32.installer.exe',
      'thunderbird/tinderbox-builds/comm-central-l10n/'
      'thunderbird-27.0a1.pt-PT.win32.installer.exe'),
-    ({'application': 'thunderbird', 'branch': 'comm-central', 'date': '2013-09-28', 'platform': 'win32'},
+    ({'application': 'thunderbird', 'date': '2013-09-28', 'platform': 'win32'},
      '1380362686-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
      'thunderbird/tinderbox-builds/comm-central-win32/'
      '1380362686/thunderbird-27.0a1.en-US.win32.installer.exe'),
-    ({'application': 'thunderbird', 'branch': 'comm-central', 'build_number': '1', 'date': '2013-09-28',
+    ({'application': 'thunderbird', 'build_number': '1', 'date': '2013-09-28',
       'platform': 'win32'},
      '1380362527-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
      'thunderbird/tinderbox-builds/comm-central-win32/'
      '1380362527/thunderbird-27.0a1.en-US.win32.installer.exe'),
-    ({'application': 'thunderbird', 'branch': 'comm-central', 'date': '1380362527', 'platform': 'win32'},
+    ({'application': 'thunderbird', 'date': '1380362527', 'platform': 'win32'},
      '1380362527-comm-central-thunderbird-27.0a1.en-US.win32.installer.exe',
      'thunderbird/tinderbox-builds/comm-central-win32/'
      '1380362527/thunderbird-27.0a1.en-US.win32.installer.exe'),
