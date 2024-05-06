@@ -389,9 +389,7 @@ class DailyScraper(Scraper):
     def get_build_info(self):
         """Define additional build information."""
         # Retrieve branch once knowing self.application from Scraper.__init__
-        if self.branch is not None:
-            self.branch = self.branch
-        else:
+        if self.branch is None:
             self.branch = APPLICATIONS_TO_BRANCH.get(self.application, DEFAULT_BRANCH)
         # Retrieve build by revision
         if self.revision:
@@ -832,9 +830,8 @@ class TinderboxScraper(Scraper):
     def get_build_info(self):
         """Define additional build information."""
         # Retrieve branch once knowing self.application from Scraper.__init__
-        if self.branch is not None:
-            self.branch = self.branch
-        else:
+
+        if self.branch is None:
             self.branch = APPLICATIONS_TO_BRANCH.get(self.application, DEFAULT_BRANCH)
         # Retrieve build by revision
         if self.revision:
