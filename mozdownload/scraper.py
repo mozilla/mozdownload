@@ -459,6 +459,8 @@ class DailyScraper(Scraper):
                           months.entries[-1] + '/')
             parser = self._create_directory_parser(url)
             parser.entries = parser.filter(r'.*%s' % self.platform_regex)
+            if not parser.entries:
+                raise errors.NotFoundError('No builds have been found', url)
             parser.entries.sort()
 
             date = ''.join(parser.entries[-1].split('-')[:6])
