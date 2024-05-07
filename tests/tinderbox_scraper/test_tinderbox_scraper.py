@@ -107,10 +107,6 @@ from mozdownload.utils import urljoin
      '1380362686-comm-central-thunderbird-27.0a1.en-US.linux-i686.tar.bz2',
      'thunderbird/tinderbox-builds/comm-central-linux/'
      '1380362686/thunderbird-27.0a1.en-US.linux-i686.tar.bz2'),
-    ({'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'linux'},
-     '1380362686-comm-central-thunderbird-27.0a1.en-US.linux-i686.tar.bz2',
-     'thunderbird/tinderbox-builds/comm-central-linux/'
-     '1380362686/thunderbird-27.0a1.en-US.linux-i686.tar.bz2'),
     ({'application': 'thunderbird', 'platform': 'linux64'},
      '1380362686-comm-central-thunderbird-27.0a1.en-US.linux-x86_64.tar.bz2',
      'thunderbird/tinderbox-builds/comm-central-linux64/'
@@ -127,6 +123,10 @@ from mozdownload.utils import urljoin
      '1380362686-comm-central-thunderbird-27.0a1.en-US.win64-x86_64.installer.exe',
      'thunderbird/tinderbox-builds/comm-central-win64/'
      '1380362686/thunderbird-27.0a1.en-US.win64-x86_64.installer.exe'),
+    ({'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'linux'},
+     '1380362686-comm-central-thunderbird-27.0a1.en-US.linux-i686.tar.bz2',
+     'thunderbird/tinderbox-builds/comm-central-linux/'
+     '1380362686/thunderbird-27.0a1.en-US.linux-i686.tar.bz2'),
     ({'application': 'thunderbird', 'debug_build': True, 'platform': 'win32'},
      '1380362686-comm-central-debug-thunderbird-27.0a1.en-US.win32.installer.exe',
      'thunderbird/tinderbox-builds/comm-central-win32-debug/'
