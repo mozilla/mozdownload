@@ -15,5 +15,5 @@ import mozdownload.errors as errors
 def test_invalid_branch_tinderbox(httpd, tmpdir, args):
     """Testing download scenarios with invalid branch parameters for TinderboxScraper"""
 
-    with pytest.raises(errors.NotSupportedError):
+    with pytest.raises(errors.NotFoundError):
         TinderboxScraper(destination=str(tmpdir), base_url=httpd.get_url(), **args)
