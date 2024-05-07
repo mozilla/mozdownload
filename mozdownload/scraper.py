@@ -955,38 +955,40 @@ class TinderboxScraper(Scraper):
         """Get additional information for the build at the given index."""
         url = urljoin(self.base_url, self.build_list_regex)
 
-        self.logger.info('Retrieving list of builds from %s' % url)
-        parser = self._create_directory_parser(url)
-        parser.entries = parser.filter(r'^\d+$')
+        if not self.timestamp:
+            self.logger.info('Retrieving list of builds from %s' % url)
+            parser = self._create_directory_parser(url)
+            parser.entries = parser.filter(r'^\d+$')
 
-        if self.timestamp:
+            if self.date:
+                # If date is given, retrieve the subset of builds on that date
+                parser.entries = list(filter(self.date_matches, parser.entries))
+
+            if not parser.entries:
+                message = 'No builds have been found'
+                raise errors.NotFoundError(message, url)
+
+            entries = parser.entries
+
+        else:
             # If a timestamp is given, retrieve the folder with the timestamp
             # as name
-            parser.entries = self.timestamp in parser.entries and \
-                [self.timestamp]
+            entries = [self.timestamp]
 
-        elif self.date:
-            # If date is given, retrieve the subset of builds on that date
-            parser.entries = list(filter(self.date_matches, parser.entries))
-
-        if not parser.entries:
-            message = 'No builds have been found'
-            raise errors.NotFoundError(message, url)
-
-        self.show_matching_builds(parser.entries)
+        self.show_matching_builds(entries)
 
         # If no index has been given, set it to the last build of the day.
         if build_index is None:
             # Find the most recent non-empty entry.
-            build_index = len(parser.entries)
-            for build in reversed(parser.entries):
+            build_index = len(entries)
+            for build in reversed(entries):
                 build_index -= 1
                 if not build_index or self.is_build_dir(build):
                     break
 
-        self.logger.info('Selected build: %s' % parser.entries[build_index])
+        self.logger.info('Selected build: %s' % entries[build_index])
 
-        return (parser.entries, build_index)
+        return (entries, build_index)
 
     @property
     def path_regex(self):
