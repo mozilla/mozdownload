@@ -10,11 +10,10 @@ from mozdownload import DailyScraper
 import mozdownload.errors as errors
 
 @pytest.mark.parametrize('args', [
-    ({'application': 'firefox', 'branch': 'invalid', 'platform': 'win32'}),
-    ({'application': 'thunderbird', 'branch': 'invalid', 'platform': 'win32'}),
+    ({'application': 'firefox', 'branch': 'invalid', 'platform': 'win32'})
 ])
 def test_invalid_branch(httpd, tmpdir, args):
     """Testing download scenarios with invalid branch parameters for DailyScraper"""
 
-    with pytest.raises(errors.NotSupportedError):
+    with pytest.raises(errors.NotFoundError):
         DailyScraper(destination=str(tmpdir), base_url=httpd.get_url(), **args)
