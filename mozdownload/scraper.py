@@ -124,13 +124,12 @@ class Scraper(object):
 
         self.destination = destination or os.getcwd()
 
-        if not locale:
-            if application in APPLICATIONS_MULTI_LOCALE:
-                self.locale = 'multi'
-            else:
-                self.locale = 'en-US'
-        else:
+        if application in APPLICATIONS_MULTI_LOCALE:
+            self.locale = 'multi'
+        elif locale:
             self.locale = locale
+        else:
+            self.locale = 'en-US'
         self.locale_build = self.locale not in ('en-US', 'multi')
 
         self.platform = platform or self.detect_platform()
@@ -451,6 +450,8 @@ class DailyScraper(Scraper):
                           months.entries[-1] + '/')
             parser = self._create_directory_parser(url)
             parser.entries = parser.filter(r'.*%s' % self.platform_regex)
+            if not parser.entries:
+                raise errors.NotFoundError('No builds have been found', url)
             parser.entries.sort()
 
             date = ''.join(parser.entries[-1].split('-')[:6])
@@ -540,6 +541,10 @@ class DailyScraper(Scraper):
                 build_index -= 1
                 if not build_index or self.is_build_dir(build):
                     break
+
+        if build_index >= len(parser.entries):
+            raise errors.NotFoundError('Specified build number has not been found ', url)
+
         self.logger.info('Selected build: %s' % parser.entries[build_index])
 
         return (parser.entries, build_index)
@@ -761,7 +766,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
             self.build_index = 0
             self.logger.info('Selected build: build%s' % self.build_number)
         else:
-            raise errors.NotSupportedError('Selected build not available')
+            raise errors.NotFoundError('Specified build number has not been found ', url)
 
     @property
     def candidate_build_list_regex(self):
@@ -985,6 +990,9 @@ class TinderboxScraper(Scraper):
                 build_index -= 1
                 if not build_index or self.is_build_dir(build):
                     break
+
+        if build_index >= len(entries):
+            raise errors.NotFoundError('Specified build number has not been found ', url)
 
         self.logger.info('Selected build: %s' % entries[build_index])
 
