@@ -43,7 +43,7 @@ def httpd():
     routes.extend(default_routes.routes)
     httpd = server.WebTestHttpd(
         host="127.0.0.1",
-        port=8080,
+        port=0,
         doc_root=os.path.join(HERE, 'data'),
         routes=routes,
         )
