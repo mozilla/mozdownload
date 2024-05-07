@@ -30,5 +30,5 @@ def test_invalid_build_number(httpd, tmpdir):
 
     args = {'application': 'firefox', 'build_number': '2', 'platform': 'linux', 'version': '23.0.1'}
 
-    with pytest.raises(errors.NotSupportedError):
+    with pytest.raises(errors.NotFoundError):
         ReleaseCandidateScraper(destination=tmpdir, base_url=httpd.get_url(), **args)
