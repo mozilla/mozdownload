@@ -128,9 +128,8 @@ def parse_arguments(argv):
     group = parser.add_argument_group('Daily builds', 'Extra options for daily builds.')
     group.add_argument('--branch',
                        dest='branch',
-                       default='mozilla-central',
                        metavar='BRANCH',
-                       help='Name of the branch, default: "%(default)s"')
+                       help='Name of the branch')
     group.add_argument('--build-id',
                        dest='build_id',
                        metavar='BUILD_ID',
