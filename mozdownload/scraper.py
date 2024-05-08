@@ -973,6 +973,8 @@ class TinderboxScraper(Scraper):
         url = urljoin(self.base_url, self.build_list_regex)
 
         if self.timestamp:
+            # If a timestamp is given, retrieve the folder with the timestamp
+            # as name
             entries = [self.timestamp]
         else:
             self.logger.info('Retrieving list of builds from %s' % url)
