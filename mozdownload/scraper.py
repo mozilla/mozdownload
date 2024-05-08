@@ -960,7 +960,9 @@ class TinderboxScraper(Scraper):
         """Get additional information for the build at the given index."""
         url = urljoin(self.base_url, self.build_list_regex)
 
-        if not self.timestamp:
+        if self.timestamp:
+            entries = [self.timestamp]
+        else:
             self.logger.info('Retrieving list of builds from %s' % url)
             parser = self._create_directory_parser(url)
             parser.entries = parser.filter(r'^\d+$')
@@ -974,11 +976,6 @@ class TinderboxScraper(Scraper):
                 raise errors.NotFoundError(message, url)
 
             entries = parser.entries
-
-        else:
-            # If a timestamp is given, retrieve the folder with the timestamp
-            # as name
-            entries = [self.timestamp]
 
         self.show_matching_builds(entries)
 
