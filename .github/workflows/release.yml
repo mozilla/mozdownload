@@ -6,22 +6,14 @@ on:
       - master
 
 jobs:
-  check-token:
+  deploy:
+    name: Upload release to PyPI
     runs-on: ubuntu-latest
-    steps:
-      - name: Check token variable
-        env:
-          PYPI_TOKEN_VAR: ${{ secrets.pypi_token }}
-        run: |
-          if [ -z "$PYPI_TOKEN_VAR" ]; then
-            echo "Pypi token variable is empty!"
-            exit 1
-          fi
-          echo "Pypi token variable is set!"
-  build:
-    name: Build package
-    needs: check-token
-    runs-on: ubuntu-latest
+    environment:
+      name: release
+      url: https://pypi.org/p/mozdownload
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v4
 
@@ -36,29 +28,5 @@ jobs:
       - name: Build a binary wheel and a source tarball
         run: python -m build
 
-      - name: Store the distribution packages
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-package-distributions
-          path: dist
-  
-  pypi-publish:
-    name: Upload release to PyPI
-    runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/mozdownload
-    permissions:
-      id-token: write
-    needs: [check-token, build]
-    steps:
-      - name: Download dist folder
-        uses: actions/download-artifact@v4
-        with:
-          name: python-package-distributions
-          path: dist
       - name: Upload release to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          packages_dir: dist/
-          password: ${{ secrets.pypi_token }}
