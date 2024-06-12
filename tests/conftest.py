@@ -1,8 +1,6 @@
-import base64
 import os
 
 import pytest
-from urllib.parse import parse_qs, urlparse
 
 from wptserve import (
     handlers,
@@ -34,19 +32,22 @@ def basic_auth_handler(req, response):
         response.content = content.format("restricted")
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def httpd():
     HERE = os.path.dirname(os.path.abspath(__file__))
+
     routes = [
         ("GET", "/basic_auth", basic_auth_handler),
     ]
     routes.extend(default_routes.routes)
+
     httpd = server.WebTestHttpd(
         host="127.0.0.1",
         port=0,
         doc_root=os.path.join(HERE, 'data'),
         routes=routes,
         )
+
     httpd.start()
     yield httpd
     httpd.stop()
