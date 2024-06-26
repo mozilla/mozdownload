@@ -31,6 +31,7 @@ from mozdownload.utils import urljoin
 ])
 def test_release_scraper(tmpdir, args, url):
     """Test release scraper against the remote server."""
+    args.update({"retry_attempts": 5, "retry_delay": 0.1})
     scraper = mozdownload.ReleaseScraper(destination=tmpdir, **args)
 
     if url:
@@ -56,6 +57,7 @@ def test_release_scraper(tmpdir, args, url):
 ])
 def test_candidate_scraper(tmpdir, args, url):
     """Test release candidate scraper against the remote server."""
+    args.update({"retry_attempts": 5, "retry_delay": 0.1})
     scraper = mozdownload.ReleaseCandidateScraper(destination=tmpdir, **args)
 
     assert unquote(scraper.url) == urljoin(BASE_URL, url)

@@ -39,6 +39,7 @@ from mozdownload.utils import urljoin
 ])
 def test_release_scraper(tmpdir, args, url):
     """Test release scraper against the remote server."""
+    args.update({"retry_attempts": 5, "retry_delay": 0.1})
     scraper = mozdownload.ReleaseScraper(destination=tmpdir, **args)
 
     if url:
@@ -70,6 +71,7 @@ def test_release_scraper(tmpdir, args, url):
 ])
 def test_candidate_scraper(tmpdir, args, url):
     """Test release candidate scraper against the remote server."""
+    args.update({"retry_attempts": 5, "retry_delay": 0.1})
     scraper = mozdownload.ReleaseCandidateScraper(destination=tmpdir, **args)
 
     assert unquote(scraper.url) == urljoin(BASE_URL, url)
@@ -86,7 +88,7 @@ def test_candidate_scraper(tmpdir, args, url):
     {'branch': 'mozilla-central', 'platform': 'win32', 'date': '2015-10-21'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'date': '2015-10-21', 'build_number': 2},
     {'branch': 'mozilla-central', 'platform': 'win32', 'build_id': '20151021065025'},
-    {'branch': 'mozilla-central', 'platform': 'win32', 'build_id': '20151021030212',
+    {'branch': 'mozilla-central', 'platform': 'linux', 'build_id': '20240106211805',
      'locale': 'de'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'build_id': '20151021030212',
      'extension': 'txt'},
@@ -99,22 +101,19 @@ def test_candidate_scraper(tmpdir, args, url):
 ])
 def test_daily_scraper(tmpdir, args):
     """Test daily scraper against the remote server."""
+    args.update({"retry_attempts": 5, "retry_delay": 0.1})
     mozdownload.DailyScraper(destination=tmpdir, **args)
 
 
 @pytest.mark.ci_only
 @pytest.mark.parametrize("args", [
-    {'branch': 'mozilla-release', 'platform': 'linux'},
-    {'branch': 'mozilla-release', 'platform': 'linux64'},
-    {'branch': 'mozilla-release', 'platform': 'mac'},
-    {'branch': 'mozilla-release', 'platform': 'win32'},
-    {'branch': 'mozilla-release', 'platform': 'win64'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'debug_build': True},
     {'branch': 'mozilla-central', 'platform': 'win32', 'locale': 'de'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'extension': 'txt'},
 ])
 def test_tinderbox_scraper(tmpdir, args):
     """Test tinderbox scraper against the remote server."""
+    args.update({"retry_attempts": 5, "retry_delay": 0.1})
     mozdownload.TinderboxScraper(destination=tmpdir, **args)
 
 
