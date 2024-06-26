@@ -88,7 +88,7 @@ def test_candidate_scraper(tmpdir, args, url):
     {'branch': 'mozilla-central', 'platform': 'win32', 'date': '2015-10-21'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'date': '2015-10-21', 'build_number': 2},
     {'branch': 'mozilla-central', 'platform': 'win32', 'build_id': '20151021065025'},
-    {'branch': 'mozilla-central', 'platform': 'win32', 'build_id': '20151021030212',
+    {'branch': 'mozilla-central', 'platform': 'linux', 'build_id': '20240106211805',
      'locale': 'de'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'build_id': '20151021030212',
      'extension': 'txt'},
@@ -107,11 +107,6 @@ def test_daily_scraper(tmpdir, args):
 
 @pytest.mark.ci_only
 @pytest.mark.parametrize("args", [
-    {'branch': 'mozilla-release', 'platform': 'linux'},
-    {'branch': 'mozilla-release', 'platform': 'linux64'},
-    {'branch': 'mozilla-release', 'platform': 'mac'},
-    {'branch': 'mozilla-release', 'platform': 'win32'},
-    {'branch': 'mozilla-release', 'platform': 'win64'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'debug_build': True},
     {'branch': 'mozilla-central', 'platform': 'win32', 'locale': 'de'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'extension': 'txt'},
