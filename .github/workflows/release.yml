@@ -1,14 +1,16 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - master
+  workflow_run:
+    workflows: [ Test ]
+    types: [ completed ]
+    branches: [ master ]
 
 jobs:
   deploy:
     name: Upload release to PyPI
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     environment:
       name: release
       url: https://pypi.org/p/mozdownload
@@ -30,3 +32,8 @@ jobs:
 
       - name: Upload release to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+  on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - run: echo "Test has failed"
