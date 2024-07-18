@@ -75,7 +75,7 @@ DEFAULT_FILE_EXTENSIONS = {'android-arm64-v8a': 'apk',
                            'mac64': 'dmg',
                            'win32': 'exe',
                            'win64': 'exe',
-                           'win64-aarch64': 'exe'}
+                           'win-arm64': 'exe'}
 
 PLATFORM_FRAGMENTS = {'android-arm64-v8a': r'android-arm64-v8a',
                       'android-armeabi-v7a': r'android-armeabi-v7a',
@@ -88,7 +88,7 @@ PLATFORM_FRAGMENTS = {'android-arm64-v8a': r'android-arm64-v8a',
                       'mac64': r'mac(64)?',
                       'win32': r'win32',
                       'win64': r'win64(-x86_64)?',
-                      'win64-aarch64': r'win64-aarch64'}
+                      'win-arm64': r'win64-aarch64'}
 
 # Special versions for release and candidate builds
 RELEASE_AND_CANDIDATE_LATEST_VERSIONS = {
@@ -577,7 +577,7 @@ class DailyScraper(Scraper):
                         'mac64': r'\.%(EXT)s$',
                         'win32': r'(\.installer%(STUB)s)?\.%(EXT)s$',
                         'win64': r'(\.installer%(STUB)s)?\.%(EXT)s$',
-                        'win64-aarch64': r'(\.installer%(STUB)s)?\.%(EXT)s$'}
+                        'win-arm64': r'(\.installer%(STUB)s)?\.%(EXT)s$'}
 
         regex = regex_base_name + regex_suffix[self.platform]
 
@@ -678,7 +678,7 @@ class ReleaseScraper(Scraper):
                      r'^%(BINARY_NAME)s(%(STUB_NEW)s|(?:\sSetup\s|-)%(STUB)s%(VERSION)s)\.%(EXT)s$',
                  'win64':
                      r'^%(BINARY_NAME)s(%(STUB_NEW)s|(?:\sSetup\s|-)%(STUB)s%(VERSION)s)\.%(EXT)s$',
-                 'win64-aarch64':
+                 'win-arm64':
                      r'^%(BINARY_NAME)s(%(STUB_NEW)s|(?:\sSetup\s|-)%(STUB)s%(VERSION)s)\.%(EXT)s$',
                  'android-arm64-v8a': r'^%(BINARY_NAME)s-%(VERSION)s\.multi.%(PLATFORM)s\.%(EXT)s$',
                  'android-armeabi-v7a':

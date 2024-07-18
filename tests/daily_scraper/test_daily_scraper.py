@@ -19,7 +19,7 @@ firefox_tests = [
     ({'platform': 'win64'},
      '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win64.installer.exe',
      'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64.installer.exe'),
-    ({'platform': 'win64-aarch64'},
+    ({'platform': 'win-arm64'},
      '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win64-aarch64.installer.exe',
      'firefox/nightly/2013/10/2013-10-01-03-02-04-mozilla-central/firefox-27.0a1.en-US.win64-aarch64.installer.exe'),
     ({'platform': 'linux'},
