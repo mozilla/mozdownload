@@ -85,7 +85,7 @@ def test_candidate_scraper(tmpdir, args, url):
     {'branch': 'mozilla-central', 'platform': 'mac'},
     {'branch': 'mozilla-central', 'platform': 'win32'},
     {'branch': 'mozilla-central', 'platform': 'win64'},
-    {'branch': 'mozilla-central', 'platform': 'win64-aarch64'},
+    {'branch': 'mozilla-central', 'platform': 'win64-arm64'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'date': '2015-10-21'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'date': '2015-10-21', 'build_number': 2},
     {'branch': 'mozilla-central', 'platform': 'win32', 'build_id': '20151021065025'},
