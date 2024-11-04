@@ -26,9 +26,6 @@ jobs:
         - os: ubuntu-latest
           python: "3.9"
           toxenv: py39
-        - os: ubuntu-latest
-          python: "3.8"
-          toxenv: py38
         # windows
         - os: windows-latest
           python: "3.12"
@@ -42,9 +39,6 @@ jobs:
         - os: windows-latest
           python: "3.9"
           toxenv: py39
-        - os: windows-latest
-          python: "3.8"
-          toxenv: py38
         # macos
         - os: macos-latest
           python: "3.12"
@@ -58,9 +52,6 @@ jobs:
         - os: macos-latest
           python: "3.9"
           toxenv: py39
-        - os: macos-latest
-          python: "3.8"
-          toxenv: py38
         # misc
         - os: ubuntu-latest
           python: "3.11"
