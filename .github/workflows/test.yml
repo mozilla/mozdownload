@@ -15,6 +15,9 @@ jobs:
         include:
         # linux
         - os: ubuntu-latest
+          python: "3.13"
+          toxenv: py313
+        - os: ubuntu-latest
           python: "3.12"
           toxenv: py312
         - os: ubuntu-latest
@@ -26,11 +29,11 @@ jobs:
         - os: ubuntu-latest
           python: "3.9"
           toxenv: py39
-        - os: ubuntu-latest
-          python: "3.8"
-          toxenv: py38
         # windows
         - os: windows-latest
+          python: "3.13"
+          toxenv: py313
+        - os: windows-latest
           python: "3.12"
           toxenv: py312
         - os: windows-latest
@@ -42,11 +45,11 @@ jobs:
         - os: windows-latest
           python: "3.9"
           toxenv: py39
-        - os: windows-latest
-          python: "3.8"
-          toxenv: py38
         # macos
         - os: macos-latest
+          python: "3.13"
+          toxenv: py313
+        - os: macos-latest
           python: "3.12"
           toxenv: py312
         - os: macos-latest
@@ -58,12 +61,9 @@ jobs:
         - os: macos-latest
           python: "3.9"
           toxenv: py39
-        - os: macos-latest
-          python: "3.8"
-          toxenv: py38
         # misc
         - os: ubuntu-latest
-          python: "3.11"
+          python: "3.13"
           toxenv: pylama
 
     steps:
