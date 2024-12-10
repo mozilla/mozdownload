@@ -68,13 +68,15 @@ DEFAULT_FILE_EXTENSIONS = {'android-arm64-v8a': 'apk',
                            'android-armeabi-v7a': 'apk',
                            'android-x86': 'apk',
                            'android-x86_64': 'apk',
-                           'linux': 'tar.bz2',
-                           'linux64': 'tar.bz2',
-                           'linux-arm64': 'tar.bz2',
+                           'linux': 'tar.xz',
+                           'linux64': 'tar.xz',
+                           'linux-arm64': 'tar.xz',
                            'mac': 'dmg',
                            'mac64': 'dmg',
                            'win32': 'exe',
                            'win64': 'exe'}
+
+FALLBACK_FILE_EXTENSIONS = {'tar.xz': r'tar.bz2'}
 
 PLATFORM_FRAGMENTS = {'android-arm64-v8a': r'android-arm64-v8a',
                       'android-armeabi-v7a': r'android-armeabi-v7a',
@@ -239,6 +241,16 @@ class Scraper(object):
         return urljoin(self.base_url, self.path_regex)
 
     @property
+    def extension_regex(self):
+        extension = self.extension
+
+        fallback = FALLBACK_FILE_EXTENSIONS.get(extension)
+        if fallback:
+            extension = f'({extension}|{fallback})'
+
+        return extension
+
+    @property
     def path_regex(self):
         """Return the regex for the path to the build folder."""
         raise errors.NotImplementedError(sys._getframe(0).f_code.co_name)
@@ -363,6 +375,13 @@ class Scraper(object):
         os.rename(tmp_file, self.filename)
 
         return self.filename
+
+    def get_file_extension(self, binary):
+        extension = self.extension
+        if not binary.endswith(extension):
+            extension = FALLBACK_FILE_EXTENSIONS.get(extension)
+
+        return extension
 
     def show_matching_builds(self, builds):
         """Output the matching builds."""
@@ -581,7 +600,7 @@ class DailyScraper(Scraper):
                                                                        self.application),
                         'LOCALE': self.locale,
                         'PLATFORM': self.platform_regex,
-                        'EXT': self.extension,
+                        'EXT': self.extension_regex,
                         'STUB': '-stub' if self.is_stub_installer else '',
                         'STUB_NEW': 'Installer' if self.is_stub_installer else ''}
 
@@ -682,7 +701,7 @@ class ReleaseScraper(Scraper):
                  }
         return regex[self.platform] % {
             'BINARY_NAME': APPLICATIONS_TO_BINARY_NAME.get(self.application, self.application),
-            'EXT': self.extension,
+            'EXT': self.extension_regex,
             'PLATFORM': self.platform,
             'STUB': 'Stub ' if self.is_stub_installer else '',
             'STUB_NEW': ' Installer' if self.is_stub_installer else '',
@@ -717,7 +736,7 @@ class ReleaseScraper(Scraper):
                            'LOCALE': self.locale,
                            'PLATFORM': self.platform,
                            'STUB': '-stub' if self.is_stub_installer else '',
-                           'EXT': self.extension}
+                           'EXT': self.get_file_extension(binary)}
 
     def get_build_info(self):
         """Define additional build information."""
@@ -813,7 +832,7 @@ class ReleaseCandidateScraper(ReleaseScraper):
                            'LOCALE': self.locale,
                            'PLATFORM': self.platform,
                            'STUB': '-stub' if self.is_stub_installer else '',
-                           'EXT': self.extension}
+                           'EXT': self.get_file_extension(binary)}
 
 
 class TinderboxScraper(Scraper):
@@ -904,7 +923,7 @@ class TinderboxScraper(Scraper):
                         'PLATFORM': PLATFORM_FRAGMENTS[self.platform],
                         'STUB': '-stub' if self.is_stub_installer else '',
                         'STUB_NEW': 'setup' if self.is_stub_installer else '',
-                        'EXT': self.extension}
+                        'EXT': self.extension_regex}
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary."""
@@ -1080,7 +1099,7 @@ class TryScraper(Scraper):
                         'PLATFORM': PLATFORM_FRAGMENTS[self.platform],
                         'STUB': '-stub' if self.is_stub_installer else '',
                         'STUB_NEW': 'setup' if self.is_stub_installer else '',
-                        'EXT': self.extension}
+                        'EXT': self.extension_regex}
 
     def build_filename(self, binary):
         """Return the proposed filename with extension for the binary."""
