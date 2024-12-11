@@ -13,40 +13,13 @@ from mozdownload import ReleaseScraper
 from mozdownload.utils import urljoin
 
 
-@pytest.mark.parametrize("args,filename,url", [
-    ({'application': 'fenix', 'platform': 'android-arm64-v8a', 'version': 'latest'},
-     'fenix-120.1.0.multi.android-arm64-v8a.apk',
-     'fenix/releases/120.1.0/android/fenix-120.1.0-android-arm64-v8a/fenix-120.1.0.multi.android-arm64-v8a.apk'),
-    ({'application': 'fenix', 'platform': 'android-armeabi-v7a', 'version': 'latest'},
-     'fenix-120.1.0.multi.android-armeabi-v7a.apk',
-     'fenix/releases/120.1.0/android/fenix-120.1.0-android-armeabi-v7a/fenix-120.1.0.multi.android-armeabi-v7a.apk'),
-    ({'application': 'fenix', 'platform': 'android-x86', 'version': 'latest'},
-     'fenix-120.1.0.multi.android-x86.apk',
-     'fenix/releases/120.1.0/android/fenix-120.1.0-android-x86/fenix-120.1.0.multi.android-x86.apk'),
-    ({'application': 'fenix', 'platform': 'android-x86_64', 'version': 'latest'},
-     'fenix-120.1.0.multi.android-x86_64.apk',
-     'fenix/releases/120.1.0/android/fenix-120.1.0-android-x86_64/fenix-120.1.0.multi.android-x86_64.apk'),
-    ({'application': 'fenix', 'platform': 'android-arm64-v8a', 'version': 'latest-beta'},
-     'fenix-120.0b9.multi.android-arm64-v8a.apk',
-     'fenix/releases/120.0b9/android/fenix-120.0b9-android-arm64-v8a/fenix-120.0b9.multi.android-arm64-v8a.apk'),
-    ({'application': 'fenix', 'platform': 'android-armeabi-v7a', 'version': 'latest-beta'},
-     'fenix-120.0b9.multi.android-armeabi-v7a.apk',
-     'fenix/releases/120.0b9/android/fenix-120.0b9-android-armeabi-v7a/fenix-120.0b9.multi.android-armeabi-v7a.apk'),
-    ({'application': 'fenix', 'platform': 'android-x86', 'version': 'latest-beta'},
-     'fenix-120.0b9.multi.android-x86.apk',
-     'fenix/releases/120.0b9/android/fenix-120.0b9-android-x86/fenix-120.0b9.multi.android-x86.apk'),
-    ({'application': 'fenix', 'platform': 'android-x86_64', 'version': 'latest-beta'},
-     'fenix-120.0b9.multi.android-x86_64.apk',
-     'fenix/releases/120.0b9/android/fenix-120.0b9-android-x86_64/fenix-120.0b9.multi.android-x86_64.apk'),
-    ({'application': 'fenix', 'platform': 'android-arm64-v8a', 'version': 'latest', 'locale': 'de'},
-     'fenix-120.1.0.multi.android-arm64-v8a.apk',
-     'fenix/releases/120.1.0/android/fenix-120.1.0-android-arm64-v8a/fenix-120.1.0.multi.android-arm64-v8a.apk'),
+firefox_tests = [
     ({'application': 'firefox', 'platform': 'linux', 'version': 'latest'},
-     'firefox-23.0.1.en-US.linux.tar.bz2',
-     'firefox/releases/23.0.1/linux-i686/en-US/firefox-23.0.1.tar.bz2'),
+     'firefox-23.0.1.en-US.linux.tar.xz',
+     'firefox/releases/23.0.1/linux-i686/en-US/firefox-23.0.1.tar.xz'),
     ({'application': 'firefox', 'platform': 'linux64', 'version': 'latest'},
-     'firefox-23.0.1.en-US.linux64.tar.bz2',
-     'firefox/releases/23.0.1/linux-x86_64/en-US/firefox-23.0.1.tar.bz2'),
+     'firefox-23.0.1.en-US.linux64.tar.xz',
+     'firefox/releases/23.0.1/linux-x86_64/en-US/firefox-23.0.1.tar.xz'),
     ({'application': 'firefox', 'platform': 'mac', 'version': 'latest'},
      'firefox-23.0.1.en-US.mac.dmg',
      'firefox/releases/23.0.1/mac/en-US/Firefox 23.0.1.dmg'),
@@ -86,12 +59,15 @@ from mozdownload.utils import urljoin
     ({'application': 'firefox', 'platform': 'win64', 'version': 'latest-esr'},
      'firefox-24.0esr.en-US.win64.exe',
      'firefox/releases/24.0esr/win64/en-US/Firefox Setup 24.0esr.exe'),
+]
+
+thunderbird_tests = [
     ({'application': 'thunderbird', 'platform': 'linux', 'version': 'latest'},
-     'thunderbird-17.0.en-US.linux.tar.bz2',
-     'thunderbird/releases/17.0/linux-i686/en-US/thunderbird-17.0.tar.bz2'),
+     'thunderbird-17.0.en-US.linux.tar.xz',
+     'thunderbird/releases/17.0/linux-i686/en-US/thunderbird-17.0.tar.xz'),
     ({'application': 'thunderbird', 'platform': 'linux64', 'version': 'latest'},
-     'thunderbird-17.0.en-US.linux64.tar.bz2',
-     'thunderbird/releases/17.0/linux-x86_64/en-US/thunderbird-17.0.tar.bz2'),
+     'thunderbird-17.0.en-US.linux64.tar.xz',
+     'thunderbird/releases/17.0/linux-x86_64/en-US/thunderbird-17.0.tar.xz'),
     ({'application': 'thunderbird', 'platform': 'mac', 'version': 'latest'},
      'thunderbird-17.0.en-US.mac.dmg',
      'thunderbird/releases/17.0/mac/en-US/Thunderbird 17.0.dmg'),
@@ -122,7 +98,39 @@ from mozdownload.utils import urljoin
     ({'application': 'thunderbird', 'platform': 'win32', 'version': 'latest-esr'},
      'thunderbird-17.0.1esr.en-US.win32.exe',
      'thunderbird/releases/17.0.1esr/win32/en-US/Thunderbird Setup 17.0.1esr.exe'),
-])
+]
+
+fenix_tests = [
+    ({'application': 'fenix', 'platform': 'android-arm64-v8a', 'version': 'latest'},
+     'fenix-120.1.0.multi.android-arm64-v8a.apk',
+     'fenix/releases/120.1.0/android/fenix-120.1.0-android-arm64-v8a/fenix-120.1.0.multi.android-arm64-v8a.apk'),
+    ({'application': 'fenix', 'platform': 'android-armeabi-v7a', 'version': 'latest'},
+     'fenix-120.1.0.multi.android-armeabi-v7a.apk',
+     'fenix/releases/120.1.0/android/fenix-120.1.0-android-armeabi-v7a/fenix-120.1.0.multi.android-armeabi-v7a.apk'),
+    ({'application': 'fenix', 'platform': 'android-x86', 'version': 'latest'},
+     'fenix-120.1.0.multi.android-x86.apk',
+     'fenix/releases/120.1.0/android/fenix-120.1.0-android-x86/fenix-120.1.0.multi.android-x86.apk'),
+    ({'application': 'fenix', 'platform': 'android-x86_64', 'version': 'latest'},
+     'fenix-120.1.0.multi.android-x86_64.apk',
+     'fenix/releases/120.1.0/android/fenix-120.1.0-android-x86_64/fenix-120.1.0.multi.android-x86_64.apk'),
+    ({'application': 'fenix', 'platform': 'android-arm64-v8a', 'version': 'latest-beta'},
+     'fenix-120.0b9.multi.android-arm64-v8a.apk',
+     'fenix/releases/120.0b9/android/fenix-120.0b9-android-arm64-v8a/fenix-120.0b9.multi.android-arm64-v8a.apk'),
+    ({'application': 'fenix', 'platform': 'android-armeabi-v7a', 'version': 'latest-beta'},
+     'fenix-120.0b9.multi.android-armeabi-v7a.apk',
+     'fenix/releases/120.0b9/android/fenix-120.0b9-android-armeabi-v7a/fenix-120.0b9.multi.android-armeabi-v7a.apk'),
+    ({'application': 'fenix', 'platform': 'android-x86', 'version': 'latest-beta'},
+     'fenix-120.0b9.multi.android-x86.apk',
+     'fenix/releases/120.0b9/android/fenix-120.0b9-android-x86/fenix-120.0b9.multi.android-x86.apk'),
+    ({'application': 'fenix', 'platform': 'android-x86_64', 'version': 'latest-beta'},
+     'fenix-120.0b9.multi.android-x86_64.apk',
+     'fenix/releases/120.0b9/android/fenix-120.0b9-android-x86_64/fenix-120.0b9.multi.android-x86_64.apk'),
+    ({'application': 'fenix', 'platform': 'android-arm64-v8a', 'version': 'latest', 'locale': 'de'},
+     'fenix-120.1.0.multi.android-arm64-v8a.apk',
+     'fenix/releases/120.1.0/android/fenix-120.1.0-android-arm64-v8a/fenix-120.1.0.multi.android-arm64-v8a.apk'),
+]
+
+@pytest.mark.parametrize("args,filename,url", firefox_tests + thunderbird_tests + fenix_tests)
 def test_latest_build(httpd, tmpdir, args, filename, url):
     """Testing various download scenarios for latest release builds"""
 
