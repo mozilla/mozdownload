@@ -1,4 +1,19 @@
-# Changelog
+## 1.29.0 / 2024-12-11
+
+* Default to "tar.xz" archive file format for Linux (#709)
+* Remove support for Python 3.8 (#706)
+* Add workflow to auto publish releases on PyPI (#686)
+* Fix remote tests (#692)
+* Use httpd fixture per session to increase test runtime drastically (#690)
+* Move DevEdition remote tests from Firefox 60.0 to 128.0 (#689)
+* Add support for Linux ARM64 platform (#682)
+* Don't retrieve Tinderbox directory listing when timestamp is provided (#679)
+* Auto-select available port for localhost (#678)
+* Add Thunderbird daily default branch handling (#247) (#676)
+* Add consistent build number error notification for scrapers (#121) (#677)
+* Add Fenix locale handling (#671)
+* Raise NotFoundError if no daily build can be found for latest build date (#672)
+* Update supported Python versions from 3.8 to 3.12 (#654)
 
 ## 1.28.0 / 2024-03-26
 
