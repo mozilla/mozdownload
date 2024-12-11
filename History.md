@@ -4,7 +4,7 @@
 * Remove support for Python 3.8 (#706)
 * Add workflow to auto publish releases on PyPI (#686)
 * Fix remote tests (#692)
-* Use httpd fixture per session to increase test runtime drastically (#690)
+* Use httpd fixture per session to decrease test runtime drastically (#690)
 * Move DevEdition remote tests from Firefox 60.0 to 128.0 (#689)
 * Add support for Linux ARM64 platform (#682)
 * Don't retrieve Tinderbox directory listing when timestamp is provided (#679)
