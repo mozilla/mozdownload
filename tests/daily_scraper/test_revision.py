@@ -19,7 +19,7 @@ def test_valid_revision(httpd, tmpdir, mocker):
                            platform='linux',
                            revision='6b92cb377496')
     assert len(scraper.builds) == 1
-    assert scraper.url == (build_path + 'firefox-27.0a1.en-US.linux-i686.tar.bz2')
+    assert scraper.url == (build_path + 'firefox-27.0a1.en-US.linux-i686.tar.xz')
 
 
 def test_invalid_revision(httpd, tmpdir, mocker):
