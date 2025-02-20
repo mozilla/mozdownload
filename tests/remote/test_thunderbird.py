@@ -24,7 +24,7 @@ from mozdownload.utils import urljoin
      'thunderbird/releases/52.0/linux-x86_64/en-US/thunderbird-52.0.tar.bz2'),
     ({'application': 'thunderbird', 'platform': 'mac', 'version': '52.0'},
      'thunderbird/releases/52.0/mac/en-US/Thunderbird 52.0.dmg'),
-    ({'application': 'thunderbird', 'platform': 'win32', 'version': '52.0', 'locale': 'de'},
+    ({'application': 'thunderbird', 'platform': 'win32', 'version': '52.0', 'locale': 'fr'},
      'thunderbird/releases/52.0/win32/de/Thunderbird Setup 52.0.exe'),
 ])
 def test_release_scraper(tmpdir, args, url):
@@ -77,7 +77,7 @@ def test_candidate_scraper(tmpdir, args, url):
     {'application': 'thunderbird', 'platform': 'linux',
         'branch': 'comm-central', 'build_id': '20240102101857', 'extension': 'txt'},
     {'application': 'thunderbird', 'platform': 'linux64',
-        'branch': 'comm-central', 'build_id': '20240103103152', 'locale': 'de'},
+        'branch': 'comm-central', 'build_id': '20240103103152', 'locale': 'fr'},
 ])
 def test_daily_scraper(tmpdir, args):
     """Test daily scraper against the remote server."""
@@ -95,7 +95,7 @@ def test_daily_scraper(tmpdir, args):
     # Currently no debug builds are shipped for comm-central
     # {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'debug_build': True},
     # Test inappropriately causes an xpass even when it should fail
-    # {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'locale': 'de'},
+    # {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'locale': 'fr'},
     {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'extension': 'txt'},
 ])
 @pytest.mark.xfail(strict=True, reason="tinderbox builds not available in the archive")

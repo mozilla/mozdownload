@@ -28,7 +28,7 @@ from mozdownload.utils import urljoin
      'firefox/releases/42.0b2/win32/en-US/Firefox Setup 42.0b2.exe'),
     ({'application': 'firefox', 'platform': 'win64', 'version': '42.0b2'},
      'firefox/releases/42.0b2/win64/en-US/Firefox Setup 42.0b2.exe'),
-    ({'application': 'firefox', 'platform': 'win32', 'version': '42.0b2', 'locale': 'de'},
+    ({'application': 'firefox', 'platform': 'win32', 'version': '42.0b2', 'locale': 'fr'},
      'firefox/releases/42.0b2/win32/de/Firefox Setup 42.0b2.exe'),
     ({'application': 'firefox', 'platform': 'win32', 'version': '42.0b2',
       'is_stub_installer': True},  # old format
@@ -57,7 +57,7 @@ def test_release_scraper(tmpdir, args, url):
     ({'application': 'firefox', 'platform': 'win32', 'version': '45.4.0esr', 'build_number': 1},
      'firefox/candidates/45.4.0esr-candidates/build1/win32/en-US/Firefox Setup 45.4.0esr.exe'),
     ({'application': 'firefox', 'platform': 'mac', 'version': '45.4.0esr', 'build_number': 1,
-      'locale': 'de'},
+      'locale': 'fr'},
      'firefox/candidates/45.4.0esr-candidates/build1/mac/de/Firefox 45.4.0esr.dmg'),
     ({'application': 'firefox', 'platform': 'mac', 'version': '45.4.0esr', 'build_number': 1,
       'extension': 'json'},
@@ -89,7 +89,7 @@ def test_candidate_scraper(tmpdir, args, url):
     {'branch': 'mozilla-central', 'platform': 'win32', 'date': '2015-10-21', 'build_number': 2},
     {'branch': 'mozilla-central', 'platform': 'win32', 'build_id': '20151021065025'},
     {'branch': 'mozilla-central', 'platform': 'linux', 'build_id': '20240106211805',
-     'locale': 'de'},
+     'locale': 'fr'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'build_id': '20151021030212',
      'extension': 'txt'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'build_id': '20151021030212',
@@ -108,7 +108,7 @@ def test_daily_scraper(tmpdir, args):
 @pytest.mark.ci_only
 @pytest.mark.parametrize("args", [
     {'branch': 'mozilla-central', 'platform': 'win32', 'debug_build': True},
-    {'branch': 'mozilla-central', 'platform': 'win32', 'locale': 'de'},
+    {'branch': 'mozilla-central', 'platform': 'win32', 'locale': 'fr'},
     {'branch': 'mozilla-central', 'platform': 'win32', 'extension': 'txt'},
 ])
 def test_tinderbox_scraper(tmpdir, args):
