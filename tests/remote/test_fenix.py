@@ -50,7 +50,7 @@ from mozdownload.utils import urljoin
         'application': 'fenix',
         'platform': 'android-x86_64',
         'version': '123.0',
-        'locale': 'de',
+        'locale': 'fr',
     },
         'fenix/releases/123.0/android/fenix-123.0-android-x86_64/fenix-123.0.multi.android-x86_64.apk'),
 ])
