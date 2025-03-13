@@ -13,7 +13,6 @@ from mozdownload.scraper import (
     DirectScraper,
     ReleaseScraper,
     ReleaseCandidateScraper,
-    TinderboxScraper,
     TryScraper,
 )
 
@@ -26,6 +25,5 @@ __all__ = [
     DirectScraper,
     ReleaseScraper,
     ReleaseCandidateScraper,
-    TinderboxScraper,
     TryScraper,
 ]

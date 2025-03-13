@@ -51,20 +51,3 @@ def handle_rest_api(request, response):
         data = list(filter(do_filter, data))
 
     return data
-
-
-@pytest.mark.parametrize('platform', PLATFORM_MAP)
-def test_query_tinderbox_builds(httpd, platform):
-    """Basic tests for the Treeherder wrapper."""
-    httpd.router.register('GET', '/api/*', handle_rest_api)
-
-    if platform == 'mac64':
-        pytest.skip("mac64 is identical to mac")
-
-    application = 'firefox' if not platform.startswith('android') else 'fenix'
-    th = Treeherder(application, 'mozilla-beta', platform,
-                    server_url='http://{}:{}'.format(httpd.host, httpd.port))
-    builds = th.query_builds_by_revision('29258f59e545')
-
-    assert len(builds) == 1
-    assert re.search(r'mozilla-beta-%s' % platform, builds[0].rsplit('/', 3)[1]) is not None
