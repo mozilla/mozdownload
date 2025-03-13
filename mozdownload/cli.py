@@ -36,11 +36,11 @@ def parse_arguments(argv):
                         dest='build_number',
                         type=int,
                         metavar='BUILD_NUMBER',
-                        help='Number of the build (for candidate, daily, and tinderbox builds)')
+                        help='Number of the build (for candidate, and daily builds)')
     parser.add_argument('--debug-build',
                         dest='debug_build',
                         action='store_true',
-                        help='Download a debug build (for tinderbox, and try builds)')
+                        help='Download a debug build (for try builds)')
     parser.add_argument('--destination', '-d',
                         dest='destination',
                         default=os.getcwd(),
@@ -91,7 +91,7 @@ def parse_arguments(argv):
                              'attempts, default: %(default)s')
     parser.add_argument('--revision',
                         dest='revision',
-                        help='Revision of the build (for daily, tinderbox, and try builds)')
+                        help='Revision of the build (for daily, and try builds)')
     parser.add_argument('--stub',
                         dest='is_stub_installer',
                         action='store_true',
