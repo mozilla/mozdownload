@@ -15,7 +15,6 @@ scraper_types = {'candidate': scraper.ReleaseCandidateScraper,
                  'daily': scraper.DailyScraper,
                  'direct': scraper.DirectScraper,
                  'release': scraper.ReleaseScraper,
-                 'tinderbox': scraper.TinderboxScraper,
                  'try': scraper.TryScraper,
                  }
 
@@ -32,7 +31,7 @@ class FactoryScraper(scraper.Scraper):
         :param application: The name of the application to download.
         :param base_url: The base url to be used
         :param branch: Name of the branch.
-        :param build_number: Number of the build (for candidate, daily, and tinderbox builds).
+        :param build_number: Number of the build (for candidate, and daily builds).
         :param date: Date of the build.
         :param debug_build: Download a debug build.
         :param destination: Directory or file name to download the file to.
@@ -104,13 +103,6 @@ class FactoryScraper(scraper.Scraper):
                 'build_number': kwargs.get('build_number'),
                 'build_id': kwargs.get('build_id'),
                 'date': kwargs.get('date'),
-                'revision': kwargs.get('revision'),
-            },
-            'tinderbox': {
-                'branch': kwargs.get('branch', 'mozilla-central'),
-                'build_number': kwargs.get('build_number'),
-                'date': kwargs.get('date'),
-                'debug_build': kwargs.get('debug_build', False),
                 'revision': kwargs.get('revision'),
             },
             'try': {
