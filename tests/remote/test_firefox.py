@@ -106,18 +106,6 @@ def test_daily_scraper(tmpdir, args):
     mozdownload.DailyScraper(destination=tmpdir, **args)
 
 
-@pytest.mark.ci_only
-@pytest.mark.parametrize("args", [
-    {'branch': 'mozilla-central', 'platform': 'win32', 'debug_build': True},
-    {'branch': 'mozilla-central', 'platform': 'win32', 'locale': 'de'},
-    {'branch': 'mozilla-central', 'platform': 'win32', 'extension': 'txt'},
-])
-def test_tinderbox_scraper(tmpdir, args):
-    """Test tinderbox scraper against the remote server."""
-    args.update({"retry_attempts": 5, "retry_delay": 0.1})
-    mozdownload.TinderboxScraper(destination=tmpdir, **args)
-
-
 @pytest.mark.skip(reason='Not testable as long as we cannot grab a latest build')
 def test_try_scraper():
     pass

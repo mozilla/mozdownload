@@ -26,11 +26,6 @@ tests = {
         'fname': '2013-10-01-03-02-04-mozilla-central-firefox-27.0a1.en-US.win32.installer.exe',
     },
 
-    'tinderbox': {
-        'args': ['-t', 'tinderbox', '-p', 'win32'],
-        'fname': '1374583608-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe',
-    },
-
     'try': {
         'args': ['-t', 'try', '-p', 'win32', '--revision', '8fcac92cfcad'],
         'builds': ['/firefox/try-builds/test-user@mozilla.com-8fcac92cfcad/try-win32/'],

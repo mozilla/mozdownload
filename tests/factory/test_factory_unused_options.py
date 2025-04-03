@@ -45,14 +45,6 @@ from mozdownload import FactoryScraper
          'version': '23.0.1',
      }),
 
-    # TinderboxScraper
-    ('tinderbox', None, '1374583608-mozilla-central-firefox-25.0a1.en-US.win32.installer.exe', {
-        'platform': 'win32',
-        # unused options
-        'url': 'http://localhost',
-        'version': '23.0.1',
-    }),
-
     # TryScraper
     ('try', ['/firefox/try-builds/test-user@mozilla.com-8fcac92cfcad/try-foobar/'],
      '8fcac92cfcad-firefox-38.0a1.en-US.mac.dmg', {

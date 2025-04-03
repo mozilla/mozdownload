@@ -85,26 +85,6 @@ def test_daily_scraper(tmpdir, args):
     mozdownload.DailyScraper(destination=tmpdir, **args)
 
 
-@pytest.mark.ci_only
-@pytest.mark.parametrize("args", [
-    {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32'},
-    {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win64'},
-    {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'linux'},
-    {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'linux64'},
-    {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'mac'},
-    # Currently no debug builds are shipped for comm-central
-    # {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'debug_build': True},
-    # Test inappropriately causes an xpass even when it should fail
-    # {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'locale': 'de'},
-    {'application': 'thunderbird', 'branch': 'comm-central', 'platform': 'win32', 'extension': 'txt'},
-])
-@pytest.mark.xfail(strict=True, reason="tinderbox builds not available in the archive")
-def test_tinderbox_scraper(tmpdir, args):
-    """Test tinderbox scraper against the remote server."""
-    args.update({"retry_attempts": 5, "retry_delay": 0.1})
-    mozdownload.TinderboxScraper(destination=tmpdir, **args)
-
-
 @pytest.mark.skip(reason='Not testable as long as we cannot grab a latest build')
 def test_try_scraper():
     pass
