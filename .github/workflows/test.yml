@@ -2,71 +2,58 @@ name: Test
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
   pull_request:
 
 jobs:
-  build:
+  test:
+    name: Test on ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    needs: lint
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
-        include:
-        # linux
-        - os: ubuntu-latest
-          python: "3.12"
-          toxenv: py312
-        - os: ubuntu-latest
-          python: "3.11"
-          toxenv: py311
-        - os: ubuntu-latest
-          python: "3.10"
-          toxenv: py310
-        - os: ubuntu-latest
-          python: "3.9"
-          toxenv: py39
-        # windows
-        - os: windows-latest
-          python: "3.12"
-          toxenv: py312
-        - os: windows-latest
-          python: "3.11"
-          toxenv: py311
-        - os: windows-latest
-          python: "3.10"
-          toxenv: py310
-        - os: windows-latest
-          python: "3.9"
-          toxenv: py39
-        # macos
-        - os: macos-latest
-          python: "3.12"
-          toxenv: py312
-        - os: macos-latest
-          python: "3.11"
-          toxenv: py311
-        - os: macos-latest
-          python: "3.10"
-          toxenv: py310
-        - os: macos-latest
-          python: "3.9"
-          toxenv: py39
-        # misc
-        - os: ubuntu-latest
-          python: "3.11"
-          toxenv: pylama
-
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
+      fail-fast: false
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python }}
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: python -m pip install -U tox
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/tests.txt
+          pip install -e .
 
-      - name: Tox tests
-        run: tox -e ${{ matrix.toxenv }}
+      - name: Run tests
+        run: |
+          pytest --verbose --cov=mozdownload --cov-report=xml
+
+      - name: Upload coverage to Codecov (only on ubuntu & py313)
+        if: matrix.python-version == '3.13'
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: whimboo/mozdownload
+
+  lint:
+    name: Lint (pylama)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pylama
+        run: |
+          pip install pylama
+
+      - name: Run pylama
+        run: pylama mozdownload

@@ -4,7 +4,7 @@
 is a [python package](http://pypi.python.org/pypi/mozdownload)
 which handles downloading of Mozilla applications.
 
-[![Coverage](https://coveralls.io/repos/github/mozilla/mozdownload/badge.svg)](https://coveralls.io/github/mozilla/mozdownload)
+[![Coverage](https://codecov.io/gh/mozilla/mozdownload/branch/main/graph/badge.svg)](https://codecov.io/gh/mozilla/mozdownload)
 [![Issues](https://img.shields.io/github/issues/mozilla/mozdownload.svg)](https://github.com/mozilla/mozdownload/issues)
 
 ## Installation

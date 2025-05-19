@@ -9,3 +9,4 @@ dist/
 *.pyc
 .coverage
 .DS_Store
+coverage.xml
