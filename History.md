@@ -1,3 +1,11 @@
+# Version History
+
+## 1.30.0 / 2025-05-26
+
+* Update release action to get triggered from a new tag being created. (#718)
+* Add Python 3.13 to GitHub actions and move to Codecov (#716)
+* Remove support for Tinderbox scraper (#714)
+
 ## 1.29.0 / 2024-12-11
 
 * Default to "tar.xz" archive file format for Linux (#709)
