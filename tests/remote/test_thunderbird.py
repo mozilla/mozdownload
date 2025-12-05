@@ -63,12 +63,11 @@ def test_candidate_scraper(tmpdir, args, url):
 
 @pytest.mark.ci_only
 @pytest.mark.parametrize("args", [
-    {'application': 'thunderbird', 'platform': 'linux', 'branch': 'comm-central'},
     {'application': 'thunderbird', 'platform': 'linux64', 'branch': 'comm-central'},
     {'application': 'thunderbird', 'platform': 'mac', 'branch': 'comm-central'},
     {'application': 'thunderbird', 'platform': 'win32', 'branch': 'comm-central'},
     {'application': 'thunderbird', 'platform': 'win64', 'branch': 'comm-central'},
-    {'application': 'thunderbird', 'platform': 'win64',
+    {'application': 'thunderbird', 'platform': 'linux',
         'branch': 'comm-central', 'date': '2024-01-02'},
     {'application': 'thunderbird', 'platform': 'win64',
         'branch': 'comm-central', 'date': '2024-01-02', 'build_number': 1},
