@@ -79,7 +79,6 @@ def test_candidate_scraper(tmpdir, args, url):
 
 @pytest.mark.ci_only
 @pytest.mark.parametrize("args", [
-    {'branch': 'mozilla-central', 'platform': 'linux'},
     {'branch': 'mozilla-central', 'platform': 'linux64'},
     {'branch': 'mozilla-central', 'platform': 'linux-arm64'},
     {'branch': 'mozilla-central', 'platform': 'mac'},
