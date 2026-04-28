@@ -1,4 +1,4 @@
-mozinfo >= 1.0.0
+mozinfo >= 1.2.3
 mozilla-version >= 2.0.0
 progressbar2 >= 3.34.3
 redo == 3.0.0
