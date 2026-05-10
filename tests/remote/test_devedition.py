@@ -26,8 +26,8 @@ from mozdownload.utils import urljoin
      'devedition/releases/128.0b1/win32/en-US/Firefox Setup 128.0b1.exe'),
     ({'application': 'devedition', 'platform': 'win64', 'version': '128.0b1'},
      'devedition/releases/128.0b1/win64/en-US/Firefox Setup 128.0b1.exe'),
-    ({'application': 'devedition', 'platform': 'win32', 'version': '128.0b1', 'locale': 'de'},
-     'devedition/releases/128.0b1/win32/de/Firefox Setup 128.0b1.exe'),
+    ({'application': 'devedition', 'platform': 'win32', 'version': '128.0b1', 'locale': 'fr'},
+     'devedition/releases/128.0b1/win32/fr/Firefox Setup 128.0b1.exe'),
 ])
 def test_release_scraper(tmpdir, args, url):
     """Test release scraper against the remote server."""
@@ -49,8 +49,8 @@ def test_release_scraper(tmpdir, args, url):
     ({'application': 'devedition', 'platform': 'win32', 'version': '128.0b1', 'build_number': 1},
      'devedition/candidates/128.0b1-candidates/build1/win32/en-US/Firefox Setup 128.0b1.exe'),
     ({'application': 'devedition', 'platform': 'mac', 'version': '128.0b1', 'build_number': 1,
-      'locale': 'de'},
-     'devedition/candidates/128.0b1-candidates/build1/mac/de/Firefox 128.0b1.dmg'),
+      'locale': 'fr'},
+     'devedition/candidates/128.0b1-candidates/build1/mac/fr/Firefox 128.0b1.dmg'),
     ({'application': 'devedition', 'platform': 'mac', 'version': '128.0b1', 'build_number': 1,
       'extension': 'json'},
      'devedition/candidates/128.0b1-candidates/build1/mac/en-US/firefox-128.0b1.json'),

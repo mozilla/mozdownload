@@ -24,8 +24,8 @@ from mozdownload.utils import urljoin
      'thunderbird/releases/52.0/linux-x86_64/en-US/thunderbird-52.0.tar.bz2'),
     ({'application': 'thunderbird', 'platform': 'mac', 'version': '52.0'},
      'thunderbird/releases/52.0/mac/en-US/Thunderbird 52.0.dmg'),
-    ({'application': 'thunderbird', 'platform': 'win32', 'version': '52.0', 'locale': 'de'},
-     'thunderbird/releases/52.0/win32/de/Thunderbird Setup 52.0.exe'),
+    ({'application': 'thunderbird', 'platform': 'win32', 'version': '52.0', 'locale': 'fr'},
+     'thunderbird/releases/52.0/win32/fr/Thunderbird Setup 52.0.exe'),
 ])
 def test_release_scraper(tmpdir, args, url):
     """Test release scraper against the remote server."""
