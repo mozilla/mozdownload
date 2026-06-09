@@ -35,7 +35,7 @@ jobs:
 
       - name: Upload coverage to Codecov (only on ubuntu & py314)
         if: matrix.python-version == '3.14'
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: whimboo/mozdownload
