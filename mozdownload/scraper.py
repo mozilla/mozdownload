@@ -89,6 +89,12 @@ PLATFORM_FRAGMENTS = {'android-arm64-v8a': r'android-arm64-v8a',
                       'win32': r'win32',
                       'win64': r'win64(-x86_64)?'}
 
+# Applications restricted to a specific set of platforms
+APPLICATIONS_TO_PLATFORMS = {
+    'fenix': ('android-arm64-v8a', 'android-armeabi-v7a',
+              'android-x86', 'android-x86_64'),
+}
+
 # Special versions for release and candidate builds
 RELEASE_AND_CANDIDATE_LATEST_VERSIONS = {
     'latest': r'^\d+(\.\d+)+(-candidates)?$',
@@ -141,6 +147,13 @@ class Scraper(object):
         self.locale_build = self.locale not in ('en-US', 'multi')
 
         self.platform = platform or self.detect_platform()
+
+        allowed_platforms = APPLICATIONS_TO_PLATFORMS.get(application)
+        if allowed_platforms and self.platform not in allowed_platforms:
+            raise errors.NotSupportedError(
+                'Platform "%s" is not supported for application "%s". '
+                'Supported platforms: %s' % (
+                    self.platform, application, ', '.join(allowed_platforms)))
 
         self.session = requests.Session()
         if (username, password) != (None, None):
