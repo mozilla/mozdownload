@@ -138,6 +138,18 @@ class Scraper(object):
 
         self.destination = destination or os.getcwd()
 
+        self.platform = platform or self.detect_platform()
+
+        # Fenix is Firefox for Android. If a non-Android platform is
+        # requested, fall back to the firefox application instead of
+        # raising an error, since fenix builds only exist for Android.
+        # This must happen before locale is determined below, since
+        # APPLICATIONS_MULTI_LOCALE membership depends on the final
+        # application value.
+        allowed_platforms = APPLICATIONS_TO_PLATFORMS.get(application)
+        if allowed_platforms and self.platform not in allowed_platforms:
+            application = 'firefox'
+
         if application in APPLICATIONS_MULTI_LOCALE:
             self.locale = 'multi'
         elif locale:
@@ -145,15 +157,6 @@ class Scraper(object):
         else:
             self.locale = 'en-US'
         self.locale_build = self.locale not in ('en-US', 'multi')
-
-        self.platform = platform or self.detect_platform()
-
-        allowed_platforms = APPLICATIONS_TO_PLATFORMS.get(application)
-        if allowed_platforms and self.platform not in allowed_platforms:
-            raise errors.NotSupportedError(
-                'Platform "%s" is not supported for application "%s". '
-                'Supported platforms: %s' % (
-                    self.platform, application, ', '.join(allowed_platforms)))
 
         self.session = requests.Session()
         if (username, password) != (None, None):
@@ -567,6 +570,7 @@ class DailyScraper(Scraper):
             parser.entries = parser.filter(regex)
 
         if not parser.entries:
+            print('DEBUG application=', self.application, 'locale=', self.locale, 'locale_build=', self.locale_build, 'branch=', self.branch, 'regex=', regex)
             date_format = '%Y-%m-%d-%H-%M-%S' if has_time else '%Y-%m-%d'
             message = 'Folder for builds on %s has not been found' % \
                       self.date.strftime(date_format)
