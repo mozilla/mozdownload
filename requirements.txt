@@ -1,6 +1,6 @@
 mozinfo >= 1.2.3
 mozilla-version >= 5.1.0
-progressbar2 >= 4.5.0
+progressbar2 >= 4.6.0
 redo == 3.0.0
 requests >= 2.34.2, < 3.0.0
 treeherder-client >= 5.0.0, <6.0.0
