@@ -1,0 +1,65 @@
+[
+    {
+        "url": "http://archive.mozilla.org/pub/firefox/tinderbox-builds/mozilla-beta-linux/1452814920/mozilla-beta-linux-bm77-build1-build9.txt.gz",
+        "parse_status": "parsed",
+        "id": 1005637,
+        "name": "buildbot_text",
+        "job_id": 737977
+    },
+    {
+        "url": "http://archive.mozilla.org/pub/firefox/tinderbox-builds/mozilla-beta-linux64/1452814920/mozilla-beta-linux64-bm77-build1-build6.txt.gz",
+        "parse_status": "parsed",
+        "id": 1005489,
+        "name": "buildbot_text",
+        "job_id": 737980
+    },
+    {
+        "url": "http://archive.mozilla.org/pub/firefox/tinderbox-builds/mozilla-beta-macosx64/1452814920/mozilla-beta-macosx64-bm82-build1-build129.txt.gz",
+        "parse_status": "parsed",
+        "id": 1004207,
+        "name": "buildbot_text",
+        "job_id": 737985
+    },
+    {
+        "url": "http://archive.mozilla.org/pub/firefox/tinderbox-builds/mozilla-beta-win32/1451991580/mozilla-beta-win32-bm71-build1-build0.txt.gz",
+        "parse_status": "parsed",
+        "id": 3826060,
+        "name": "buildbot_text",
+        "job_id": 737986
+    },
+    {
+        "url": "http://archive.mozilla.org/pub/firefox/tinderbox-builds/mozilla-beta-win64/1452814920/mozilla-beta-win64-bm74-build1-build20.txt.gz",
+        "parse_status": "parsed",
+        "id": 1005818,
+        "name": "buildbot_text",
+        "job_id": 737988
+    },
+    {
+        "url": "http://archive.mozilla.org/pub/mobile/tinderbox-builds/mozilla-beta-android-x86/1451991581/mozilla-beta-android-x86-bm72-build1-build168.txt.gz",
+        "parse_status": "parsed",
+        "id": 3822388,
+        "name": "buildbot_text",
+        "job_id": 2999599
+    },
+    {
+        "url": "http://archive.mozilla.org/pub/mobile/tinderbox-builds/mozilla-beta-android-api-9/1451991581/mozilla-beta-android-api-9-bm72-build1-build254.txt.gz",
+        "parse_status": "parsed",
+        "id": 3822280,
+        "name": "buildbot_text",
+        "job_id": 2999602
+    },
+    {
+        "url": "http://archive.mozilla.org/pub/mobile/tinderbox-builds/mozilla-beta-android-api-11/1451991581/mozilla-beta-android-api-11-bm73-build1-build9.txt.gz",
+        "parse_status": "parsed",
+        "id": 3822281,
+        "name": "buildbot_text",
+        "job_id": 2999600
+    },
+    {
+        "url": "http://archive.mozilla.org/pub/mobile/tinderbox-builds/mozilla-beta-android-api-15/1451991581/mozilla-beta-android-api-15-bm73-build1-build9.txt.gz",
+        "parse_status": "parsed",
+        "id": 3822282,
+        "name": "buildbot_text",
+        "job_id": 2999601
+    }
+]
