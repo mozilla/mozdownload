@@ -89,6 +89,12 @@ PLATFORM_FRAGMENTS = {'android-arm64-v8a': r'android-arm64-v8a',
                       'win32': r'win32',
                       'win64': r'win64(-x86_64)?'}
 
+# Applications restricted to a specific set of platforms
+APPLICATIONS_TO_PLATFORMS = {
+    'fenix': ('android-arm64-v8a', 'android-armeabi-v7a',
+              'android-x86', 'android-x86_64'),
+}
+
 # Special versions for release and candidate builds
 RELEASE_AND_CANDIDATE_LATEST_VERSIONS = {
     'latest': r'^\d+(\.\d+)+(-candidates)?$',
@@ -132,6 +138,18 @@ class Scraper(object):
 
         self.destination = destination or os.getcwd()
 
+        self.platform = platform or self.detect_platform()
+
+        # Fenix is Firefox for Android. If a non-Android platform is
+        # requested, fall back to the firefox application instead of
+        # raising an error, since fenix builds only exist for Android.
+        # This must happen before locale is determined below, since
+        # APPLICATIONS_MULTI_LOCALE membership depends on the final
+        # application value.
+        allowed_platforms = APPLICATIONS_TO_PLATFORMS.get(application)
+        if allowed_platforms and self.platform not in allowed_platforms:
+            application = 'firefox'
+
         if application in APPLICATIONS_MULTI_LOCALE:
             self.locale = 'multi'
         elif locale:
@@ -139,8 +157,6 @@ class Scraper(object):
         else:
             self.locale = 'en-US'
         self.locale_build = self.locale not in ('en-US', 'multi')
-
-        self.platform = platform or self.detect_platform()
 
         self.session = requests.Session()
         if (username, password) != (None, None):
