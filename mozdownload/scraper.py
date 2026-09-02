@@ -570,7 +570,6 @@ class DailyScraper(Scraper):
             parser.entries = parser.filter(regex)
 
         if not parser.entries:
-            print('DEBUG application=', self.application, 'locale=', self.locale, 'locale_build=', self.locale_build, 'branch=', self.branch, 'regex=', regex)
             date_format = '%Y-%m-%d-%H-%M-%S' if has_time else '%Y-%m-%d'
             message = 'Folder for builds on %s has not been found' % \
                       self.date.strftime(date_format)
