@@ -73,7 +73,8 @@ DEFAULT_FILE_EXTENSIONS = {'android-arm64-v8a': 'apk',
                            'mac': 'dmg',
                            'mac64': 'dmg',
                            'win32': 'exe',
-                           'win64': 'exe'}
+                           'win64': 'exe',
+                           'win-arm64': 'exe'}
 
 FALLBACK_FILE_EXTENSIONS = {'tar.xz': r'tar.bz2'}
 
@@ -87,7 +88,8 @@ PLATFORM_FRAGMENTS = {'android-arm64-v8a': r'android-arm64-v8a',
                       'mac': r'mac',
                       'mac64': r'mac(64)?',
                       'win32': r'win32',
-                      'win64': r'win64(-x86_64)?'}
+                      'win64': r'win64(-x86_64)?',
+                      'win-arm64': r'win64-aarch64'}
 
 # Special versions for release and candidate builds
 RELEASE_AND_CANDIDATE_LATEST_VERSIONS = {
@@ -592,7 +594,9 @@ class DailyScraper(Scraper):
                         'mac': r'\.%(EXT)s$',
                         'mac64': r'\.%(EXT)s$',
                         'win32': r'(\.installer%(STUB)s)?\.%(EXT)s$',
-                        'win64': r'(\.installer%(STUB)s)?\.%(EXT)s$'}
+                        'win64': r'(\.installer%(STUB)s)?\.%(EXT)s$',
+                        'win-arm64': r'(\.installer%(STUB)s)?\.%(EXT)s$'}
+
         regex = regex_base_name + regex_suffix[self.platform]
 
         return regex % {'BINARY_NAME': APPLICATIONS_TO_BINARY_NAME.get(self.application,
@@ -691,6 +695,8 @@ class ReleaseScraper(Scraper):
                  'win32':
                      r'^%(BINARY_NAME)s(%(STUB_NEW)s|(?:\sSetup\s|-)%(STUB)s%(VERSION)s)\.%(EXT)s$',
                  'win64':
+                     r'^%(BINARY_NAME)s(%(STUB_NEW)s|(?:\sSetup\s|-)%(STUB)s%(VERSION)s)\.%(EXT)s$',
+                 'win-arm64':
                      r'^%(BINARY_NAME)s(%(STUB_NEW)s|(?:\sSetup\s|-)%(STUB)s%(VERSION)s)\.%(EXT)s$',
                  'android-arm64-v8a': r'^%(BINARY_NAME)s-%(VERSION)s\.multi.%(PLATFORM)s\.%(EXT)s$',
                  'android-armeabi-v7a':
