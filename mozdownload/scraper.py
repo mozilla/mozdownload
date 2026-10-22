@@ -10,6 +10,7 @@ import logging
 import os
 import re
 import sys
+import warnings
 from datetime import datetime
 
 import mozinfo
@@ -138,17 +139,28 @@ class Scraper(object):
 
         self.destination = destination or os.getcwd()
 
+        # detect_platform() of some scrapers (e.g. TryScraper) reads
+        # self.locale, so it needs a provisional value before the platform
+        # is detected.
+        self.locale = locale or 'en-US'
+
         self.platform = platform or self.detect_platform()
 
-        # Fenix is Firefox for Android. If a non-Android platform is
-        # requested, fall back to the firefox application instead of
-        # raising an error, since fenix builds only exist for Android.
-        # This must happen before locale is determined below, since
+        # Fenix is Firefox for Android, so map the application by platform.
+        # This must happen before the final locale is determined, since
         # APPLICATIONS_MULTI_LOCALE membership depends on the final
         # application value.
-        allowed_platforms = APPLICATIONS_TO_PLATFORMS.get(application)
-        if allowed_platforms and self.platform not in allowed_platforms:
-            application = 'firefox'
+        fenix_platforms = APPLICATIONS_TO_PLATFORMS['fenix']
+        if application == 'fenix':
+            warnings.warn("The application type 'fenix' is deprecated. Use "
+                          "'firefox' together with an Android platform "
+                          "(e.g. 'android-arm64-v8a') instead.",
+                          category=DeprecationWarning,
+                          stacklevel=2)
+            if self.platform not in fenix_platforms:
+                application = 'firefox'
+        elif application == 'firefox' and self.platform in fenix_platforms:
+            application = 'fenix'
 
         if application in APPLICATIONS_MULTI_LOCALE:
             self.locale = 'multi'
