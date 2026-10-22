@@ -62,7 +62,12 @@ class FactoryScraper(scraper.Scraper):
         if scraper_type in ('try') and not kwargs.get('revision'):
             raise ValueError('The revision of the build has to be specified.')
 
-        if kwargs.get('application') == 'fenix' and scraper_type not in ('daily', 'release'):
+        application = kwargs.get('application')
+        fenix_platforms = scraper.APPLICATIONS_TO_PLATFORMS['fenix']
+        is_fenix = (application == 'fenix' or
+                    (application == 'firefox' and
+                     kwargs.get('platform') in fenix_platforms))
+        if is_fenix and scraper_type not in ('daily', 'release'):
             error_msg = '%s build is not yet supported for fenix' % scraper_type
             raise NotSupportedError(error_msg)
 
