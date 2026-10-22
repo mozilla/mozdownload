@@ -144,13 +144,21 @@ class Scraper(object):
         # is detected.
         self.locale = locale or 'en-US'
 
-        self.platform = platform or self.detect_platform()
-
         # Fenix is Firefox for Android, so map the application by platform.
         # This must happen before the final locale is determined, since
         # APPLICATIONS_MULTI_LOCALE membership depends on the final
         # application value.
         fenix_platforms = APPLICATIONS_TO_PLATFORMS['fenix']
+
+        if platform:
+            self.platform = platform
+        elif application == 'fenix':
+            # Without an explicit platform, fenix defaults to Android
+            # instead of the desktop platform.
+            self.platform = fenix_platforms[0]
+        else:
+            self.platform = self.detect_platform()
+
         if application == 'fenix':
             warnings.warn("The application type 'fenix' is deprecated. Use "
                           "'firefox' together with an Android platform "
