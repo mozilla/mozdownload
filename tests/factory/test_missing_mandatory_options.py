@@ -32,6 +32,21 @@ def test_non_daily_fenix(httpd, tmpdir):
                        version='110.0b1')
 
 
+@pytest.mark.parametrize('platform', ['android-arm64-v8a',
+                                      'android-armeabi-v7a',
+                                      'android-x86',
+                                      'android-x86_64'])
+def test_non_daily_firefox_on_android(httpd, tmpdir, platform):
+    """Test that non-daily scraper_type for firefox on Android raises exception"""
+    with pytest.raises(NotSupportedError):
+        FactoryScraper('candidate',
+                       destination=str(tmpdir),
+                       base_url=httpd.get_url(),
+                       application='firefox',
+                       platform=platform,
+                       version='110.0b1')        
+
+
 def test_non_release_non_candidate_devedition(httpd, tmpdir):
     """Test that non-relase and non-candidate scraper type for devedition raises exception"""
     with pytest.raises(NotSupportedError):

@@ -10,6 +10,7 @@ import logging
 import os
 import re
 import sys
+import warnings
 from datetime import datetime
 
 import mozinfo
@@ -89,6 +90,12 @@ PLATFORM_FRAGMENTS = {'android-arm64-v8a': r'android-arm64-v8a',
                       'win32': r'win32',
                       'win64': r'win64(-x86_64)?'}
 
+# Applications restricted to a specific set of platforms
+APPLICATIONS_TO_PLATFORMS = {
+    'fenix': ('android-arm64-v8a', 'android-armeabi-v7a',
+              'android-x86', 'android-x86_64'),
+}
+
 # Special versions for release and candidate builds
 RELEASE_AND_CANDIDATE_LATEST_VERSIONS = {
     'latest': r'^\d+(\.\d+)+(-candidates)?$',
@@ -132,6 +139,37 @@ class Scraper(object):
 
         self.destination = destination or os.getcwd()
 
+        # detect_platform() of some scrapers (e.g. TryScraper) reads
+        # self.locale, so it needs a provisional value before the platform
+        # is detected.
+        self.locale = locale or 'en-US'
+
+        # Fenix is Firefox for Android, so map the application by platform.
+        # This must happen before the final locale is determined, since
+        # APPLICATIONS_MULTI_LOCALE membership depends on the final
+        # application value.
+        fenix_platforms = APPLICATIONS_TO_PLATFORMS['fenix']
+
+        if platform:
+            self.platform = platform
+        elif application == 'fenix':
+            # Without an explicit platform, fenix defaults to Android
+            # instead of the desktop platform.
+            self.platform = fenix_platforms[0]
+        else:
+            self.platform = self.detect_platform()
+
+        if application == 'fenix':
+            warnings.warn("The application type 'fenix' is deprecated. Use "
+                          "'firefox' together with an Android platform "
+                          "(e.g. 'android-arm64-v8a') instead.",
+                          category=DeprecationWarning,
+                          stacklevel=2)
+            if self.platform not in fenix_platforms:
+                application = 'firefox'
+        elif application == 'firefox' and self.platform in fenix_platforms:
+            application = 'fenix'
+
         if application in APPLICATIONS_MULTI_LOCALE:
             self.locale = 'multi'
         elif locale:
@@ -139,8 +177,6 @@ class Scraper(object):
         else:
             self.locale = 'en-US'
         self.locale_build = self.locale not in ('en-US', 'multi')
-
-        self.platform = platform or self.detect_platform()
 
         self.session = requests.Session()
         if (username, password) != (None, None):
