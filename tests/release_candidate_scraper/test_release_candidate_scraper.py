@@ -13,6 +13,9 @@ from mozdownload import ReleaseCandidateScraper
 from mozdownload.utils import urljoin
 
 firefox_tests = [
+    ({'application': 'firefox', 'platform': 'linux-arm64', 'version': '23.0.1'},
+     'firefox-23.0.1-build3.en-US.linux-arm64.tar.xz',
+     'firefox/candidates/23.0.1-candidates/build3/linux-aarch64/en-US/firefox-23.0.1.tar.xz'),
 ({'application': 'firefox', 'platform': 'linux', 'version': '23.0.1'},
      'firefox-23.0.1-build3.en-US.linux.tar.xz',
      'firefox/candidates/23.0.1-candidates/build3/linux-i686/en-US/firefox-23.0.1.tar.xz'),

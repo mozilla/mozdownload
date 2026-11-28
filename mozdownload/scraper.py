@@ -686,6 +686,7 @@ class ReleaseScraper(Scraper):
         """Return the regex for the binary."""
         regex = {'linux': r'^%(BINARY_NAME)s-%(VERSION)s\.%(EXT)s$',
                  'linux64': r'^%(BINARY_NAME)s-%(VERSION)s\.%(EXT)s$',
+                 'linux-arm64': r'^%(BINARY_NAME)s-%(VERSION)s\.%(EXT)s$',
                  'mac': r'^%(BINARY_NAME)s(?:\s|-)%(VERSION)s\.%(EXT)s$',
                  'mac64': r'^%(BINARY_NAME)s(?:\s|-)%(VERSION)s\.%(EXT)s$',
                  'win32':
